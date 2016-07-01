@@ -6,9 +6,9 @@ mbed OS accelerates the process of creating a connected product by providing a p
  
 ## Current release
  
-This is our mbed OS 5.0 Early Partner Release, ahead of our 16.07 public release:
+This is our mbed OS 16.07 Early Partner Release, ahead of our 16.07 public release:
 
-- [Release Note](ERP_Release_Note.md)
+- [Release Note](EPR_Release_Note.md)
 
 ## Getting Started
  
