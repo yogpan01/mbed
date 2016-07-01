@@ -1,10 +1,10 @@
-# mbed OS 5.0 EPR - 16.07 Early Partner Release  
+# mbed OS 16.07 Early Partner Release
 
 This is the release note for the 16.07 Early Partner Release (EPR) of mbed OS and associated tools. It summarises the major changes in this version of mbed OS, as well as the steps you need to take to support this release on your lead platforms. 
 
 ## About this release 
 
-mbed OS 5.0 marks significant changes and enhancements that have accelerated important aspects of our roadmap, opened up the applicability of mbed OS to many more use cases and developers, and unlocked compatibility with our previous mbed OS 2.0 ("Classic") ecosystem.
+This release marks significant changes and enhancements that have accelerated important aspects of our roadmap, opened up the applicability of mbed OS to many more use cases and developers, and unlocked compatibility with our previous mbed OS 2.0 ("Classic") ecosystem.
 
 
 The Early Partner Release (EPR) gives you early visibility of repositories and documents for the upcoming release at the final stages of development. This should allow you to update your ports, so that your platforms support mbed OS by the time it is publicly released.
