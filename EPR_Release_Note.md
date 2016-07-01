@@ -154,4 +154,4 @@ Supported partner targets will be listed for the 16.07 release, based on success
 
 To get started with and begin porting for this release, see [EPR Getting Started](https://github.com/ARMmbed/EPR-Getting-Started).
 
-
+You can download this release [here](https://github.com/ARMmbed/mbed-os/releases/tag/mbed-os-5.0.1-epr).
