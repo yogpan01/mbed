@@ -47,65 +47,7 @@
  * it can be run a second time on the device without flashing, and the test should
  * still work.
  */
-#if defined __MBED__ && ! defined TOOLCHAIN_GCC_ARM
-
-
-#include "mbed-drivers/mbed.h"
-#include "cfstore_config.h"
-#include "Driver_Common.h"
-#include "cfstore_debug.h"
-#include "cfstore_test.h"
-#include "configuration_store.h"
-#include "utest/utest.h"
-#include "unity/unity.h"
-#include "greentea-client/test_env.h"
-#ifdef YOTTA_CFG_CFSTORE_UVISOR
-#include "uvisor-lib/uvisor-lib.h"
-#include "cfstore_uvisor.h"
-#endif /* YOTTA_CFG_CFSTORE_UVISOR */
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <inttypes.h>
-
-using namespace utest::v1;
-
-static control_t cfstore_example3_test_00(const size_t call_count)
-{
-    (void) call_count;
-    printf("Not implemented for ARM toolchain\n");
-    return CaseNext;
-}
-
-
-utest::v1::status_t greentea_setup(const size_t number_of_cases)
-{
-    GREENTEA_SETUP(100, "default_auto");
-    return greentea_test_setup_handler(number_of_cases);
-}
-
-Case cases[] = {
-           /*          1         2         3         4         5         6        7  */
-           /* 1234567890123456789012345678901234567890123456789012345678901234567890 */
-        Case("EXAMPLE3_test_00", cfstore_example3_test_00),
-};
-
-
-/* Declare your test specification with a custom setup handler */
-Specification specification(greentea_setup, cases);
-
-int main()
-{
-    return !Harness::run(specification);
-}
-
-
-
-#else
-
-
-#include "mbed-drivers/mbed.h"
+#include "mbed.h"
 #ifndef YOTTA_CONFIGURATION_STORE_EXAMPLE3_VERSION_STRING
 /* when built as Configuration-Store example, include greentea support otherwise omit */
 #include "utest/utest.h"
@@ -182,7 +124,7 @@ const char* cfstore_ex3_kv_value = "TheRollingStone";
 
 typedef struct cfstore_example3_ctx_t
 {
-    ARM_CFSTORE_CAPABILITIES caps;;
+    ARM_CFSTORE_CAPABILITIES caps;
     uint8_t hkey[CFSTORE_HANDLE_BUFSIZE];
     uint8_t hkey_next_buf[CFSTORE_HANDLE_BUFSIZE];
     uint8_t hkey_prev_buf[CFSTORE_HANDLE_BUFSIZE];
@@ -357,22 +299,11 @@ Case cases[] = {
 /* Declare your test specification with a custom setup handler */
 Specification specification(greentea_setup, cases);
 
-#if defined CFSTORE_CONFIG_MBED_OS_VERSION && CFSTORE_CONFIG_MBED_OS_VERSION == 3
-/* mbedosV3*/
-void app_start(int argc __unused, char** argv __unused)
-{
-    /* Run the test specification */
-    Harness::run(specification);
-}
-#endif /* CFSTORE_CONFIG_MBED_OS_VERSION == 3 */
-
-#if defined CFSTORE_CONFIG_MBED_OS_VERSION && CFSTORE_CONFIG_MBED_OS_VERSION == 4
-/* mbedosV3++*/
 int main()
 {
     return !Harness::run(specification);
 }
-#endif /* CFSTORE_CONFIG_MBED_OS_VERSION == 4 */
+
 
 #else   // YOTTA_CONFIGURATION_STORE_EXAMPLE3_VERSION_STRING
 
@@ -383,8 +314,4 @@ void app_start(int argc __unused, char** argv __unused)
 }
 
 
-
 #endif // YOTTA_CONFIGURATION_STORE_EXAMPLE3_VERSION_STRING
-
-
-#endif // __MBED__ && ! defined TOOLCHAIN_GCC_ARM

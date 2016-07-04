@@ -30,7 +30,8 @@
  * SUCH DAMAGE.
  */
 
-#ifndef _NO_FNMATCH
+#ifndef CFSTORE_NO_FNMATCH
+#define CFSTORE_NO_FNMATCH
 
 #if defined(LIBC_SCCS) && !defined(lint)
 static char sccsid[] = "@(#)cfstore_fnmatch.c	8.2 (Berkeley) 4/16/94";
@@ -136,8 +137,7 @@ int __collate_load_error = 1;
  * "[a-z]"-type ranges with national characters.
  */
 
-int __collate_range_cmp (c1, c2)
-	int c1, c2;
+static int __collate_range_cmp (int c1, int c2)
 {
 	static char s1[2], s2[2];
 	int ret;
@@ -272,7 +272,8 @@ rangematch(const char *pattern, char test, int flags, char **newp)
 	 * consistency with the regular expression syntax.
 	 * J.T. Conklin (conklin@ngai.kaleida.com)
 	 */
-	if ( (negate = (*pattern == '!' || *pattern == '^')) )
+	negate = (*pattern == '!' || *pattern == '^');
+	if ( negate )
 		++pattern;
 
 	if (flags & FNM_CASEFOLD)
@@ -322,4 +323,4 @@ rangematch(const char *pattern, char test, int flags, char **newp)
 	return (ok == negate ? RANGE_NOMATCH : RANGE_MATCH);
 }
 
-#endif /* !_NO_FNMATCH  */
+#endif /* CFSTORE_NO_FNMATCH  */

@@ -17,65 +17,7 @@
  *
  * Test cases to create KVs in the CFSTORE using the drv->Create() API call.
  */
-#if defined __MBED__ && ! defined TOOLCHAIN_GCC_ARM
-
-
-#include "mbed-drivers/mbed.h"
-#include "cfstore_config.h"
-#include "Driver_Common.h"
-#include "cfstore_debug.h"
-#include "cfstore_test.h"
-#include "configuration_store.h"
-#include "utest/utest.h"
-#include "unity/unity.h"
-#include "greentea-client/test_env.h"
-#ifdef YOTTA_CFG_CFSTORE_UVISOR
-#include "uvisor-lib/uvisor-lib.h"
-#include "cfstore_uvisor.h"
-#endif /* YOTTA_CFG_CFSTORE_UVISOR */
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <inttypes.h>
-
-using namespace utest::v1;
-
-static control_t cfstore_create_test_00(const size_t call_count)
-{
-    (void) call_count;
-    printf("Not implemented for ARM toolchain\n");
-    return CaseNext;
-}
-
-
-utest::v1::status_t greentea_setup(const size_t number_of_cases)
-{
-    GREENTEA_SETUP(100, "default_auto");
-    return greentea_test_setup_handler(number_of_cases);
-}
-
-Case cases[] = {
-           /*          1         2         3         4         5         6        7  */
-           /* 1234567890123456789012345678901234567890123456789012345678901234567890 */
-        Case("CREATE_test_00", cfstore_create_test_00),
-};
-
-
-/* Declare your test specification with a custom setup handler */
-Specification specification(greentea_setup, cases);
-
-int main()
-{
-    return !Harness::run(specification);
-}
-
-
-
-#else
-
-
-#include "mbed-drivers/mbed.h"
+#include "mbed.h"
 #include "cfstore_config.h"
 #include "cfstore_debug.h"
 #include "cfstore_test.h"
@@ -85,6 +27,7 @@ int main()
 #include "unity/unity.h"
 #include "greentea-client/test_env.h"
 #include "cfstore_utest.h"
+
 #ifdef YOTTA_CFG_CFSTORE_UVISOR
 #include "uvisor-lib/uvisor-lib.h"
 #endif /* YOTTA_CFG_CFSTORE_UVISOR */
@@ -256,7 +199,7 @@ static int32_t cfstore_create_kv_create(size_t name_len, char* name_tag, char* v
         return ret;
     }
 
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_create_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: failed to create KV in store for kv_name_good(ret=%" PRId32 ").\n", __func__, ret);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_create_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: failed to create KV in store for kv_name_good(ret=%d).\n", __func__, (int) ret);
     TEST_ASSERT_MESSAGE(ret >= ARM_DRIVER_OK, cfstore_create_utest_msg_g);
 
     return ret;
@@ -349,12 +292,12 @@ static control_t cfstore_create_test_01_end(const size_t call_count)
     memset(&flags, 0, sizeof(flags));
 
     ret = cfstore_test_create_table(cfstore_create_test_01_data_step_01);
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_create_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Failed to add cfstore_create_test_01_data_head (ret=%" PRId32 ").\n", __func__, ret);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_create_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Failed to add cfstore_create_test_01_data_head (ret=%d).\n", __func__, (int) ret);
     TEST_ASSERT_MESSAGE(ret >= ARM_DRIVER_OK, cfstore_create_utest_msg_g);
 
     /* find cfstore_create_test_01_data[0] and grow the KV MID_ENTRY_01 to MID_ENTRY_02 */
     ret = cfstore_create_test_KV_change(&cfstore_create_test_01_data[0], &cfstore_create_test_01_data[1]);
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_create_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Failed to increase size of KV (ret=%" PRId32 ").\n", __func__, ret);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_create_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Failed to increase size of KV (ret=%d).\n", __func__, (int) ret);
     TEST_ASSERT_MESSAGE(ret >= ARM_DRIVER_OK, cfstore_create_utest_msg_g);
 
     /* Now check that the KVs are all present and correct */
@@ -370,7 +313,7 @@ static control_t cfstore_create_test_01_end(const size_t call_count)
     CFSTORE_DBGLOG("KV successfully increased in size and other KVs remained unchanged.%s", "\n");
     /* Shrink the KV from KV MID_ENTRY_02 to MID_ENTRY_03 */
     ret = cfstore_create_test_KV_change(&cfstore_create_test_01_data[1], &cfstore_create_test_01_data[2]);
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_create_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Failed to decrease size of KV (ret=%" PRId32 ").\n", __func__, ret);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_create_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Failed to decrease size of KV (ret=%d).\n", __func__, (int) ret);
     TEST_ASSERT_MESSAGE(ret >= ARM_DRIVER_OK, cfstore_create_utest_msg_g);
 
     /* Now check that the KVs are all present and correct */
@@ -445,13 +388,13 @@ static int32_t cfstore_create_test_02_core(const size_t call_count)
         bytes_stored += kv_value_min_len * (i+1);    /* kv value blob */
         bytes_stored += 8;                           /* kv overhead */
         if(ret == ARM_CFSTORE_DRIVER_ERROR_OUT_OF_MEMORY){
-            CFSTORE_ERRLOG("Out of memory on %" PRId32 "-th KV, trying to allocate memory totalling %" PRIu32 ".\n", i, bytes_stored);
+            CFSTORE_ERRLOG("Out of memory on %d-th KV, trying to allocate memory totalling %d.\n", (int) i, (int) bytes_stored);
             break;
         }
-        CFSTORE_DBGLOG("Successfully stored %" PRId32 "-th KV bytes,  totalling %" PRIu32 ".\n", i, bytes_stored);
+        CFSTORE_DBGLOG("Successfully stored %d-th KV bytes,  totalling %d.\n", (int) i, (int) bytes_stored);
     }
     ret = cfstore_test_delete_all();
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_create_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: failed to delete_all() attributes to clean up after test (ret=%" PRId32 ").\n", __func__, ret);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_create_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: failed to delete_all() attributes to clean up after test (ret=%d).\n", __func__, (int) ret);
     TEST_ASSERT_MESSAGE(ret >= ARM_DRIVER_OK, cfstore_create_utest_msg_g);
     return ret;
 }
@@ -465,7 +408,7 @@ static control_t cfstore_create_test_02_end(const size_t call_count)
     (void) call_count;
 
     ret = cfstore_create_test_02_core(call_count);
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_create_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: something went wrong (ret=%" PRId32 ").\n", __func__, ret);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_create_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: something went wrong (ret=%d).\n", __func__, (int) ret);
     TEST_ASSERT_MESSAGE(ret >= ARM_DRIVER_OK, cfstore_create_utest_msg_g);
 
     CFSTORE_TEST_UTEST_MESSAGE(cfstore_create_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: Uninitialize() call failed.\n", __func__);
@@ -484,10 +427,10 @@ static control_t cfstore_create_test_03_end(const size_t call_count)
     for(i = 0; i < 100; i++)
     {
         ret = cfstore_create_test_02_core(call_count);
-        CFSTORE_TEST_UTEST_MESSAGE(cfstore_create_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: something went wrong (ret=%" PRId32 ").\n", __func__, ret);
+        CFSTORE_TEST_UTEST_MESSAGE(cfstore_create_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: something went wrong (ret=%d).\n", __func__, (int) ret);
         TEST_ASSERT_MESSAGE(ret >= ARM_DRIVER_OK, cfstore_create_utest_msg_g);
         /* revert CFSTORE_LOG for more trace */
-        CFSTORE_DBGLOG("Successfully completed create/destroy loop %" PRId32 ".\n", i);
+        CFSTORE_DBGLOG("Successfully completed create/destroy loop %d.\n", (int) i);
     }
     CFSTORE_TEST_UTEST_MESSAGE(cfstore_create_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: Uninitialize() call failed.\n", __func__);
     TEST_ASSERT_MESSAGE(drv->Uninitialize() >= ARM_DRIVER_OK, cfstore_create_utest_msg_g);
@@ -520,6 +463,12 @@ static control_t cfstore_create_test_04_end(const size_t call_count)
 
     CFSTORE_FENTRYLOG("%s:entered\n", __func__);
     (void) call_count;
+
+    CFSTORE_LOG("%s: cfstore_test_dump: dump here contents of CFSTORE so we know whats present\n", __func__);
+    ret = cfstore_test_dump();
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_create_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error:  D.1.1 cfstore_test_dump failed (ret=%d).\n", __func__, (int) ret);
+    TEST_ASSERT_MESSAGE(ret >= ARM_DRIVER_OK, cfstore_create_utest_msg_g);
+
     value_buf = (char*) malloc(max_value_buf_size);
     CFSTORE_TEST_UTEST_MESSAGE(cfstore_create_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: out of memory.\n", __func__);
     TEST_ASSERT_MESSAGE(value_buf != NULL, cfstore_create_utest_msg_g);
@@ -532,14 +481,14 @@ static control_t cfstore_create_test_04_end(const size_t call_count)
         bytes_stored += kv_value_min_len/8 * (i+1);  /* kv value blob */
         bytes_stored += 8;                           /* kv overhead */
         if(ret == ARM_CFSTORE_DRIVER_ERROR_OUT_OF_MEMORY){
-            CFSTORE_ERRLOG("Out of memory on %" PRId32 "-th KV, trying to allocate memory totalling %" PRIu32 ".\n", i, bytes_stored);
+            CFSTORE_ERRLOG("Out of memory on %d-th KV, trying to allocate memory totalling %d.\n", (int) i, (int) bytes_stored);
             break;
         }
         /* revert CFSTORE_LOG for more trace */
-        CFSTORE_DBGLOG("Successfully stored %" PRId32 "-th KV bytes,  totalling %" PRIu32 ".\n", i, bytes_stored);
+        CFSTORE_DBGLOG("Successfully stored %d-th KV bytes,  totalling %d.\n", (int) i, (int) bytes_stored);
     }
     ret = cfstore_test_delete_all();
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_create_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: failed to delete_all() attributes to clean up after test (ret=%" PRId32 ").\n", __func__, ret);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_create_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: failed to delete_all() attributes to clean up after test (ret=%d).\n", __func__, (int) ret);
     TEST_ASSERT_MESSAGE(ret >= ARM_DRIVER_OK, cfstore_create_utest_msg_g);
     free(value_buf);
     CFSTORE_TEST_UTEST_MESSAGE(cfstore_create_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: Uninitialize() call failed.\n", __func__);
@@ -587,11 +536,11 @@ static control_t cfstore_create_test_05_end(const size_t call_count)
         bytes_stored += kv_value_min_len/64 * (i+1);                           /* kv value blob */
         bytes_stored += 8;                                                     /* kv overhead */
         if(ret == ARM_CFSTORE_DRIVER_ERROR_OUT_OF_MEMORY){
-            CFSTORE_ERRLOG("Out of memory on %" PRId32 "-th KV, trying to allocate memory totalling %" PRIu32 ".\n", i, bytes_stored);
+            CFSTORE_ERRLOG("Out of memory on %d-th KV, trying to allocate memory totalling %d.\n", (int) i, (int) bytes_stored);
             break;
         }
         /* revert CFSTORE_LOG for more trace */
-        CFSTORE_DBGLOG("Successfully stored %" PRId32 "-th KV bytes,  totalling %" PRIu32 ".\n", i, bytes_stored);
+        CFSTORE_DBGLOG("Successfully stored %d-th KV bytes,  totalling %d.\n", (int) i, (int) bytes_stored);
     }
     ret = cfstore_test_delete_all();
     CFSTORE_TEST_UTEST_MESSAGE(cfstore_create_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: failed to delete_all() attributes to clean up after test.\n", __func__);
@@ -702,7 +651,7 @@ static control_t cfstore_create_test_06_end(const size_t call_count)
     while(node->key_name != NULL)
     {
         ret = cfstore_create_key_name_validate(node->key_name, node->f_allowed);
-        CFSTORE_TEST_UTEST_MESSAGE(cfstore_create_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: test failed (ret=%d, key_name=%s, f_allowed=%d)\n", __func__, (int) ret, node->key_name, node->f_allowed);
+        CFSTORE_TEST_UTEST_MESSAGE(cfstore_create_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: test failed (ret=%d, key_name=%s, f_allowed=%d)\n", __func__, (int) ret, node->key_name, (int) node->f_allowed);
         TEST_ASSERT_MESSAGE(ret == true, cfstore_create_utest_msg_g);
         node++;
     }
@@ -741,22 +690,8 @@ Case cases[] = {
 /* Declare your test specification with a custom setup handler */
 Specification specification(greentea_setup, cases);
 
-#if defined CFSTORE_CONFIG_MBED_OS_VERSION && CFSTORE_CONFIG_MBED_OS_VERSION == 3
-/* mbedosV3*/
-void app_start(int argc __unused, char** argv __unused)
-{
-    /* Run the test specification */
-    Harness::run(specification);
-}
-#endif /* CFSTORE_CONFIG_MBED_OS_VERSION == 3 */
-
-#if defined CFSTORE_CONFIG_MBED_OS_VERSION && CFSTORE_CONFIG_MBED_OS_VERSION == 4
-/* mbedosV3++*/
 int main()
 {
     return !Harness::run(specification);
 }
-#endif /* CFSTORE_CONFIG_MBED_OS_VERSION == 4 */
 
-
-#endif // __MBED__ && ! defined TOOLCHAIN_GCC_ARM

@@ -17,65 +17,7 @@
  *
  * Test cases to write KVs in the CFSTORE using the drv->Write() API call.
  */
-#if defined __MBED__ && ! defined TOOLCHAIN_GCC_ARM
-
-
-#include "mbed-drivers/mbed.h"
-#include "cfstore_config.h"
-#include "Driver_Common.h"
-#include "cfstore_debug.h"
-#include "cfstore_test.h"
-#include "configuration_store.h"
-#include "utest/utest.h"
-#include "unity/unity.h"
-#include "greentea-client/test_env.h"
-#ifdef YOTTA_CFG_CFSTORE_UVISOR
-#include "uvisor-lib/uvisor-lib.h"
-#include "cfstore_uvisor.h"
-#endif /* YOTTA_CFG_CFSTORE_UVISOR */
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <inttypes.h>
-
-using namespace utest::v1;
-
-static control_t cfstore_write_test_00(const size_t call_count)
-{
-    (void) call_count;
-    printf("Not implemented for ARM toolchain\n");
-    return CaseNext;
-}
-
-
-utest::v1::status_t greentea_setup(const size_t number_of_cases)
-{
-    GREENTEA_SETUP(100, "default_auto");
-    return greentea_test_setup_handler(number_of_cases);
-}
-
-Case cases[] = {
-           /*          1         2         3         4         5         6        7  */
-           /* 1234567890123456789012345678901234567890123456789012345678901234567890 */
-        Case("WRITE_test_00", cfstore_write_test_00),
-};
-
-
-/* Declare your test specification with a custom setup handler */
-Specification specification(greentea_setup, cases);
-
-int main()
-{
-    return !Harness::run(specification);
-}
-
-
-
-#else
-
-
-#include "mbed-drivers/mbed.h"
+#include "mbed.h"
 #include "cfstore_config.h"
 #include "cfstore_test.h"
 #include "cfstore_debug.h"
@@ -158,26 +100,26 @@ static control_t cfstore_write_test_01_end(const size_t call_count)
     kdesc.drl = ARM_RETENTION_WHILE_DEVICE_ACTIVE;
     len = strlen(cfstore_write_test_01_kv_data[0].value);
     ret = cfstore_test_create(cfstore_write_test_01_kv_data[0].key_name, "one", &len, &kdesc);
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_write_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: failed to create new KV (key_name=%s, ret=%" PRId32 ").\n", __func__, cfstore_write_test_01_kv_data[0].key_name, ret);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_write_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: failed to create new KV (key_name=%s, ret=%d).\n", __func__, cfstore_write_test_01_kv_data[0].key_name, (int) ret);
     TEST_ASSERT_MESSAGE(ret >= ARM_DRIVER_OK, cfstore_write_utest_msg_g);
 
     /* now open the newly created key and write repeated to created the string */
     flags.write = true;
     ret = drv->Open(cfstore_write_test_01_kv_data[0].key_name, flags, hkey);
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_write_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: failed to open node (key_name=\"%s\", value=\"%s\")(ret=%" PRId32 ")\n", __func__, cfstore_write_test_01_kv_data[0].key_name, cfstore_write_test_01_kv_data[0].value, ret);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_write_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: failed to open node (key_name=\"%s\", value=\"%s\")(ret=%d)\n", __func__, cfstore_write_test_01_kv_data[0].key_name, cfstore_write_test_01_kv_data[0].value, (int) ret);
     TEST_ASSERT_MESSAGE(ret >= ARM_DRIVER_OK, cfstore_write_utest_msg_g);
 
     for(i = 0; i < strlen(cfstore_write_test_01_kv_data[0].value); i++)
     {
         len = 1;
         ret = drv->Write(hkey, &cfstore_write_test_01_kv_data[0].value[i], &len);
-        CFSTORE_TEST_UTEST_MESSAGE(cfstore_write_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: Write failed for char (\'%c\') (ret=%" PRId32 ")\n", __func__, cfstore_write_test_01_kv_data[0].value[i], ret);
+        CFSTORE_TEST_UTEST_MESSAGE(cfstore_write_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: Write failed for char (\'%c\') (ret=%d)\n", __func__, cfstore_write_test_01_kv_data[0].value[i], (int) ret);
         TEST_ASSERT_MESSAGE(ret >= ARM_DRIVER_OK, cfstore_write_utest_msg_g);
     }
     /* check that the value created in the key is as expected*/
     len = CFSTORE_KEY_NAME_MAX_LENGTH+1;
     ret = drv->Read(hkey, read_buf, &len);
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_write_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: Read failed (ret=%" PRId32 ")\n", __func__, ret);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_write_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: Read failed (ret=%d)\n", __func__, (int) ret);
     TEST_ASSERT_MESSAGE(ret >= ARM_DRIVER_OK, cfstore_write_utest_msg_g);
 
     /* check node key_names are identical */
@@ -217,7 +159,7 @@ static control_t cfstore_write_test_02_end(const size_t call_count)
     kdesc.drl = ARM_RETENTION_WHILE_DEVICE_ACTIVE;
     len = strlen(cfstore_write_test_01_kv_data[0].value);
     ret = cfstore_test_create(cfstore_write_test_01_kv_data[0].key_name, NULL, &len, &kdesc);
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_write_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error KV creation should have failed due to null write buffer but something else happended (ret=%" PRId32 ").\n", __func__, ret);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_write_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error KV creation should have failed due to null write buffer but something else happended (ret=%d).\n", __func__, (int) ret);
     TEST_ASSERT_MESSAGE(ret == ARM_CFSTORE_DRIVER_ERROR_INVALID_WRITE_BUFFER, cfstore_write_utest_msg_g);
 
     ret = drv->Uninitialize();
@@ -247,22 +189,7 @@ Case cases[] = {
 /* Declare your test specification with a custom setup handler */
 Specification specification(greentea_setup, cases);
 
-#if defined CFSTORE_CONFIG_MBED_OS_VERSION && CFSTORE_CONFIG_MBED_OS_VERSION == 3
-/* mbedosV3*/
-void app_start(int argc __unused, char** argv __unused)
-{
-    /* Run the test specification */
-    Harness::run(specification);
-}
-#endif /* CFSTORE_CONFIG_MBED_OS_VERSION == 3 */
-
-#if defined CFSTORE_CONFIG_MBED_OS_VERSION && CFSTORE_CONFIG_MBED_OS_VERSION == 4
-/* mbedosV3++*/
 int main()
 {
     return !Harness::run(specification);
 }
-#endif /* CFSTORE_CONFIG_MBED_OS_VERSION == 4 */
-
-
-#endif // __MBED__ && ! defined TOOLCHAIN_GCC_ARM

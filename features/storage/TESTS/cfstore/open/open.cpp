@@ -18,64 +18,7 @@
  *
  * Test cases to open KVs in the CFSTORE using the drv->Open() interface.
  */
-#if defined __MBED__ && ! defined TOOLCHAIN_GCC_ARM
-
-
-#include "mbed-drivers/mbed.h"
-#include "cfstore_config.h"
-#include "Driver_Common.h"
-#include "cfstore_debug.h"
-#include "cfstore_test.h"
-#include "configuration_store.h"
-#include "utest/utest.h"
-#include "unity/unity.h"
-#include "greentea-client/test_env.h"
-#ifdef YOTTA_CFG_CFSTORE_UVISOR
-#include "uvisor-lib/uvisor-lib.h"
-#include "cfstore_uvisor.h"
-#endif /* YOTTA_CFG_CFSTORE_UVISOR */
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <inttypes.h>
-
-using namespace utest::v1;
-
-static control_t cfstore_open_test_00(const size_t call_count)
-{
-    (void) call_count;
-    printf("Not implemented for ARM toolchain\n");
-    return CaseNext;
-}
-
-
-utest::v1::status_t greentea_setup(const size_t number_of_cases)
-{
-    GREENTEA_SETUP(100, "default_auto");
-    return greentea_test_setup_handler(number_of_cases);
-}
-
-Case cases[] = {
-           /*          1         2         3         4         5         6        7  */
-           /* 1234567890123456789012345678901234567890123456789012345678901234567890 */
-        Case("OPEN_test_00", cfstore_open_test_00),
-};
-
-
-/* Declare your test specification with a custom setup handler */
-Specification specification(greentea_setup, cases);
-
-int main()
-{
-    return !Harness::run(specification);
-}
-
-
-#else
-
-
-#include "mbed-drivers/mbed.h"
+#include "mbed.h"
 #include "cfstore_config.h"
 #include "cfstore_test.h"
 #include "cfstore_debug.h"
@@ -171,26 +114,26 @@ static control_t cfstore_open_test_01_end(const size_t call_count)
     kdesc.drl = ARM_RETENTION_WHILE_DEVICE_ACTIVE;
     CFSTORE_DBGLOG("%s:About to create new node (key_name=\"%s\", value=\"%s\")\n", __func__, node->key_name, node->value);
     ret = drv->Create(node->key_name, strlen(node->value), &kdesc, hkey);
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_open_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: failed to create node (key_name=\"%s\", value=\"%s\")(ret=%" PRId32 ")\n", __func__, node->key_name, node->value, ret);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_open_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: failed to create node (key_name=\"%s\", value=\"%s\")(ret=%d)\n", __func__, node->key_name, node->value, (int) ret);
     TEST_ASSERT_MESSAGE(ret >= ARM_DRIVER_OK, cfstore_open_utest_msg_g);
 
     CFSTORE_DBGLOG("%s:length of KV=%d (key_name=\"%s\", value=\"%s\")\n", __func__, (int) len, node->key_name, node->value);
     len = strlen(node->value);
     ret = drv->Write(hkey, (char*) node->value, &len);
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_open_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: failed to write key (key_name=\"%s\", value=\"%s\")(ret=%" PRId32 ")\n", __func__, node->key_name, node->value, ret);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_open_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: failed to write key (key_name=\"%s\", value=\"%s\")(ret=%d)\n", __func__, node->key_name, node->value, (int) ret);
     TEST_ASSERT_MESSAGE(ret >= ARM_DRIVER_OK, cfstore_open_utest_msg_g);
 
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_open_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: failed to write full value data (key_name=\"%s\", value=\"%s\"), len=%d, (ret=%" PRId32 ")\n", __func__, node->key_name, node->value, (int) len, ret);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_open_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: failed to write full value data (key_name=\"%s\", value=\"%s\"), len=%d, (ret=%d)\n", __func__, node->key_name, node->value, (int) len, (int) ret);
     TEST_ASSERT_MESSAGE(len == strlen(node->value), cfstore_open_utest_msg_g);
 
     CFSTORE_DBGLOG("Created KV successfully (key_name=\"%s\", value=\"%s\")\n", node->key_name, node->value);
     ret = drv->Close(hkey);
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_open_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: failed to close handle (ret=%" PRId32 ")\n", __func__, ret);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_open_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: failed to close handle (ret=%d)\n", __func__, (int) ret);
     TEST_ASSERT_MESSAGE(ret >= ARM_DRIVER_OK, cfstore_open_utest_msg_g);
 
     /* now open the newly created key */
     ret = drv->Open(node->key_name, flags, hkey);
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_open_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: failed to open node (key_name=\"%s\", value=\"%s\")(ret=%" PRId32 ")\n", __func__, node->key_name, node->value, ret);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_open_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: failed to open node (key_name=\"%s\", value=\"%s\")(ret=%d)\n", __func__, node->key_name, node->value, (int) ret);
     TEST_ASSERT_MESSAGE(ret >= ARM_DRIVER_OK, cfstore_open_utest_msg_g);
 
     len = strlen(node->value) + 1;
@@ -258,17 +201,17 @@ static control_t cfstore_open_test_02_end(const size_t call_count)
     kdesc.drl = ARM_RETENTION_WHILE_DEVICE_ACTIVE;
     len = strlen(cfstore_open_test_02_data[0].value);
     ret = cfstore_test_create(cfstore_open_test_02_data[0].key_name, (char*) cfstore_open_test_02_data[0].value, &len, &kdesc);
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_open_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: failed to create KV in store (ret=%" PRId32 ").\n", __func__, ret);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_open_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: failed to create KV in store (ret=%d).\n", __func__, (int) ret);
     TEST_ASSERT_MESSAGE(ret >= ARM_DRIVER_OK, cfstore_open_utest_msg_g);
 
     /* by default, owner of key opens with read-only permissions*/
     ret = drv->Open(cfstore_open_test_02_data[0].key_name, flags, hkey);
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_open_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: failed to open node (key_name=\"%s\")(ret=%" PRId32 ")\n", __func__, cfstore_open_test_02_data[0].key_name, ret);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_open_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: failed to open node (key_name=\"%s\")(ret=%d)\n", __func__, cfstore_open_test_02_data[0].key_name, (int) ret);
     TEST_ASSERT_MESSAGE(ret >= ARM_DRIVER_OK, cfstore_open_utest_msg_g);
 
     len = strlen(cfstore_open_test_02_data[0].value);
     ret = drv->Write(hkey, cfstore_open_test_02_data[0].value, &len);
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_open_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: call to Write() succeeded when should have failed (key_name=\"%s\")(ret=%" PRId32 ").\n", __func__, cfstore_open_test_02_data[0].key_name, ret);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_open_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: call to Write() succeeded when should have failed (key_name=\"%s\")(ret=%d).\n", __func__, cfstore_open_test_02_data[0].key_name, (int) ret);
     TEST_ASSERT_MESSAGE(ret == ARM_CFSTORE_DRIVER_ERROR_KEY_READ_ONLY, cfstore_open_utest_msg_g);
 
     CFSTORE_TEST_UTEST_MESSAGE(cfstore_open_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: Close() call failed.\n", __func__);
@@ -314,19 +257,19 @@ static control_t cfstore_open_test_03_end(const size_t call_count)
     kdesc.drl = ARM_RETENTION_WHILE_DEVICE_ACTIVE;
     len = strlen(cfstore_open_test_02_data[0].value);
     ret = cfstore_test_create(cfstore_open_test_02_data[0].key_name, (char*) cfstore_open_test_02_data[0].value, &len, &kdesc);
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_open_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: failed to create KV in store (ret=%" PRId32 ").\n", __func__, ret);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_open_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: failed to create KV in store (ret=%d).\n", __func__, (int) ret);
     TEST_ASSERT_MESSAGE(ret >= ARM_DRIVER_OK, cfstore_open_utest_msg_g);
 
     /* opens with read-write permissions*/
     flags.read = true;
     flags.write = true;
     ret = drv->Open(cfstore_open_test_02_data[0].key_name, flags, hkey);
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_open_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: failed to open node (key_name=\"%s\")(ret=%" PRId32 ")\n", __func__, cfstore_open_test_02_data[0].key_name, ret);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_open_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: failed to open node (key_name=\"%s\")(ret=%d)\n", __func__, cfstore_open_test_02_data[0].key_name, (int) ret);
     TEST_ASSERT_MESSAGE(ret >= ARM_DRIVER_OK, cfstore_open_utest_msg_g);
 
     len = strlen(cfstore_open_test_02_data[0].value);
     ret = drv->Write(hkey, cfstore_open_test_02_data[0].value, &len);
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_open_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: call to Write() failed when should have succeeded (key_name=\"%s\")(ret=%" PRId32 ").\n", __func__, cfstore_open_test_02_data[0].key_name, ret);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_open_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: call to Write() failed when should have succeeded (key_name=\"%s\")(ret=%d).\n", __func__, cfstore_open_test_02_data[0].key_name, (int) ret);
     TEST_ASSERT_MESSAGE(ret >= ARM_DRIVER_OK, cfstore_open_utest_msg_g);
 
     CFSTORE_TEST_UTEST_MESSAGE(cfstore_open_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: Close() call failed.\n", __func__);
@@ -375,7 +318,7 @@ static control_t cfstore_open_test_04_end(const size_t call_count)
     TEST_ASSERT_MESSAGE(strlen(kv_name_good) == CFSTORE_KEY_NAME_MAX_LENGTH, cfstore_open_utest_msg_g);
 
     ret = cfstore_test_create(kv_name_good, kv_name_good, &len, &kdesc);
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_open_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: failed to create KV in store for kv_name_good(ret=%" PRId32 ").\n", __func__, ret);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_open_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: failed to create KV in store for kv_name_good(ret=%d).\n", __func__, (int) ret);
     TEST_ASSERT_MESSAGE(ret >= ARM_DRIVER_OK, cfstore_open_utest_msg_g);
 
     len = CFSTORE_KEY_NAME_MAX_LENGTH+1;
@@ -388,7 +331,7 @@ static control_t cfstore_open_test_04_end(const size_t call_count)
 
     memset(&kdesc, 0, sizeof(kdesc));
     ret = cfstore_test_create(kv_name_bad, kv_name_bad, &len, &kdesc);
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_open_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: created KV in store for kv_name_bad when should have failed(ret=%" PRId32 ").\n", __func__, ret);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_open_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: created KV in store for kv_name_bad when should have failed(ret=%d).\n", __func__, (int) ret);
     TEST_ASSERT_MESSAGE(ret < ARM_DRIVER_OK, cfstore_open_utest_msg_g);
 
     ret = drv->Uninitialize();
@@ -448,7 +391,6 @@ enum cfstore_open_kv_name_pos {
 static control_t cfstore_open_test_05_end(const size_t call_count)
 {
     bool f_allowed = false;
-    const char* pos_str = NULL;
     char kv_name[CFSTORE_KEY_NAME_MAX_LENGTH+1];    /* extra char for terminating null */
     uint32_t j = 0;
     int32_t ret = ARM_DRIVER_OK;
@@ -460,7 +402,11 @@ static control_t cfstore_open_test_05_end(const size_t call_count)
 
     CFSTORE_FENTRYLOG("%s:entered\n", __func__);
     (void) call_count;
-    (void) pos_str; /* suppress warning in release build*/
+
+#ifdef CFSTORE_DEBUG
+    /* symbol only used why debug is enabled */
+    const char* pos_str = NULL;
+#endif
 
     /* create bad keyname strings with invalid character code at start of keyname */
     node = cfstore_open_kv_name_ascii_table;
@@ -488,23 +434,38 @@ static control_t cfstore_open_test_05_end(const size_t call_count)
                 {
                 case cfstore_open_kv_name_pos_start:
                     kv_name[0] = (char) j;
-                    pos_str = "start";
                     break;
                 case cfstore_open_kv_name_pos_mid:
                     /* create bad keyname strings with invalid character code in the middle of keyname */
                     kv_name[name_len/2] = (char) j;
-                    pos_str = "middle";
                     break;
                 case cfstore_open_kv_name_pos_end:
                     /* create bad keyname strings with invalid character code at end of keyname */
                     kv_name[name_len-1] = (char) j;
-                    pos_str = "end";
                     break;
                 default:
                     CFSTORE_TEST_UTEST_MESSAGE(cfstore_open_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: unexpected value of pos (pos=%d).\n", __func__, (int) pos);
                     TEST_ASSERT_MESSAGE(ret >= ARM_DRIVER_OK, cfstore_open_utest_msg_g);
                     break;
                 }
+
+#ifdef CFSTORE_DEBUG
+                /* processing only required when debug trace enabled */
+                switch(pos)
+                {
+                case cfstore_open_kv_name_pos_start:
+                    pos_str = "start";
+                    break;
+                case cfstore_open_kv_name_pos_mid:
+                    pos_str = "middle";
+                    break;
+                case cfstore_open_kv_name_pos_end:
+                    pos_str = "end";
+                    break;
+                default:
+                    break;
+                }
+#endif
                 ret = cfstore_test_create(kv_name, kv_name, &name_len, &kdesc);
 
                 /* special cases */
@@ -532,22 +493,22 @@ static control_t cfstore_open_test_05_end(const size_t call_count)
                 }
                 if(f_allowed == true)
                 {
-                    CFSTORE_TEST_UTEST_MESSAGE(cfstore_open_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: failed to create KV in store when kv_name contains valid characters (code=%" PRId32 ", ret=%" PRId32 ").\n", __func__, j, ret);
+                    CFSTORE_TEST_UTEST_MESSAGE(cfstore_open_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: failed to create KV in store when kv_name contains valid characters (code=%d, ret=%d).\n", __func__, (int) j, (int) ret);
                     TEST_ASSERT_MESSAGE(ret >= ARM_DRIVER_OK, cfstore_open_utest_msg_g);
                     /* revert CFSTORE_LOG for more trace */
-                    CFSTORE_DBGLOG("Successfully created a KV with valid keyname containing ascii character code %" PRIu32 " (%c) at the %s of the keyname.\n", j, (int) j, pos_str);
+                    CFSTORE_DBGLOG("Successfully created a KV with valid keyname containing ascii character code %d (%c) at the %s of the keyname.\n", (int) j, (int) j, pos_str);
                     CFSTORE_LOG("%c", '.');
 
                     ret = cfstore_test_delete(kv_name);
-                    CFSTORE_TEST_UTEST_MESSAGE(cfstore_open_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: failed to delete KV previously created (code=%" PRId32 ", ret=%" PRId32 ").\n", __func__, j, ret);
+                    CFSTORE_TEST_UTEST_MESSAGE(cfstore_open_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: failed to delete KV previously created (code=%d, ret=%d).\n", __func__, (int) j, (int) ret);
                     TEST_ASSERT_MESSAGE(ret >= ARM_DRIVER_OK, cfstore_open_utest_msg_g);
                 }
                 else
                 {   /*node->f_allowed == false => not allowed to create kv name with ascii code */
-                    CFSTORE_TEST_UTEST_MESSAGE(cfstore_open_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: created KV in store when kv_name contains an invalid character (code=%" PRId32 ", ret=%" PRId32 ").\n", __func__, j, ret);
+                    CFSTORE_TEST_UTEST_MESSAGE(cfstore_open_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: created KV in store when kv_name contains an invalid character (code=%d, ret=%d).\n", __func__, (int) j, (int) ret);
                     TEST_ASSERT_MESSAGE(ret < ARM_DRIVER_OK, cfstore_open_utest_msg_g);
                     /* revert CFSTORE_LOG for more trace */
-                    CFSTORE_DBGLOG("Successfully failed to create a KV with an invalid keyname containing ascii character code %" PRId32 " at the %s of the keyname.\n", j, pos_str);
+                    CFSTORE_DBGLOG("Successfully failed to create a KV with an invalid keyname containing ascii character code %d at the %s of the keyname.\n", (int) j, pos_str);
                     CFSTORE_LOG("%c", '.');
                 }
             }
@@ -601,7 +562,7 @@ static control_t cfstore_open_test_06_end(const size_t call_count)
     }
 
     ret = cfstore_test_create(kv_name, kv_name, &name_len, &kdesc);
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_open_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: created KV in store when kv_name contains invalid characters (ret=%" PRId32 ").\n", __func__, ret);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_open_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: created KV in store when kv_name contains invalid characters (ret=%d).\n", __func__, (int) ret);
     TEST_ASSERT_MESSAGE(ret < ARM_DRIVER_OK, cfstore_open_utest_msg_g);
 
     CFSTORE_TEST_UTEST_MESSAGE(cfstore_open_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: Uninitialize() call failed.\n", __func__);
@@ -646,7 +607,7 @@ static control_t cfstore_open_test_07_end(const size_t call_count)
         kv_name[rand() % (name_len+1)] = cfstore_open_ascii_illegal_buf_g[i];
     }
     ret = cfstore_test_create(kv_name, kv_name, &name_len, &kdesc);
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_open_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: created KV in store when kv_name contains invalid characters (ret=%" PRId32 ").\n", __func__, ret);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_open_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: created KV in store when kv_name contains invalid characters (ret=%d).\n", __func__, (int) ret);
     TEST_ASSERT_MESSAGE(ret < ARM_DRIVER_OK, cfstore_open_utest_msg_g);
 
     CFSTORE_TEST_UTEST_MESSAGE(cfstore_open_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: Uninitialize() call failed.\n", __func__);
@@ -684,22 +645,7 @@ Case cases[] = {
 /* Declare your test specification with a custom setup handler */
 Specification specification(greentea_setup, cases);
 
-#if defined CFSTORE_CONFIG_MBED_OS_VERSION && CFSTORE_CONFIG_MBED_OS_VERSION == 3
-/* mbedosV3*/
-void app_start(int argc __unused, char** argv __unused)
-{
-    /* Run the test specification */
-    Harness::run(specification);
-}
-#endif /* CFSTORE_CONFIG_MBED_OS_VERSION == 3 */
-
-#if defined CFSTORE_CONFIG_MBED_OS_VERSION && CFSTORE_CONFIG_MBED_OS_VERSION == 4
-/* mbedosV3++*/
 int main()
 {
     return !Harness::run(specification);
 }
-#endif /* CFSTORE_CONFIG_MBED_OS_VERSION == 4 */
-
-
-#endif // __MBED__ && ! defined TOOLCHAIN_GCC_ARM

@@ -44,7 +44,7 @@ using namespace utest::v1;
 static control_t cfstore_flush_test_00(const size_t call_count)
 {
     (void) call_count;
-    printf("Not implemented for ARM toolchain\n");
+    CFSTORE_LOG("%s:Not implemented for ARM toolchain\n", __func__);
     return CaseNext;
 }
 
@@ -75,7 +75,7 @@ int main()
 
 
 
-#include "mbed-drivers/mbed.h"
+#include "mbed.h"
 #include "cfstore_config.h"
 #include "cfstore_test.h"
 #include "cfstore_debug.h"
@@ -142,16 +142,16 @@ static int32_t cfstore_flush_test_01_x86_sync(void)
 
     ret = drv->Initialize(NULL, NULL);
     if(ret != ARM_DRIVER_OK){
-        CFSTORE_ERRLOG("%s:Initialize() call failed (ret=%" PRId32 ").\r\n", __func__, ret);
+        CFSTORE_ERRLOG("%s:Initialize() call failed (ret=%d).\r\n", __func__, (int) ret);
         goto out0;
     }
     ret = drv->Flush();
     if(ret != ARM_DRIVER_OK){
-        CFSTORE_ERRLOG("%s:Flush() call failed (ret=%" PRId32 ").\r\n", __func__, ret);
+        CFSTORE_ERRLOG("%s:Flush() call failed (ret=%d).\r\n", __func__, (int) ret);
     }
     ret = drv->Uninitialize();
     if(ret != ARM_DRIVER_OK){
-        CFSTORE_ERRLOG("%s:Initialize() call failed to Uninitialise(ret=%" PRId32 ").\r\n", __func__, ret);
+        CFSTORE_ERRLOG("%s:Initialize() call failed to Uninitialise(ret=%d).\r\n", __func__, (int) ret);
         goto out0;
     }
  out0:
@@ -314,9 +314,9 @@ static void cfstore_flush_fsm_init_on_entry(void* context)
     /* check that the mtd is in synchronous mode */
     CFSTORE_FENTRYLOG("%s:entered: callback=%p, ctx=%p\r\n", __func__, cfstore_flush_test_01_callback, ctx);
     ret = drv->Initialize(cfstore_flush_test_01_callback, ctx);
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_flush_utest_msg_g, CFSTORE_FLUSH_UTEST_MSG_BUF_SIZE, "%s:Error: failed to initialize CFSTORE (ret=%" PRId32 ")\r\n", __func__, ret);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_flush_utest_msg_g, CFSTORE_FLUSH_UTEST_MSG_BUF_SIZE, "%s:Error: failed to initialize CFSTORE (ret=%d)\r\n", __func__, (int) ret);
     TEST_ASSERT_MESSAGE(ret >= ARM_DRIVER_OK, cfstore_flush_utest_msg_g);
-    CFSTORE_DBGLOG("%s:debug: ret=%" PRId32 "\r\n", __func__, ret);
+    CFSTORE_DBGLOG("%s:debug: ret=%d\r\n", __func__, (int) ret);
     return;
 }
 
@@ -331,7 +331,7 @@ static void cfstore_flush_fsm_initializing(void* context)
     TEST_ASSERT_MESSAGE(ctx->fsm.state == cfstore_flush_fsm_state_initializing, cfstore_flush_utest_msg_g);
     CFSTORE_TEST_UTEST_MESSAGE(cfstore_flush_utest_msg_g, CFSTORE_FLUSH_UTEST_MSG_BUF_SIZE, "%s:Error: cmd_code code (%d) is not as expected (%d)\r\n", __func__, ctx->cmd_code, CFSTORE_OPCODE_INITIALIZE);
     TEST_ASSERT_MESSAGE(ctx->cmd_code == CFSTORE_OPCODE_INITIALIZE, cfstore_flush_utest_msg_g);
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_flush_utest_msg_g, CFSTORE_FLUSH_UTEST_MSG_BUF_SIZE, "%s:Error: status=%" PRId32 "\r\n", __func__, ctx->status);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_flush_utest_msg_g, CFSTORE_FLUSH_UTEST_MSG_BUF_SIZE, "%s:Error: status=%d\r\n", __func__, (int) ctx->status);
     TEST_ASSERT_MESSAGE(ctx->status >= ARM_DRIVER_OK, cfstore_flush_utest_msg_g);
     /* only change state if status >= 0*/
     if(ctx->status >= 0){
@@ -367,7 +367,7 @@ static void cfstore_flush_fsm_flush_on_entry(void* context)
     /* try to read key; should not be found */
     ret = cfstore_test_kv_is_found(cfstore_flush_test_02_kv_data->key_name, &bfound);
     if(ret != ARM_DRIVER_OK && ret != ARM_CFSTORE_DRIVER_ERROR_KEY_NOT_FOUND){
-        CFSTORE_TEST_UTEST_MESSAGE(cfstore_flush_utest_msg_g, CFSTORE_FLUSH_UTEST_MSG_BUF_SIZE, "%s:Error: cfstore_test_kv_is_found() call failed (ret=%" PRId32 ").\r\n", __func__, ret);
+        CFSTORE_TEST_UTEST_MESSAGE(cfstore_flush_utest_msg_g, CFSTORE_FLUSH_UTEST_MSG_BUF_SIZE, "%s:Error: cfstore_test_kv_is_found() call failed (ret=%d).\r\n", __func__, (int) ret);
         TEST_ASSERT_MESSAGE(false, cfstore_flush_utest_msg_g);
     }
 
@@ -383,11 +383,11 @@ static void cfstore_flush_fsm_flush_on_entry(void* context)
          * store a value */
         len = strlen(cfstore_flush_test_02_kv_data->value);
         ret = cfstore_test_create(cfstore_flush_test_02_kv_data->key_name, cfstore_flush_test_02_kv_data->value, &len, &kdesc);
-        CFSTORE_TEST_UTEST_MESSAGE(cfstore_flush_utest_msg_g, CFSTORE_FLUSH_UTEST_MSG_BUF_SIZE, "%s:Error:1: failed to write kv data (ret=%" PRId32 ").\r\n", __func__, ret);
+        CFSTORE_TEST_UTEST_MESSAGE(cfstore_flush_utest_msg_g, CFSTORE_FLUSH_UTEST_MSG_BUF_SIZE, "%s:Error:1: failed to write kv data (ret=%d).\r\n", __func__, (int) ret);
         TEST_ASSERT_MESSAGE(ret >= ARM_DRIVER_OK, cfstore_flush_utest_msg_g);
         /* flush to flash */
         ret = drv->Flush();
-        CFSTORE_TEST_UTEST_MESSAGE(cfstore_flush_utest_msg_g, CFSTORE_FLUSH_UTEST_MSG_BUF_SIZE, "%s:Error: failed to flush data to cfstore flash (ret=%" PRId32 ").\r\n", __func__, ret);
+        CFSTORE_TEST_UTEST_MESSAGE(cfstore_flush_utest_msg_g, CFSTORE_FLUSH_UTEST_MSG_BUF_SIZE, "%s:Error: failed to flush data to cfstore flash (ret=%d).\r\n", __func__, (int) ret);
         TEST_ASSERT_MESSAGE(ret >= ARM_DRIVER_OK, cfstore_flush_utest_msg_g);
         /* revert to CFSTORE_LOG if more trace required */
         CFSTORE_DBGLOG("FLUSH: Success pending for new KV creation (name=%s, value=%s)\n", cfstore_flush_test_02_kv_data->key_name, cfstore_flush_test_02_kv_data->value);
@@ -395,26 +395,26 @@ static void cfstore_flush_fsm_flush_on_entry(void* context)
         /*read the value, increment by 1 and write value back */
         len = CFSTORE_KEY_NAME_MAX_LENGTH+1;
         ret = cfstore_test_read(cfstore_flush_test_02_kv_data->key_name, value, &len);
-        CFSTORE_TEST_UTEST_MESSAGE(cfstore_flush_utest_msg_g, CFSTORE_FLUSH_UTEST_MSG_BUF_SIZE, "%s:Error: failed to read kv data (ret=%" PRId32 ").\r\n", __func__, ret);
+        CFSTORE_TEST_UTEST_MESSAGE(cfstore_flush_utest_msg_g, CFSTORE_FLUSH_UTEST_MSG_BUF_SIZE, "%s:Error: failed to read kv data (ret=%d).\r\n", __func__, (int) ret);
         TEST_ASSERT_MESSAGE(ret >= ARM_DRIVER_OK, cfstore_flush_utest_msg_g);
 
         ivalue = atoi(value);
         /* revert to CFSTORE_LOG if more trace required */
-        CFSTORE_DBGLOG("FLUSH: Read KV from flash (name=%s, value=%" PRId32 ")\n", cfstore_flush_test_02_kv_data->key_name, ivalue);
+        CFSTORE_DBGLOG("FLUSH: Read KV from flash (name=%s, value=%d)\n", cfstore_flush_test_02_kv_data->key_name, (int) ivalue);
         /* increment value */
         ++ivalue;
-        snprintf(value, CFSTORE_KEY_NAME_MAX_LENGTH+1, "%" PRId32 "", ivalue);
+        snprintf(value, CFSTORE_KEY_NAME_MAX_LENGTH+1, "%d", (int) ivalue);
         len = strlen(value);
         ret = cfstore_test_write(cfstore_flush_test_02_kv_data->key_name, value, &len);
-        CFSTORE_TEST_UTEST_MESSAGE(cfstore_flush_utest_msg_g, CFSTORE_FLUSH_UTEST_MSG_BUF_SIZE, "%s:Error: failed to write kv data (ret=%" PRId32 ").\r\n", __func__, ret);
+        CFSTORE_TEST_UTEST_MESSAGE(cfstore_flush_utest_msg_g, CFSTORE_FLUSH_UTEST_MSG_BUF_SIZE, "%s:Error: failed to write kv data (ret=%d).\r\n", __func__, (int) ret);
         TEST_ASSERT_MESSAGE(ret >= ARM_DRIVER_OK, cfstore_flush_utest_msg_g);
 
         /* flush to flash */
         ret = drv->Flush();
-        CFSTORE_TEST_UTEST_MESSAGE(cfstore_flush_utest_msg_g, CFSTORE_FLUSH_UTEST_MSG_BUF_SIZE, "%s:Error: failed to flush data to cfstore flash (ret=%" PRId32 ").\r\n", __func__, ret);
+        CFSTORE_TEST_UTEST_MESSAGE(cfstore_flush_utest_msg_g, CFSTORE_FLUSH_UTEST_MSG_BUF_SIZE, "%s:Error: failed to flush data to cfstore flash (ret=%d).\r\n", __func__, (int) ret);
         TEST_ASSERT_MESSAGE(ret >= ARM_DRIVER_OK, cfstore_flush_utest_msg_g);
         /* revert to CFSTORE_LOG if more trace required */
-        CFSTORE_DBGLOG("FLUSH: Success pending for new KV value to flash (name=%s, value=%" PRId32 ")\n", cfstore_flush_test_02_kv_data->key_name, ivalue);
+        CFSTORE_DBGLOG("FLUSH: Success pending for new KV value to flash (name=%s, value=%d)\n", cfstore_flush_test_02_kv_data->key_name, (int) ivalue);
     }
     return;
 }
@@ -430,7 +430,7 @@ static void cfstore_flush_fsm_flushing(void* context)
     TEST_ASSERT_MESSAGE(ctx->fsm.state == cfstore_flush_fsm_state_flushing, cfstore_flush_utest_msg_g);
     CFSTORE_TEST_UTEST_MESSAGE(cfstore_flush_utest_msg_g, CFSTORE_FLUSH_UTEST_MSG_BUF_SIZE, "%s:Error: cmd_code code (%d) is not as expected (%d)\r\n", __func__, ctx->cmd_code, CFSTORE_OPCODE_FLUSH);
     TEST_ASSERT_MESSAGE(ctx->cmd_code == CFSTORE_OPCODE_FLUSH, cfstore_flush_utest_msg_g);
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_flush_utest_msg_g, CFSTORE_FLUSH_UTEST_MSG_BUF_SIZE, "%s:Error: status=%" PRId32 "\r\n", __func__, ctx->status);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_flush_utest_msg_g, CFSTORE_FLUSH_UTEST_MSG_BUF_SIZE, "%s:Error: status=%d\r\n", __func__, (int) ctx->status);
     TEST_ASSERT_MESSAGE(ctx->status >= ARM_DRIVER_OK, cfstore_flush_utest_msg_g);
     /* only change state if status >= 0*/
     if(ctx->status >= 0){
@@ -456,7 +456,7 @@ static void cfstore_flush_fsm_uninit_on_entry(void* context)
     CFSTORE_TEST_UTEST_MESSAGE(cfstore_flush_utest_msg_g, CFSTORE_FLUSH_UTEST_MSG_BUF_SIZE, "%s:Error: entered handler(%s) but not in uninitializing state (fsm->state=%d)\r\n", __func__, __func__, (int) ctx->fsm.state);
     TEST_ASSERT_MESSAGE(ctx->fsm.state == cfstore_flush_fsm_state_uninitializing, cfstore_flush_utest_msg_g);
     ret = drv->Uninitialize();
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_flush_utest_msg_g, CFSTORE_FLUSH_UTEST_MSG_BUF_SIZE, "%s:Error: failed to uninitialize CFSTORE (ret=%" PRId32 ")\r\n", __func__, ret);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_flush_utest_msg_g, CFSTORE_FLUSH_UTEST_MSG_BUF_SIZE, "%s:Error: failed to uninitialize CFSTORE (ret=%d)\r\n", __func__, (int) ret);
     TEST_ASSERT_MESSAGE(ret >= ARM_DRIVER_OK, cfstore_flush_utest_msg_g);
     return;
 }
@@ -467,12 +467,12 @@ static void cfstore_flush_fsm_uninitializing(void* context)
     cfstore_flush_ctx_t* ctx = (cfstore_flush_ctx_t*) context;
 
     CFSTORE_FENTRYLOG("%s:entered\r\n", __func__);
-    CFSTORE_DBGLOG("%s:ctx->status=%" PRId32 ", ctx->loops_done=%" PRId32 "\r\n", __func__, ctx->status, ctx->loops_done);
+    CFSTORE_DBGLOG("%s:ctx->status=%d, ctx->loops_done=%d\r\n", __func__, (int) ctx->status, (int) ctx->loops_done);
     CFSTORE_TEST_UTEST_MESSAGE(cfstore_flush_utest_msg_g, CFSTORE_FLUSH_UTEST_MSG_BUF_SIZE, "%s:Error: entered handler(%s) but not in uninitializing state (fsm->state=%d)\r\n", __func__, __func__, (int) ctx->fsm.state);
     TEST_ASSERT_MESSAGE(ctx->fsm.state == cfstore_flush_fsm_state_uninitializing, cfstore_flush_utest_msg_g);
     CFSTORE_TEST_UTEST_MESSAGE(cfstore_flush_utest_msg_g, CFSTORE_FLUSH_UTEST_MSG_BUF_SIZE, "%s:Error: cmd_code code (%d) is not as expected (%d)\r\n", __func__, ctx->cmd_code, CFSTORE_OPCODE_UNINITIALIZE);
     TEST_ASSERT_MESSAGE(ctx->cmd_code == CFSTORE_OPCODE_UNINITIALIZE, cfstore_flush_utest_msg_g);
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_flush_utest_msg_g, CFSTORE_FLUSH_UTEST_MSG_BUF_SIZE, "%s:Error: status=%" PRId32 "\r\n", __func__, ctx->status);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_flush_utest_msg_g, CFSTORE_FLUSH_UTEST_MSG_BUF_SIZE, "%s:Error: status=%d\r\n", __func__, (int) ctx->status);
     TEST_ASSERT_MESSAGE(ctx->status >= ARM_DRIVER_OK, cfstore_flush_utest_msg_g);
     /* only change state if status >= 0*/
     if(ctx->status >= ARM_DRIVER_OK){
@@ -612,22 +612,10 @@ Case cases[] = {
 /* Declare your test specification with a custom setup handler */
 Specification specification(greentea_setup, cases);
 
-#if defined CFSTORE_CONFIG_MBED_OS_VERSION && CFSTORE_CONFIG_MBED_OS_VERSION == 3
-/* mbedosV3*/
-void app_start(int argc __unused, char** argv __unused)
-{
-    /* Run the test specification */
-    Harness::run(specification);
-}
-#endif /* CFSTORE_CONFIG_MBED_OS_VERSION == 3 */
-
-#if defined CFSTORE_CONFIG_MBED_OS_VERSION && CFSTORE_CONFIG_MBED_OS_VERSION == 4
-/* mbedosV3++*/
 int main()
 {
     return !Harness::run(specification);
 }
-#endif /* CFSTORE_CONFIG_MBED_OS_VERSION == 4 */
 
 
 #endif // __MBED__ && ! defined TOOLCHAIN_GCC_ARM

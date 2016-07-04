@@ -34,6 +34,7 @@
 #include <string.h>
 #include <assert.h>
 #include <inttypes.h>
+#include <ctype.h>
 
 
 /* ruler for measuring text strings */
@@ -115,16 +116,146 @@ const char* cfstore_test_opcode_str[] =
 };
 
 
+static int32_t cfstore_test_dump_print_array(const char* data, ARM_CFSTORE_SIZE len)
+{
+    int i;
+    char buf[80];
+    char sbuf[80];
+    char* outbuf = buf;
+    char* soutbuf = sbuf;
+
+    memset(outbuf, 0, 80);
+    memset(soutbuf, 0, 80);
+    outbuf += sprintf(outbuf, "      ");
+    soutbuf += sprintf(soutbuf, "      ");
+    for (i = 0; i < (int) len; i++){
+        outbuf += sprintf(outbuf, "%02X ", data[i]);
+
+        if( !(isalnum( (int) data[i]) || ispunct( (int) data[i])) ){
+            *soutbuf++ =  '*';
+        } else {
+            *soutbuf++ = data[i];
+        }
+
+        if( (i % 16 == 0) && i > 0){
+            CFSTORE_LOG("%s", buf);
+            CFSTORE_LOG("%s\n", sbuf);
+            outbuf = buf;
+            soutbuf = sbuf;
+            memset(outbuf, 0, 80);
+            memset(soutbuf, 0, 80);
+            outbuf += sprintf(outbuf, "      ");
+            soutbuf += sprintf(soutbuf, "      ");
+        }
+    }
+    if(i % 16){
+        /* Pad the end of the string to align string data. */
+        while(i % 16){
+            outbuf += sprintf(outbuf, "   ");
+            i++;
+        }
+        CFSTORE_LOG("%s", buf);
+        CFSTORE_LOG("      %s", sbuf);
+    }
+    CFSTORE_LOG("%s", "\n");
+    return ARM_DRIVER_OK;
+}
+
+
+/* @brief   function to dump contents of cfstore
+ */
+int32_t cfstore_test_dump(void)
+{
+    const char* key_name_query = "*";
+    char* read_buf = NULL;
+    char key_name[CFSTORE_KEY_NAME_MAX_LENGTH+1];
+    uint8_t len = CFSTORE_KEY_NAME_MAX_LENGTH+1;
+    ARM_CFSTORE_SIZE vlen = 0;
+    int32_t ret = ARM_DRIVER_ERROR;
+    ARM_CFSTORE_DRIVER* drv = &cfstore_driver;
+    ARM_CFSTORE_HANDLE_INIT(next);
+    ARM_CFSTORE_HANDLE_INIT(prev);
+    ARM_CFSTORE_CAPABILITIES caps = cfstore_driver.GetCapabilities();
+
+    CFSTORE_FENTRYLOG("%s:entered\n", __func__);
+
+    CFSTORE_LOG("CFSTORE Flash Entries%s", "\n");
+    CFSTORE_LOG("=====================%s", "\n\n");
+    while((ret = drv->Find(key_name_query, prev, next)) == ARM_DRIVER_OK)
+    {
+        len = CFSTORE_KEY_NAME_MAX_LENGTH+1;
+        ret = drv->GetKeyName(next, key_name, &len);
+        if(ret < ARM_DRIVER_OK){
+            CFSTORE_ERRLOG("Error: failed to get key name%s", "\n");
+            break;
+        }
+        ret = drv->GetValueLen(next, &vlen);
+        if(ret < ARM_DRIVER_OK){
+            CFSTORE_ERRLOG("Error: failed to get value length%s", "\n");
+            break;
+        }
+        read_buf = (char*) malloc(vlen+1);
+        if(read_buf == NULL){
+            CFSTORE_ERRLOG("Error: failed to malloc() read buffer%s", "\n");
+            break;
+        }
+        ret = drv->Read(next, read_buf, &vlen);
+        if(ret < ARM_DRIVER_OK){
+            CFSTORE_ERRLOG("Error: failed to read key value%s", "\n");
+            free(read_buf);
+            break;
+        }
+        CFSTORE_LOG("  keyname : %s\n", key_name);
+        CFSTORE_LOG("    name len : %d\n", (int) len);
+        CFSTORE_LOG("    value len : %d\n", (int) vlen);
+        CFSTORE_LOG("    data :%s", "\n");
+        cfstore_test_dump_print_array((const char*) read_buf, vlen);
+        CFSTORE_LOG("%s", ".\n");
+        free(read_buf);
+        CFSTORE_HANDLE_SWAP(prev, next);
+    }
+    CFSTORE_LOG("%s", ".\n");
+    CFSTORE_LOG("  caps.asynchronous_ops : %d\n", (int) caps.asynchronous_ops);
+    CFSTORE_LOG("%s", ".\n");
+    CFSTORE_LOG("== End ==============%s", "\n\n");
+
+    if(ret == ARM_CFSTORE_DRIVER_ERROR_KEY_NOT_FOUND) {
+        /* As expected, no more keys have been found by the Find(). */
+        ret = ARM_DRIVER_OK;
+    }
+    return ret;
+}
+
+
 /* @brief   test startup code to reset flash
  */
 int32_t cfstore_test_startup(void)
 {
+    int32_t ret = ARM_DRIVER_ERROR;
+    ARM_CFSTORE_DRIVER* cfstore_drv = &cfstore_driver;
     ARM_CFSTORE_CAPABILITIES caps = cfstore_driver.GetCapabilities();
+
     CFSTORE_LOG("INITIALIZING: caps.asynchronous_ops=%d\n", (int) caps.asynchronous_ops);
+
+    /* Dump contents of CFSTORE */
+    ret = cfstore_drv->Initialize(NULL, NULL);
+    if(ret < ARM_DRIVER_OK){
+        CFSTORE_ERRLOG("%s:Error: failed to initialize CFSTORE (ret=%d)\n", __func__, (int) ret);
+        return ARM_DRIVER_ERROR;
+    }
+    ret = cfstore_test_dump();
+    if(ret < ARM_DRIVER_OK){
+        CFSTORE_ERRLOG("%s:Error: failed to dump CFSTORE (ret=%d)\n", __func__, (int) ret);
+        return ARM_DRIVER_ERROR;
+    }
+    ret = cfstore_drv->Uninitialize();
+    if(ret < ARM_DRIVER_OK){
+        CFSTORE_ERRLOG("%s:Error: failed to uninitialize CFSTORE (ret=%d)\n", __func__, (int) ret);
+        return ARM_DRIVER_ERROR;
+    }
 
 #ifdef CFSTORE_CONFIG_BACKEND_FLASH_ENABLED
 
-    int32_t ret = ARM_DRIVER_ERROR;
     FlashJournal_t jrnl;
     extern ARM_DRIVER_STORAGE ARM_Driver_Storage_(0);
     const ARM_DRIVER_STORAGE *drv = &ARM_Driver_Storage_(0);
@@ -136,7 +267,7 @@ int32_t cfstore_test_startup(void)
     }
     ret = FlashJournal_reset(&jrnl);
     if(ret < JOURNAL_STATUS_OK){
-        CFSTORE_ERRLOG("%s:Error: failed to reset flash journal (ret=%" PRId32 ")\n", __func__, ret);
+        CFSTORE_ERRLOG("%s:Error: failed to reset flash journal (ret=%d)\n", __func__, (int) ret);
         return ARM_DRIVER_ERROR;
     }
 
@@ -250,7 +381,7 @@ int32_t cfstore_test_delete_all(void)
         ret = ARM_DRIVER_OK;
     }
     // todo: find portable format specification CFSTORE_FENTRYLOG("%s:exiting (ret=%ld).\r\n", __func__, ret);
-    CFSTORE_FENTRYLOG("%s:exiting (ret=%" PRId32 ").\r\n", __func__, ret);
+    CFSTORE_FENTRYLOG("%s:exiting (ret=%d).\r\n", __func__, (int) ret);
     return ret;
 }
 
