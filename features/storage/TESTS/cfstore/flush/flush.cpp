@@ -20,7 +20,7 @@
 #if defined __MBED__ && ! defined TOOLCHAIN_GCC_ARM
 
 
-#include "mbed-drivers/mbed.h"
+#include "mbed.h"
 #include "cfstore_config.h"
 #include "Driver_Common.h"
 #include "cfstore_debug.h"

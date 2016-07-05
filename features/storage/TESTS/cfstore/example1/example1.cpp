@@ -54,8 +54,7 @@
  */
 #if defined __MBED__ && ! defined TOOLCHAIN_GCC_ARM
 
-
-#include "mbed-drivers/mbed.h"
+#include "mbed.h"
 #include "cfstore_config.h"
 #include "Driver_Common.h"
 #include "cfstore_debug.h"
@@ -159,14 +158,12 @@ using namespace utest::v1;
         }                                                 \
     }while(0);
 
-/* todo: re-instate 20160704: arm testing*/
 #define CFSTORE_EX1_LOG(_fmt, ...)                        \
   do                                                      \
   {                                                       \
         printf(_fmt, __VA_ARGS__);                        \
   }while(0);
 
-//#define CFSTORE_EX1_LOG(_fmt, ...)  do{}while(0);
 
 const char* cfstore_ex_opcode_str[] =
 {
