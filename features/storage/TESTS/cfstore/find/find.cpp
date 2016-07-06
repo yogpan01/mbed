@@ -17,65 +17,7 @@
  *
  * Test cases to find KVs in the CFSTORE using the drv->Find() interface.
  */
-#if defined __MBED__ && ! defined TOOLCHAIN_GCC_ARM
-
-
-#include "mbed-drivers/mbed.h"
-#include "cfstore_config.h"
-#include "Driver_Common.h"
-#include "cfstore_debug.h"
-#include "cfstore_test.h"
-#include "configuration_store.h"
-#include "utest/utest.h"
-#include "unity/unity.h"
-#include "greentea-client/test_env.h"
-#ifdef YOTTA_CFG_CFSTORE_UVISOR
-#include "uvisor-lib/uvisor-lib.h"
-#include "cfstore_uvisor.h"
-#endif /* YOTTA_CFG_CFSTORE_UVISOR */
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <inttypes.h>
-
-using namespace utest::v1;
-
-static control_t cfstore_find_test_00(const size_t call_count)
-{
-    (void) call_count;
-    CFSTORE_DBGLOG("Not implemented for ARM toolchain\n");
-    return CaseNext;
-}
-
-
-utest::v1::status_t greentea_setup(const size_t number_of_cases)
-{
-    GREENTEA_SETUP(100, "default_auto");
-    return greentea_test_setup_handler(number_of_cases);
-}
-
-Case cases[] = {
-           /*          1         2         3         4         5         6        7  */
-           /* 1234567890123456789012345678901234567890123456789012345678901234567890 */
-        Case("FIND_test_00", cfstore_find_test_00),
-};
-
-
-/* Declare your test specification with a custom setup handler */
-Specification specification(greentea_setup, cases);
-
-int main()
-{
-    return !Harness::run(specification);
-}
-
-
-
-#else
-
-
-#include "mbed-drivers/mbed.h"
+#include "mbed.h"
 #include "cfstore_config.h"
 #include "cfstore_test.h"
 #include "cfstore_debug.h"
@@ -252,14 +194,14 @@ static control_t cfstore_find_test_03_end(const size_t call_count)
 }
 
 
-static cfstore_kv_data_t cfstore_find_test_04_kv_data[] = {
-        { "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef", "abcdefghjklmnopqrstuvwxyzabcdefghjklmnopqrstuvwxyzabcdefghjklmnopqrstuvwxyzabcdefghjklmnopqrstuvwxyzabcdefghjklmnopqrstuvwxyzabcdefghjklmnopqrstuvwxyzabcdefghjklmnopqrstuvwxyzabcdefghjklmnopqrstuvwxyzabcdefghjklmnopqrstuvwxyz"},
-        { NULL, NULL},
-};
-
 /**
  * @brief   TODO: write test that uses cfstore_find_test_04_kv_data to grow {key, value}
  *          from 1 char to 221 chars long.
+ *
+ * static cfstore_kv_data_t cfstore_find_test_04_kv_data[] = {
+ *        { "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef", "abcdefghjklmnopqrstuvwxyzabcdefghjklmnopqrstuvwxyzabcdefghjklmnopqrstuvwxyzabcdefghjklmnopqrstuvwxyzabcdefghjklmnopqrstuvwxyzabcdefghjklmnopqrstuvwxyzabcdefghjklmnopqrstuvwxyzabcdefghjklmnopqrstuvwxyzabcdefghjklmnopqrstuvwxyz"},
+ *        { NULL, NULL},
+ * };
  *
  * @return  status code
  *          ARM_DRIVER_OK, the test passed successfully
@@ -271,7 +213,6 @@ static control_t cfstore_find_test_04(const size_t call_count)
     /*todo: implement test
      *
      * */
-    (void) cfstore_find_test_04_kv_data;
     (void) call_count;
     /*todo: implement test */
     CFSTORE_TEST_UTEST_MESSAGE(cfstore_find_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Warn: Not implemented\n", __func__);
@@ -366,7 +307,7 @@ cfstore_find_key_name_validate_t cfstore_find_test_05_data[] = {
 
 /**
  * @brief   test whether a key name in the above table are valid, can be added to the
- * 			cfstore and found by a wildcard string
+ *          cfstore and found by a wildcard string
  *
  * @return  status code
  *          ARM_DRIVER_OK, the test passed successfully
@@ -397,6 +338,107 @@ static control_t cfstore_find_test_05_end(const size_t call_count)
 }
 
 
+
+#define CFSTORE_FIND_TEST_06_ENTRY_MATCH_03      { "0123456789abcdef0123456.yxxx.3", "abcdefghijklmnopqrstuvwxyz"}
+#define CFSTORE_FIND_TEST_06_ENTRY_MATCH_05      { "0123456789abcdef0123456.yxxx.5", "abcdefghijklmnopqrstuvwxyz"}
+#define CFSTORE_FIND_TEST_06_ENTRY_MATCH_07      { "0123456789abcdef0123456.yxxx.7", "abcdefghijklmnopqrstuvwxyz"}
+#define CFSTORE_FIND_TEST_06_ENTRY_MATCH_09      { "0123456789abcdef0123456.yxxx.9", "abcdefghijklmnopqrstuvwxyz"}
+
+#define CFSTORE_FIND_TEST_06_ENTRY_NOMATCH_01      { "0123456789abcdef0123456.xxxx.1", "abcdefghijklmnopqrstuvwxyz"}
+#define CFSTORE_FIND_TEST_06_ENTRY_NOMATCH_02      { "0123456789abcdef0123456.xxxx.2", "abcdefghijklmnopqrstuvwxyz"}
+#define CFSTORE_FIND_TEST_06_ENTRY_NOMATCH_04      { "0123456789abcdef0123456.xxxx.4", "abcdefghijklmnopqrstuvwxyz"}
+#define CFSTORE_FIND_TEST_06_ENTRY_NOMATCH_06      { "0123456789abcdef0123456.xxxx.6", "abcdefghijklmnopqrstuvwxyz"}
+#define CFSTORE_FIND_TEST_06_ENTRY_NOMATCH_08      { "0123456789abcdef0123456.xxxx.8", "abcdefghijklmnopqrstuvwxyz"}
+#define CFSTORE_FIND_TEST_06_ENTRY_NOMATCH_10      { "0123456789abcdef0123456.xxxx.10", "abcdefghijklmnopqrstuvwxyz"}
+#define CFSTORE_FIND_TEST_06_ENTRY_NOMATCH_11      { "0123456789abcdef0123456.xxxx.11", "abcdefghijklmnopqrstuvwxyz"}
+
+/* table 1: to initialise cfstore with CFSTORE_CREATE_TEST_01_TABLE_MID_ENTRY_01 */
+static cfstore_kv_data_t cfstore_find_test_06_data[] = {
+        CFSTORE_FIND_TEST_06_ENTRY_NOMATCH_01,
+        CFSTORE_FIND_TEST_06_ENTRY_NOMATCH_02,
+        CFSTORE_FIND_TEST_06_ENTRY_MATCH_03,
+        CFSTORE_FIND_TEST_06_ENTRY_NOMATCH_04,
+        CFSTORE_FIND_TEST_06_ENTRY_MATCH_05,
+        CFSTORE_FIND_TEST_06_ENTRY_NOMATCH_06,
+        CFSTORE_FIND_TEST_06_ENTRY_MATCH_07,
+        CFSTORE_FIND_TEST_06_ENTRY_NOMATCH_08,
+        CFSTORE_FIND_TEST_06_ENTRY_MATCH_09,
+        CFSTORE_FIND_TEST_06_ENTRY_NOMATCH_10,
+        CFSTORE_FIND_TEST_06_ENTRY_NOMATCH_11,
+        { NULL, NULL},
+};
+
+static cfstore_kv_data_t cfstore_find_test_06_data_match_results[] = {
+        CFSTORE_FIND_TEST_06_ENTRY_MATCH_03,
+        CFSTORE_FIND_TEST_06_ENTRY_MATCH_05,
+        CFSTORE_FIND_TEST_06_ENTRY_MATCH_07,
+        CFSTORE_FIND_TEST_06_ENTRY_MATCH_09,
+        { NULL, NULL},
+};
+
+
+/**
+ * @brief   test to use find to find at least 2 entries in the cfstore,
+ *          but the query string doesnt match the last 2 entries in the
+ *          store.
+ *
+ * @return  status code
+ *          ARM_DRIVER_OK, the test passed successfully
+ *          ret < ARM_DRIVER_OK, the test failed with the return code
+ *          supplying more details
+ */
+static control_t cfstore_find_test_06_end(const size_t call_count)
+{
+    const char* key_name_query = "0123456789abcdef0123456.y*";
+    char key_name[CFSTORE_KEY_NAME_MAX_LENGTH+1];
+    uint8_t len = CFSTORE_KEY_NAME_MAX_LENGTH+1;
+    int32_t ret = ARM_DRIVER_ERROR;
+    int32_t find_count = 0;
+    ARM_CFSTORE_DRIVER* drv = &cfstore_driver;
+    ARM_CFSTORE_HANDLE_INIT(next);
+    ARM_CFSTORE_HANDLE_INIT(prev);
+    cfstore_kv_data_t* node = NULL;
+
+    ret = cfstore_test_create_table(cfstore_find_test_06_data);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_find_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Failed to add cfstore_find_test_06_data table data (ret=%d).\n", __func__, (int) ret);
+    TEST_ASSERT_MESSAGE(ret >= ARM_DRIVER_OK, cfstore_find_utest_msg_g);
+
+    while((ret = drv->Find(key_name_query, prev, next)) == ARM_DRIVER_OK)
+    {
+        len = CFSTORE_KEY_NAME_MAX_LENGTH+1;
+        ret = drv->GetKeyName(next, key_name, &len);
+        if(ret < ARM_DRIVER_OK){
+            CFSTORE_ERRLOG("Error: failed to get key name%s", "\n");
+            break;
+        }
+        CFSTORE_LOG("%s:Found entry key_name=%s\n", __func__, key_name);
+        node = cfstore_find_test_06_data_match_results;
+        while(node->key_name != NULL){
+            if(strncmp(node->key_name, key_name, CFSTORE_KEY_NAME_MAX_LENGTH) == 0){
+                find_count++;
+                break;
+            }
+            node++;
+        }
+        CFSTORE_TEST_UTEST_MESSAGE(cfstore_find_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: unable to find match in match table for %s.\n", __func__, key_name);
+        TEST_ASSERT_MESSAGE(node->key_name != NULL, cfstore_find_utest_msg_g);
+
+        CFSTORE_HANDLE_SWAP(prev, next);
+    }
+
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_find_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: find_count=%d doesnt match the number of entries in match table = %d.\n", __func__, (int) find_count, (int) (sizeof(cfstore_find_test_06_data_match_results)/sizeof(cfstore_kv_data_t))-1);
+    TEST_ASSERT_MESSAGE(find_count == (sizeof(cfstore_find_test_06_data_match_results)/sizeof(cfstore_kv_data_t))-1, cfstore_find_utest_msg_g);
+
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_find_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: expected ret == ret == ARM_CFSTORE_DRIVER_ERROR_KEY_NOT_FOUND, but ret = %d.\n", __func__, (int) ret);
+    TEST_ASSERT_MESSAGE(ret == ARM_CFSTORE_DRIVER_ERROR_KEY_NOT_FOUND, cfstore_find_utest_msg_g);
+
+    ret = drv->Uninitialize();
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_find_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: Uninitialize() call failed.\n", __func__);
+    TEST_ASSERT_MESSAGE(ret >= ARM_DRIVER_OK, cfstore_find_utest_msg_g);
+    return CaseNext;
+}
+
+
 utest::v1::status_t greentea_setup(const size_t number_of_cases)
 {
     GREENTEA_SETUP(400, "default_auto");
@@ -414,28 +456,16 @@ Case cases[] = {
         Case("FIND_test_04", cfstore_find_test_04),
         Case("FIND_test_05_start", cfstore_utest_default_start),
         Case("FIND_test_05_end", cfstore_find_test_05_end),
+        Case("FIND_test_06_start", cfstore_utest_default_start),
+        Case("FIND_test_06_end", cfstore_find_test_06_end),
 };
 
 
 /* Declare your test specification with a custom setup handler */
 Specification specification(greentea_setup, cases);
 
-#if defined CFSTORE_CONFIG_MBED_OS_VERSION && CFSTORE_CONFIG_MBED_OS_VERSION == 3
-/* mbedosV3*/
-void app_start(int argc __unused, char** argv __unused)
-{
-    /* Run the test specification */
-    Harness::run(specification);
-}
-#endif /* CFSTORE_CONFIG_MBED_OS_VERSION == 3 */
-
-#if defined CFSTORE_CONFIG_MBED_OS_VERSION && CFSTORE_CONFIG_MBED_OS_VERSION == 4
-/* mbedosV3++*/
 int main()
 {
     return !Harness::run(specification);
 }
-#endif /* CFSTORE_CONFIG_MBED_OS_VERSION == 4 */
 
-
-#endif // __MBED__ && ! defined TOOLCHAIN_GCC_ARM

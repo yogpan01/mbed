@@ -17,65 +17,7 @@
  *
  * Test cases to add and delete KVs in the CFSTORE.
  */
-#if defined __MBED__ && ! defined TOOLCHAIN_GCC_ARM
-
-
-#include "mbed-drivers/mbed.h"
-#include "cfstore_config.h"
-#include "Driver_Common.h"
-#include "cfstore_debug.h"
-#include "cfstore_test.h"
-#include "configuration_store.h"
-#include "utest/utest.h"
-#include "unity/unity.h"
-#include "greentea-client/test_env.h"
-
-#ifdef YOTTA_CFG_CFSTORE_UVISOR
-#include "uvisor-lib/uvisor-lib.h"
-#include "cfstore_uvisor.h"
-#endif /* YOTTA_CFG_CFSTORE_UVISOR */
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <inttypes.h>
-
-using namespace utest::v1;
-
-static control_t cfstore_add_del_test_00(const size_t call_count)
-{
-    (void) call_count;
-    printf("Not implemented for ARM toolchain\n");
-    return CaseNext;
-}
-
-
-utest::v1::status_t greentea_setup(const size_t number_of_cases)
-{
-    GREENTEA_SETUP(100, "default_auto");
-    return greentea_test_setup_handler(number_of_cases);
-}
-
-Case cases[] = {
-           /*          1         2         3         4         5         6        7  */
-           /* 1234567890123456789012345678901234567890123456789012345678901234567890 */
-        Case("ADD_DEL_test_00", cfstore_add_del_test_00),
-};
-
-
-/* Declare your test specification with a custom setup handler */
-Specification specification(greentea_setup, cases);
-
-int main()
-{
-    return !Harness::run(specification);
-}
-
-
-#else
-
-
-#include "mbed-drivers/mbed.h"
+#include "mbed.h"
 #include "cfstore_config.h"
 #include "Driver_Common.h"
 #include "cfstore_debug.h"
@@ -85,6 +27,7 @@ int main()
 #include "unity/unity.h"
 #include "greentea-client/test_env.h"
 #include "cfstore_utest.h"
+
 #ifdef YOTTA_CFG_CFSTORE_UVISOR
 #include "uvisor-lib/uvisor-lib.h"
 #include "cfstore_uvisor.h"
@@ -154,12 +97,12 @@ static control_t cfstore_add_del_test_01_end(const size_t call_count)
     len = strlen(cfstore_add_del_test_07_data[0].value);
 
     ret = cfstore_test_create(cfstore_add_del_test_07_data[0].key_name, (char*) cfstore_add_del_test_07_data[0].value, &len, &kdesc);
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_add_del_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: failed to create KV in store (ret=%" PRId32 ").\n", __func__, ret);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_add_del_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: failed to create KV in store (ret=%d).\n", __func__, (int) ret);
     TEST_ASSERT_MESSAGE(ret >= ARM_DRIVER_OK, cfstore_add_del_utest_msg_g);
 
     /* now delete KV*/
     ret = drv->Open(cfstore_add_del_test_07_data[0].key_name, flags, hkey);
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_add_del_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: failed to Open() (ret=%" PRId32 ").\n", __func__, ret);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_add_del_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: failed to Open() (ret=%d).\n", __func__, (int) ret);
     TEST_ASSERT_MESSAGE(ret >= ARM_DRIVER_OK, cfstore_add_del_utest_msg_g);
 
     if(hkey != NULL){
@@ -171,7 +114,7 @@ static control_t cfstore_add_del_test_01_end(const size_t call_count)
     /* revert to CFSTORE_LOG if more trace required */
     CFSTORE_DBGLOG("LOG: WARNING: About to look for non-existent key (key_name=%s) (which will generate internal trace reporting errors if debug trace enabled).\n", cfstore_add_del_test_07_data[0].key_name);
     ret = cfstore_test_kv_is_found(cfstore_add_del_test_07_data[0].key_name, &bfound);
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_add_del_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error failed to delete a key (ret=%" PRId32 ").\n", __func__, ret);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_add_del_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error failed to delete a key (ret=%d).\n", __func__, (int) ret);
     TEST_ASSERT_MESSAGE(ret == ARM_CFSTORE_DRIVER_ERROR_KEY_NOT_FOUND, cfstore_add_del_utest_msg_g);
 
     CFSTORE_TEST_UTEST_MESSAGE(cfstore_add_del_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Test failed: found KV that was previously deleted (key_name=%s)\n", __func__, cfstore_add_del_test_07_data[0].key_name);
@@ -283,7 +226,7 @@ static control_t cfstore_add_del_test_03_end(const size_t call_count)
     {
         CFSTORE_DBGLOG("%s:about to delete key (key_name=%s).\n", __func__, node->key_name);
         cfstore_test_delete(node->key_name);
-        CFSTORE_TEST_UTEST_MESSAGE(cfstore_add_del_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error failed to delete a key (ret=%" PRId32 ").\n", __func__, ret);
+        CFSTORE_TEST_UTEST_MESSAGE(cfstore_add_del_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error failed to delete a key (ret=%d).\n", __func__, (int) ret);
         TEST_ASSERT_MESSAGE(ret >= ARM_DRIVER_OK, cfstore_add_del_utest_msg_g);
         /* revert CFSTORE_LOG for more trace */
         CFSTORE_DBGLOG("Deleted KV successfully (key_name=\"%s\")\n", node->key_name);
@@ -294,7 +237,7 @@ static control_t cfstore_add_del_test_03_end(const size_t call_count)
     while(node->key_name != NULL)
     {
         ret = cfstore_test_kv_is_found(node->key_name, &bfound);
-        CFSTORE_TEST_UTEST_MESSAGE(cfstore_add_del_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: failed to delete a key (ret=%" PRId32 ").\n", __func__, ret);
+        CFSTORE_TEST_UTEST_MESSAGE(cfstore_add_del_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: failed to delete a key (ret=%d).\n", __func__, (int) ret);
         TEST_ASSERT_MESSAGE(ret == ARM_CFSTORE_DRIVER_ERROR_KEY_NOT_FOUND, cfstore_add_del_utest_msg_g);
 
         CFSTORE_TEST_UTEST_MESSAGE(cfstore_add_del_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Test failed: found KV that was previously deleted (key_name=%s)\n", __func__, node->key_name);
@@ -304,11 +247,11 @@ static control_t cfstore_add_del_test_03_end(const size_t call_count)
 
     /* clean up by deleting all remaining KVs. this is not part of the test */
     ret = cfstore_test_delete_all();
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_add_del_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error failed to delete a all KVs (ret=%" PRId32 ").\n", __func__, ret);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_add_del_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error failed to delete a all KVs (ret=%d).\n", __func__, (int) ret);
     TEST_ASSERT_MESSAGE(ret >= ARM_DRIVER_OK, cfstore_add_del_utest_msg_g);
 
     ret = drv->Uninitialize();
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_add_del_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: failed to initialize CFSTORE (ret=%" PRId32 ")\n", __func__, ret);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_add_del_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: failed to initialize CFSTORE (ret=%d)\n", __func__, (int) ret);
     TEST_ASSERT_MESSAGE(ret >= ARM_DRIVER_OK, cfstore_add_del_utest_msg_g);
     return CaseNext;
 }
@@ -356,22 +299,7 @@ Case cases[] = {
 /* Declare your test specification with a custom setup handler */
 Specification specification(greentea_setup, cases);
 
-#if defined CFSTORE_CONFIG_MBED_OS_VERSION && CFSTORE_CONFIG_MBED_OS_VERSION == 3
-/* mbedosV3*/
-void app_start(int argc __unused, char** argv __unused)
-{
-    /* Run the test specification */
-    Harness::run(specification);
-}
-#endif /* CFSTORE_CONFIG_MBED_OS_VERSION == 3 */
-
-#if defined CFSTORE_CONFIG_MBED_OS_VERSION && CFSTORE_CONFIG_MBED_OS_VERSION == 4
-/* mbedosV3++*/
 int main()
 {
     return !Harness::run(specification);
 }
-#endif /* CFSTORE_CONFIG_MBED_OS_VERSION == 4 */
-
-
-#endif // __MBED__ && ! defined TOOLCHAIN_GCC_ARM

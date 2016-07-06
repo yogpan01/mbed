@@ -17,70 +17,6 @@
  *
  * Test cases to flush KVs in the CFSTORE using the drv->Flush() interface.
  */
-#if defined __MBED__ && ! defined TOOLCHAIN_GCC_ARM
-
-
-#include "mbed-drivers/mbed.h"
-#include "cfstore_config.h"
-#include "Driver_Common.h"
-#include "cfstore_debug.h"
-#include "cfstore_test.h"
-#include "configuration_store.h"
-#include "utest/utest.h"
-#include "unity/unity.h"
-#include "greentea-client/test_env.h"
-
-#ifdef YOTTA_CFG_CFSTORE_UVISOR
-#include "uvisor-lib/uvisor-lib.h"
-#include "cfstore_uvisor.h"
-#endif /* YOTTA_CFG_CFSTORE_UVISOR */
-
-#ifdef CFSTORE_CONFIG_BACKEND_FLASH_ENABLED
-#include "flash_journal_strategy_sequential.h"
-#include "flash_journal.h"
-#include "Driver_Common.h"
-#endif /* CFSTORE_CONFIG_BACKEND_FLASH_ENABLED */
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <inttypes.h>
-
-using namespace utest::v1;
-
-static control_t cfstore_flash_test_00(const size_t call_count)
-{
-    (void) call_count;
-    printf("Not implemented for ARM toolchain\n");
-    return CaseNext;
-}
-
-
-utest::v1::status_t greentea_setup(const size_t number_of_cases)
-{
-    GREENTEA_SETUP(100, "default_auto");
-    return greentea_test_setup_handler(number_of_cases);
-}
-
-Case cases[] = {
-           /*          1         2         3         4         5         6        7  */
-           /* 1234567890123456789012345678901234567890123456789012345678901234567890 */
-        Case("FLASH_test_00", cfstore_flash_test_00),
-};
-
-
-/* Declare your test specification with a custom setup handler */
-Specification specification(greentea_setup, cases);
-
-int main()
-{
-    return !Harness::run(specification);
-}
-
-
-#else
-
-
 #include "cfstore_config.h"
 #include "cfstore_test.h"
 #include "cfstore_debug.h"
@@ -364,7 +300,7 @@ static void cfstore_flash_fsm_initializing(void* context)
     TEST_ASSERT_MESSAGE(ctx->fsm.state == cfstore_flash_fsm_state_initializing, cfstore_flash_utest_msg_g);
     CFSTORE_TEST_UTEST_MESSAGE(cfstore_flash_utest_msg_g, CFSTORE_FLASH_UTEST_MSG_BUF_SIZE, "%s:Error: cmd_code code (%d) is not as expected (%d)\r\n", __func__, ctx->cmd_code, FLASH_JOURNAL_OPCODE_INITIALIZE);
     TEST_ASSERT_MESSAGE(ctx->cmd_code == FLASH_JOURNAL_OPCODE_INITIALIZE, cfstore_flash_utest_msg_g);
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_flash_utest_msg_g, CFSTORE_FLASH_UTEST_MSG_BUF_SIZE, "%s:Error: status=%" PRId32 "\r\n", __func__, ctx->status);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_flash_utest_msg_g, CFSTORE_FLASH_UTEST_MSG_BUF_SIZE, "%s:Error: status=%d\r\n", __func__, (int) ctx->status);
     TEST_ASSERT_MESSAGE(ctx->status >= JOURNAL_STATUS_OK, cfstore_flash_utest_msg_g);
     /* only change state if status > 0*/
     if(ctx->status > 0){
@@ -417,11 +353,11 @@ static void cfstore_flash_fsm_read_on_entry(void* context)
             ctx->area_0_tail = ctx->area_0_head + info.sizeofJournaledBlob;
         }
         ret = FlashJournal_read(&ctx->jrnl, (void*) ctx->area_0_head, info.sizeofJournaledBlob);
-        CFSTORE_TEST_UTEST_MESSAGE(cfstore_flash_utest_msg_g, CFSTORE_FLASH_UTEST_MSG_BUF_SIZE, "%s:Error: unable to read flash journal (ret=%" PRId32 ". info.sizeofJournaledBlob=%d)\r\n", __func__, ret, (int) info.sizeofJournaledBlob);
+        CFSTORE_TEST_UTEST_MESSAGE(cfstore_flash_utest_msg_g, CFSTORE_FLASH_UTEST_MSG_BUF_SIZE, "%s:Error: unable to read flash journal (ret=%d. info.sizeofJournaledBlob=%d)\r\n", __func__, (int) ret, (int) info.sizeofJournaledBlob);
         TEST_ASSERT_MESSAGE(ret >= JOURNAL_STATUS_OK, cfstore_flash_utest_msg_g);
         if(ret > 0){
             /* read has completed synchronously*/
-            CFSTORE_TEST_UTEST_MESSAGE(cfstore_flash_utest_msg_g, CFSTORE_FLASH_UTEST_MSG_BUF_SIZE, "%s:Error: unable to read all data from flash journal (expected size=%lu, read=%" PRId32 ")\r\n", __func__, (unsigned long int)info.sizeofJournaledBlob, ret);
+            CFSTORE_TEST_UTEST_MESSAGE(cfstore_flash_utest_msg_g, CFSTORE_FLASH_UTEST_MSG_BUF_SIZE, "%s:Error: unable to read all data from flash journal (expected size=%lu, read=%d)\r\n", __func__, (unsigned long int)info.sizeofJournaledBlob, (int) ret);
             TEST_ASSERT_EQUAL_INT32_MESSAGE( (int32_t) info.sizeofJournaledBlob, ret, cfstore_flash_utest_msg_g);
             cfstore_flash_test_01_callback(ret, FLASH_JOURNAL_OPCODE_READ_BLOB);
         }
@@ -447,7 +383,7 @@ void cfstore_flash_fsm_reading(void* context)
     TEST_ASSERT_MESSAGE(ctx->fsm.state == cfstore_flash_fsm_state_reading, cfstore_flash_utest_msg_g);
     CFSTORE_TEST_UTEST_MESSAGE(cfstore_flash_utest_msg_g, CFSTORE_FLASH_UTEST_MSG_BUF_SIZE, "%s:Error: cmd_code code (%d) is not as expected (%d)\r\n", __func__, ctx->cmd_code, FLASH_JOURNAL_OPCODE_READ_BLOB);
     TEST_ASSERT_MESSAGE(ctx->cmd_code == FLASH_JOURNAL_OPCODE_READ_BLOB, cfstore_flash_utest_msg_g);
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_flash_utest_msg_g, CFSTORE_FLASH_UTEST_MSG_BUF_SIZE, "%s:Error: status=%" PRId32 "\r\n", __func__, ctx->status);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_flash_utest_msg_g, CFSTORE_FLASH_UTEST_MSG_BUF_SIZE, "%s:Error: status=%d\r\n", __func__, (int) ctx->status);
     TEST_ASSERT_MESSAGE(ctx->status >= JOURNAL_STATUS_OK, cfstore_flash_utest_msg_g);
 
     if(ctx->status > 0)
@@ -455,7 +391,7 @@ void cfstore_flash_fsm_reading(void* context)
         if(ctx->status > (int32_t) CFSTORE_FLASH_AREA_SIZE_MIN)
         {
             /* check the correct amount of data was read, which is the status code */
-            CFSTORE_TEST_UTEST_MESSAGE(cfstore_flash_utest_msg_g, CFSTORE_FLASH_UTEST_MSG_BUF_SIZE, "%s:Error: unable to read all data from flash journal (expected size=%lu, read=%" PRId32 ")\r\n", __func__, (unsigned long int) ctx->expected_blob_size, ctx->status);
+            CFSTORE_TEST_UTEST_MESSAGE(cfstore_flash_utest_msg_g, CFSTORE_FLASH_UTEST_MSG_BUF_SIZE, "%s:Error: unable to read all data from flash journal (expected size=%lu, read=%d)\r\n", __func__, (unsigned long int) ctx->expected_blob_size, (int) ctx->status);
             /* ctx->status contains the status of the read that was completed */
             TEST_ASSERT_EQUAL_INT64_MESSAGE(ctx->expected_blob_size, (int32_t) ctx->status, cfstore_flash_utest_msg_g);
             if(ctx->area_0_head != NULL)
@@ -522,7 +458,7 @@ void cfstore_flash_fsm_write_on_entry(void* context)
     CFSTORE_TEST_UTEST_MESSAGE(cfstore_flash_utest_msg_g, CFSTORE_FLASH_UTEST_MSG_BUF_SIZE, "%s:Error: ret = JOURNAL_STATUS_SMALL_LOG_REQUEST, bailing out.", __func__);
     TEST_ASSERT_MESSAGE(ret != (int32_t) JOURNAL_STATUS_SMALL_LOG_REQUEST, cfstore_flash_utest_msg_g);
 
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_flash_utest_msg_g, CFSTORE_FLASH_UTEST_MSG_BUF_SIZE, "%s:Error: failed to perform log operation to flash journal (ret=%" PRId32 ")\r\n", __func__, ret);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_flash_utest_msg_g, CFSTORE_FLASH_UTEST_MSG_BUF_SIZE, "%s:Error: failed to perform log operation to flash journal (ret=%d)\r\n", __func__, (int) ret);
     TEST_ASSERT_MESSAGE(ret >= 0, cfstore_flash_utest_msg_g);
     if(ret > 0){
         /* write has completed synchronously*/
@@ -543,12 +479,12 @@ void cfstore_flash_fsm_writing(void* context)
     TEST_ASSERT_MESSAGE(ctx->fsm.state == cfstore_flash_fsm_state_writing, cfstore_flash_utest_msg_g);
     CFSTORE_TEST_UTEST_MESSAGE(cfstore_flash_utest_msg_g, CFSTORE_FLASH_UTEST_MSG_BUF_SIZE, "%s:Error: cmd_code code (%d) is not as expected (%d)\r\n", __func__, ctx->cmd_code, FLASH_JOURNAL_OPCODE_LOG_BLOB);
     TEST_ASSERT_MESSAGE(ctx->cmd_code == FLASH_JOURNAL_OPCODE_LOG_BLOB, cfstore_flash_utest_msg_g);
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_flash_utest_msg_g, CFSTORE_FLASH_UTEST_MSG_BUF_SIZE, "%s:Error: status=%" PRId32 "\r\n", __func__, ctx->status);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_flash_utest_msg_g, CFSTORE_FLASH_UTEST_MSG_BUF_SIZE, "%s:Error: status=%d\r\n", __func__, (int) ctx->status);
     TEST_ASSERT_MESSAGE(ctx->status >= JOURNAL_STATUS_OK, cfstore_flash_utest_msg_g);
 
     if(ctx->status > 0){
         /* check the correct amount of data was written */
-        CFSTORE_TEST_UTEST_MESSAGE(cfstore_flash_utest_msg_g, CFSTORE_FLASH_UTEST_MSG_BUF_SIZE, "%s:Error: unable to write all data from flash journal (expected size=%lu, read=%" PRId32 ")\r\n", __func__, (unsigned long int) ctx->expected_blob_size, ctx->status);
+        CFSTORE_TEST_UTEST_MESSAGE(cfstore_flash_utest_msg_g, CFSTORE_FLASH_UTEST_MSG_BUF_SIZE, "%s:Error: unable to write all data from flash journal (expected size=%lu, read=%d)\r\n", __func__, (unsigned long int) ctx->expected_blob_size, (int) ctx->status);
         TEST_ASSERT_EQUAL_INT64_MESSAGE(ctx->expected_blob_size, ctx->status, cfstore_flash_utest_msg_g);
         cfstore_fsm_state_set(&ctx->fsm, cfstore_flash_fsm_state_committing, ctx);
     }
@@ -586,7 +522,7 @@ void cfstore_flash_fsm_committing(void* context)
     TEST_ASSERT_MESSAGE(ctx->fsm.state == cfstore_flash_fsm_state_committing, cfstore_flash_utest_msg_g);
     CFSTORE_TEST_UTEST_MESSAGE(cfstore_flash_utest_msg_g, CFSTORE_FLASH_UTEST_MSG_BUF_SIZE, "%s:Error: cmd_code code (%d) is not as expected (%d)\r\n", __func__, ctx->cmd_code, FLASH_JOURNAL_OPCODE_COMMIT);
     TEST_ASSERT_MESSAGE(ctx->cmd_code == FLASH_JOURNAL_OPCODE_COMMIT, cfstore_flash_utest_msg_g);
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_flash_utest_msg_g, CFSTORE_FLASH_UTEST_MSG_BUF_SIZE, "%s:Error: status=%" PRId32 "\r\n", __func__, ctx->status);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_flash_utest_msg_g, CFSTORE_FLASH_UTEST_MSG_BUF_SIZE, "%s:Error: status=%d\r\n", __func__, (int) ctx->status);
     TEST_ASSERT_MESSAGE(ctx->status >= JOURNAL_STATUS_OK, cfstore_flash_utest_msg_g);
 
     /* check the correct amount of data was written */
@@ -741,22 +677,8 @@ utest::v1::status_t greentea_setup(const size_t number_of_cases)
 /* Declare your test specification with a custom setup handler */
 Specification specification(greentea_setup, cases);
 
-#if defined CFSTORE_CONFIG_MBED_OS_VERSION && CFSTORE_CONFIG_MBED_OS_VERSION == 3
-/* mbedosV3*/
-void app_start(int argc __unused, char** argv __unused)
-{
-    /* Run the test specification */
-    Harness::run(specification);
-}
-#endif /* CFSTORE_CONFIG_MBED_OS_VERSION == 3 */
 
-#if defined CFSTORE_CONFIG_MBED_OS_VERSION && CFSTORE_CONFIG_MBED_OS_VERSION == 4
-/* mbedosV3++*/
 int main()
 {
     return !Harness::run(specification);
 }
-#endif /* CFSTORE_CONFIG_MBED_OS_VERSION == 4 */
-
-
-#endif // __MBED__ && ! defined TOOLCHAIN_GCC_ARM

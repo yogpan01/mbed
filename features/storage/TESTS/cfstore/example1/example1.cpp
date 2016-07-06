@@ -54,8 +54,7 @@
  */
 #if defined __MBED__ && ! defined TOOLCHAIN_GCC_ARM
 
-
-#include "mbed-drivers/mbed.h"
+#include "mbed.h"
 #include "cfstore_config.h"
 #include "Driver_Common.h"
 #include "cfstore_debug.h"
@@ -109,7 +108,7 @@ int main()
 #else
 
 
-#include "mbed-drivers/mbed.h"
+#include "mbed.h"
 
 #ifndef YOTTA_CONFIGURATION_STORE_EXAMPLE1_VERSION_STRING
 /* when built as Configuration-Store example, include greentea support otherwise omit */
@@ -231,7 +230,7 @@ typedef enum cfstore_ex_state_t {
 
 typedef struct cfstore_example1_ctx_t
 {
-    ARM_CFSTORE_CAPABILITIES caps;;
+    ARM_CFSTORE_CAPABILITIES caps;
     uint8_t hkey[CFSTORE_HANDLE_BUFSIZE];
     uint8_t hkey_next_buf[CFSTORE_HANDLE_BUFSIZE];
     uint8_t hkey_prev_buf[CFSTORE_HANDLE_BUFSIZE];
@@ -310,7 +309,9 @@ static void cfstore_ex_callback(int32_t status, ARM_CFSTORE_OPCODE cmd_code, voi
             break;
         default:
             CFSTORE_EX1_TEST_ASSERT_MSG(false, "%s:Error: unknown Close() error (line=%u)\r\n", __func__, __LINE__);
-            break;
+            /* The following 'break' statement generates ARMCC #111-D: statement is unreachable warning
+             * and hence is commented out. Re-instate if previous assert is removed.
+             * break; */
         }
         break;
     case CFSTORE_OPCODE_FLUSH:
@@ -324,7 +325,9 @@ static void cfstore_ex_callback(int32_t status, ARM_CFSTORE_OPCODE cmd_code, voi
                 break;
             default:
                 CFSTORE_EX1_TEST_ASSERT_MSG(false, "%s:Error: unknown Find() error (line=%u)\r\n", __func__, __LINE__);
-                break;
+                /* The following 'break' statement generates ARMCC #111-D: statement is unreachable warning
+                 * and hence is commented out. Re-instate if previous assert is removed.
+                 * break; */
         }
         break;
     case CFSTORE_OPCODE_OPEN:
@@ -341,7 +344,9 @@ static void cfstore_ex_callback(int32_t status, ARM_CFSTORE_OPCODE cmd_code, voi
             break;
         default:
             CFSTORE_EX1_TEST_ASSERT_MSG(false, "%s:Error: unknown Find() error (line=%u)\r\n", __func__, __LINE__);
-            break;
+            /* The following 'break' statement generates ARMCC #111-D: statement is unreachable warning
+             * and hence is commented out. Re-instate if previous assert is removed.
+             * break; */
         }
         break;
     case CFSTORE_OPCODE_GET_KEY_NAME:
@@ -361,7 +366,9 @@ static void cfstore_ex_callback(int32_t status, ARM_CFSTORE_OPCODE cmd_code, voi
             break;
         default:
             CFSTORE_EX1_TEST_ASSERT_MSG(false, "%s:Error: unknown Read() error (line=%u)\r\n", __func__, __LINE__);
-            break;
+            /* The following 'break' statement generates ARMCC #111-D: statement is unreachable warning
+             * and hence is commented out. Re-instate if previous assert is removed.
+             * break; */
         }
         break;
     case CFSTORE_OPCODE_RSEEK:
@@ -377,7 +384,9 @@ static void cfstore_ex_callback(int32_t status, ARM_CFSTORE_OPCODE cmd_code, voi
     case CFSTORE_OPCODE_POWER_CONTROL:
     default:
         CFSTORE_EX1_TEST_ASSERT_MSG(false, "%s:Error: received asynchronous notification for opcode=%d (%s)\r\b", __func__, cmd_code, cmd_code < CFSTORE_OPCODE_MAX ? cfstore_ex_opcode_str[cmd_code] : "unknown");
-        break;
+        /* The following 'break' statement generates ARMCC #111-D: statement is unreachable warning
+         * and hence is commented out. Re-instate if previous assert is removed.
+         * break; */
     }
     ctx->callback_status = status;
     ctx->callback_handle = handle;
@@ -404,7 +413,9 @@ static void cfstore_ex_fms_update(cfstore_example1_ctx_t* ctx)
                 break;
             }
             CFSTORE_EX1_TEST_ASSERT_MSG(false, "%s:Error: unknown error (line=%u)\r\n", __func__, __LINE__);
-            break;
+            /* The following 'break' statement generates ARMCC #111-D: statement is unreachable warning
+             * and hence is commented out. Re-instate if previous assert is removed.
+             * break; */
 
         case CFSTORE_EX_STATE_INIT_DONE:
             CFSTORE_EX1_LOG("INIT_DONE%s", "\r\n");
@@ -429,7 +440,9 @@ static void cfstore_ex_fms_update(cfstore_example1_ctx_t* ctx)
                 break;
             }
             CFSTORE_EX1_TEST_ASSERT_MSG(false, "%s:Error: unknown error (line=%u)\r\n", __func__, __LINE__);
-            break;
+            /* The following 'break' statement generates ARMCC #111-D: statement is unreachable warning
+             * and hence is commented out. Re-instate if previous assert is removed.
+             * break; */
 
         case CFSTORE_EX_STATE_CREATE_DONE:
             CFSTORE_EX1_LOG("CREATE_DONE%s", "\r\n");
@@ -452,7 +465,9 @@ static void cfstore_ex_fms_update(cfstore_example1_ctx_t* ctx)
                 break;
             }
             CFSTORE_EX1_TEST_ASSERT_MSG(false, "%s:Error: unknown error (line=%u)\r\n", __func__, __LINE__);
-            break;
+            /* The following 'break' statement generates ARMCC #111-D: statement is unreachable warning
+             * and hence is commented out. Re-instate if previous assert is removed.
+             * break; */
 
         case CFSTORE_EX_STATE_WRITE_DONE:
             CFSTORE_EX1_LOG("WRITE_DONE%s", "\r\n");
@@ -476,7 +491,9 @@ static void cfstore_ex_fms_update(cfstore_example1_ctx_t* ctx)
                 break;
             }
             CFSTORE_EX1_TEST_ASSERT_MSG(false, "%s:Error: unknown error (line=%u)\r\n", __func__, __LINE__);
-            break;
+            /* The following 'break' statement generates ARMCC #111-D: statement is unreachable warning
+             * and hence is commented out. Re-instate if previous assert is removed.
+             * break; */
 
         case CFSTORE_EX_STATE_CLOSE_DONE1:
             CFSTORE_EX1_LOG("CLOSE_DONE1%s", "\r\n");
@@ -498,7 +515,9 @@ static void cfstore_ex_fms_update(cfstore_example1_ctx_t* ctx)
                 break;
             }
             CFSTORE_EX1_TEST_ASSERT_MSG(false, "%s:Error: unknown error (line=%u)\r\n", __func__, __LINE__);
-            break;
+            /* The following 'break' statement generates ARMCC #111-D: statement is unreachable warning
+             * and hence is commented out. Re-instate if previous assert is removed.
+             * break; */
 
         case CFSTORE_EX_STATE_FLUSH_DONE1:
             CFSTORE_EX1_LOG("FLUSH_DONE1%s", "\r\n");
@@ -522,7 +541,9 @@ static void cfstore_ex_fms_update(cfstore_example1_ctx_t* ctx)
                 break;
             }
             CFSTORE_EX1_TEST_ASSERT_MSG(false, "%s:Error: unknown error (line=%u)\r\n", __func__, __LINE__);
-            break;
+            /* The following 'break' statement generates ARMCC #111-D: statement is unreachable warning
+             * and hence is commented out. Re-instate if previous assert is removed.
+             * break; */
 
         case CFSTORE_EX_STATE_OPEN_DONE:
             CFSTORE_EX1_LOG("OPEN_DONE%s", "\r\n");
@@ -546,7 +567,9 @@ static void cfstore_ex_fms_update(cfstore_example1_ctx_t* ctx)
                 break;
             }
             CFSTORE_EX1_TEST_ASSERT_MSG(false, "%s:Error: unknown error (line=%u)\r\n", __func__, __LINE__);
-            break;
+            /* The following 'break' statement generates ARMCC #111-D: statement is unreachable warning
+             * and hence is commented out. Re-instate if previous assert is removed.
+             * break; */
 
         case CFSTORE_EX_STATE_READ_DONE1:
             CFSTORE_EX1_LOG("READ_DONE1%s", "\r\n");
@@ -571,7 +594,9 @@ static void cfstore_ex_fms_update(cfstore_example1_ctx_t* ctx)
                 break;
             }
             CFSTORE_EX1_TEST_ASSERT_MSG(false, "%s:Error: unknown error (line=%u)\r\n", __func__, __LINE__);
-            break;
+            /* The following 'break' statement generates ARMCC #111-D: statement is unreachable warning
+             * and hence is commented out. Re-instate if previous assert is removed.
+             * break; */
 
         case CFSTORE_EX_STATE_RSEEK_DONE:
             CFSTORE_EX1_LOG("RSEEK_DONE%s", "\r\n");
@@ -595,7 +620,9 @@ static void cfstore_ex_fms_update(cfstore_example1_ctx_t* ctx)
                 break;
             }
             CFSTORE_EX1_TEST_ASSERT_MSG(false, "%s:Error: unknown error (line=%u)\r\n", __func__, __LINE__);
-            break;
+            /* The following 'break' statement generates ARMCC #111-D: statement is unreachable warning
+             * and hence is commented out. Re-instate if previous assert is removed.
+             * break; */
 
         case CFSTORE_EX_STATE_READ_DONE2:
             CFSTORE_EX1_LOG("READ_DONE2%s", "\r\n");
@@ -621,7 +648,9 @@ static void cfstore_ex_fms_update(cfstore_example1_ctx_t* ctx)
                 break;
             }
             CFSTORE_EX1_TEST_ASSERT_MSG(false, "%s:Error: unknown error (line=%u)\r\n", __func__, __LINE__);
-            break;
+            /* The following 'break' statement generates ARMCC #111-D: statement is unreachable warning
+             * and hence is commented out. Re-instate if previous assert is removed.
+             * break; */
 
         case CFSTORE_EX_STATE_CLOSE_DONE2:
             CFSTORE_EX1_LOG("CLOSE_DONE2%s", "\r\n");
@@ -643,7 +672,9 @@ static void cfstore_ex_fms_update(cfstore_example1_ctx_t* ctx)
                 break;
             }
             CFSTORE_EX1_TEST_ASSERT_MSG(false, "%s:Error: unknown error (line=%u)\r\n", __func__, __LINE__);
-            break;
+            /* The following 'break' statement generates ARMCC #111-D: statement is unreachable warning
+             * and hence is commented out. Re-instate if previous assert is removed.
+             * break; */
 
         case CFSTORE_EX_STATE_FIND_DONE1:
             CFSTORE_EX1_LOG("FIND_DONE1%s", "\r\n");
@@ -667,7 +698,9 @@ static void cfstore_ex_fms_update(cfstore_example1_ctx_t* ctx)
                 break;
             }
             CFSTORE_EX1_TEST_ASSERT_MSG(false, "%s:Error: unknown error (line=%u)\r\n", __func__, __LINE__);
-            break;
+            /* The following 'break' statement generates ARMCC #111-D: statement is unreachable warning
+             * and hence is commented out. Re-instate if previous assert is removed.
+             * break; */
 
         case CFSTORE_EX_STATE_GET_KEY_NAME_DONE:
             CFSTORE_EX1_LOG("GET_KEY_NAME_DONE%s", "\r\n");
@@ -692,7 +725,9 @@ static void cfstore_ex_fms_update(cfstore_example1_ctx_t* ctx)
                 break;
             }
             CFSTORE_EX1_TEST_ASSERT_MSG(false, "%s:Error: unknown error (line=%u)\r\n", __func__, __LINE__);
-            break;
+            /* The following 'break' statement generates ARMCC #111-D: statement is unreachable warning
+             * and hence is commented out. Re-instate if previous assert is removed.
+             * break; */
 
         case CFSTORE_EX_STATE_GET_VALUE_LEN_DONE:
             CFSTORE_EX1_LOG("GET_VALUE_LEN_DONE%s", "\r\n");
@@ -715,7 +750,9 @@ static void cfstore_ex_fms_update(cfstore_example1_ctx_t* ctx)
                 break;
             }
             CFSTORE_EX1_TEST_ASSERT_MSG(false, "%s:Error: unknown error (line=%u)\r\n", __func__, __LINE__);
-            break;
+            /* The following 'break' statement generates ARMCC #111-D: statement is unreachable warning
+             * and hence is commented out. Re-instate if previous assert is removed.
+             * break; */
 
         case CFSTORE_EX_STATE_DELETE_DONE:
             CFSTORE_EX1_LOG("DELETE_DONE%s", "\r\n");
@@ -738,7 +775,9 @@ static void cfstore_ex_fms_update(cfstore_example1_ctx_t* ctx)
                 break;
             }
             CFSTORE_EX1_TEST_ASSERT_MSG(false, "%s:Error: unknown error (line=%u)\r\n", __func__, __LINE__);
-            break;
+            /* The following 'break' statement generates ARMCC #111-D: statement is unreachable warning
+             * and hence is commented out. Re-instate if previous assert is removed.
+             * break; */
 
         case CFSTORE_EX_STATE_FIND_DONE2:
             CFSTORE_EX1_LOG("FIND_DONE2%s", "\r\n");
@@ -759,7 +798,9 @@ static void cfstore_ex_fms_update(cfstore_example1_ctx_t* ctx)
                 break;
             }
             CFSTORE_EX1_TEST_ASSERT_MSG(false, "%s:Error: unknown error (line=%u)\r\n", __func__, __LINE__);
-            break;
+            /* The following 'break' statement generates ARMCC #111-D: statement is unreachable warning
+             * and hence is commented out. Re-instate if previous assert is removed.
+             * break; */
 
         case CFSTORE_EX_STATE_FLUSH_DONE2:
             CFSTORE_EX1_LOG("FLUSH_DONE2%s", "\r\n");
@@ -780,7 +821,9 @@ static void cfstore_ex_fms_update(cfstore_example1_ctx_t* ctx)
                 break;
             }
             CFSTORE_EX1_TEST_ASSERT_MSG(false, "%s:Error: unknown error (line=%u)\r\n", __func__, __LINE__);
-            break;
+            /* The following 'break' statement generates ARMCC #111-D: statement is unreachable warning
+             * and hence is commented out. Re-instate if previous assert is removed.
+             * break; */
 
         case CFSTORE_EX_STATE_UNINIT_DONE:
             CFSTORE_EX1_LOG("UNINIT_DONE%s", "\r\n");
@@ -795,7 +838,6 @@ static void cfstore_ex_fms_update(cfstore_example1_ctx_t* ctx)
 
 static control_t cfstore_example1_app_start(const size_t call_count)
 {
-    int32_t ret = ARM_DRIVER_ERROR;
     cfstore_example1_ctx_t* ctx = &cfstore_example1_ctx_g;
 
     (void) call_count;
@@ -846,7 +888,7 @@ static control_t cfstore_example1_test_00(const size_t call_count)
 
 utest::v1::status_t greentea_setup(const size_t number_of_cases)
 {
-    GREENTEA_SETUP(100, "default_auto");
+    GREENTEA_SETUP(25, "default_auto");
     return greentea_test_setup_handler(number_of_cases);
 }
 
@@ -861,22 +903,10 @@ Case cases[] = {
 /* Declare your test specification with a custom setup handler */
 Specification specification(greentea_setup, cases);
 
-#if defined CFSTORE_CONFIG_MBED_OS_VERSION && CFSTORE_CONFIG_MBED_OS_VERSION == 3
-/* mbedosV3*/
-void app_start(int argc __unused, char** argv __unused)
-{
-    /* Run the test specification */
-    Harness::run(specification);
-}
-#endif /* CFSTORE_CONFIG_MBED_OS_VERSION == 3 */
-
-#if defined CFSTORE_CONFIG_MBED_OS_VERSION && CFSTORE_CONFIG_MBED_OS_VERSION == 4
-/* mbedosV3++*/
 int main()
 {
     return !Harness::run(specification);
 }
-#endif /* CFSTORE_CONFIG_MBED_OS_VERSION == 4 */
 
 
 #else   // YOTTA_CONFIGURATION_STORE_EXAMPLE1_VERSION_STRING

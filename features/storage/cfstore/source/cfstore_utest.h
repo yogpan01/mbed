@@ -68,7 +68,7 @@ static control_t cfstore_utest_default_start(const size_t call_count)
     CFSTORE_FENTRYLOG("%s:entered\n", __func__);
     (void) call_count;
     ret = drv->Initialize(cfstore_utest_default_callback, NULL);
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_utest_msg, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: failed to initialize CFSTORE (ret=%" PRId32 ")\n", __func__, ret);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_utest_msg, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: failed to initialize CFSTORE (ret=%d)\n", __func__, (int) ret);
     TEST_ASSERT_MESSAGE(ret >= ARM_DRIVER_OK, cfstore_utest_msg);
     return CaseTimeout(CFSTORE_UTEST_DEFAULT_TIMEOUT_MS);
 }

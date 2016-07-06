@@ -17,65 +17,7 @@
  *
  * Test cases to flush KVs in the CFSTORE using the drv->Flush() interface.
  */
-#if defined __MBED__ && ! defined TOOLCHAIN_GCC_ARM
-
-
-#include "mbed-drivers/mbed.h"
-#include "cfstore_config.h"
-#include "Driver_Common.h"
-#include "cfstore_debug.h"
-#include "cfstore_test.h"
-#include "configuration_store.h"
-#include "utest/utest.h"
-#include "unity/unity.h"
-#include "greentea-client/test_env.h"
-#ifdef YOTTA_CFG_CFSTORE_UVISOR
-#include "uvisor-lib/uvisor-lib.h"
-#include "cfstore_uvisor.h"
-#endif /* YOTTA_CFG_CFSTORE_UVISOR */
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <inttypes.h>
-
-using namespace utest::v1;
-
-static control_t cfstore_flush2_test_00(const size_t call_count)
-{
-    (void) call_count;
-    printf("Not implemented for ARM toolchain\n");
-    return CaseNext;
-}
-
-
-utest::v1::status_t greentea_setup(const size_t number_of_cases)
-{
-    GREENTEA_SETUP(100, "default_auto");
-    return greentea_test_setup_handler(number_of_cases);
-}
-
-Case cases[] = {
-           /*          1         2         3         4         5         6        7  */
-           /* 1234567890123456789012345678901234567890123456789012345678901234567890 */
-        Case("FLUSH2_test_00", cfstore_flush2_test_00),
-};
-
-
-/* Declare your test specification with a custom setup handler */
-Specification specification(greentea_setup, cases);
-
-int main()
-{
-    return !Harness::run(specification);
-}
-
-
-
-#else
-
-
-#include "mbed-drivers/mbed.h"
+#include "mbed.h"
 #include "utest/utest.h"
 #include "unity/unity.h"
 #include "cfstore_config.h"
@@ -182,7 +124,7 @@ control_t  cfstore_flush2_test_01_start(const size_t call_count)
     (void) call_count;
     cfstore_flush_ctx_init(ctx);
     ret = drv->Initialize(cfstore_utest_default_callback, ctx);
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_flush_utest_msg_g, CFSTORE_FLUSH_UTEST_MSG_BUF_SIZE, "%s:Error: failed to initialize CFSTORE (ret=%" PRId32 ")\r\n", __func__, ret);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_flush_utest_msg_g, CFSTORE_FLUSH_UTEST_MSG_BUF_SIZE, "%s:Error: failed to initialize CFSTORE (ret=%d)\r\n", __func__, (int) ret);
     TEST_ASSERT_MESSAGE(ret >= ARM_DRIVER_OK, cfstore_flush_utest_msg_g);
     return CaseTimeout(100000);
 }
@@ -210,7 +152,7 @@ static control_t cfstore_flush2_test_01_mid(const size_t call_count)
     /* try to read key; should not be found */
     ret = cfstore_test_kv_is_found(cfstore_flush_test_02_kv_data->key_name, &bfound);
     if(ret != ARM_DRIVER_OK && ret != ARM_CFSTORE_DRIVER_ERROR_KEY_NOT_FOUND){
-        CFSTORE_TEST_UTEST_MESSAGE(cfstore_flush_utest_msg_g, CFSTORE_FLUSH_UTEST_MSG_BUF_SIZE, "%s:Error: cfstore_test_kv_is_found() call failed (ret=%" PRId32 ").\r\n", __func__, ret);
+        CFSTORE_TEST_UTEST_MESSAGE(cfstore_flush_utest_msg_g, CFSTORE_FLUSH_UTEST_MSG_BUF_SIZE, "%s:Error: cfstore_test_kv_is_found() call failed (ret=%d).\r\n", __func__, (int) ret);
         TEST_ASSERT_MESSAGE(false, cfstore_flush_utest_msg_g);
     }
 
@@ -226,18 +168,18 @@ static control_t cfstore_flush2_test_01_mid(const size_t call_count)
          * store a value */
         len = strlen(cfstore_flush_test_02_kv_data->value);
         ret = cfstore_test_create(cfstore_flush_test_02_kv_data->key_name, cfstore_flush_test_02_kv_data->value, &len, &kdesc);
-        CFSTORE_TEST_UTEST_MESSAGE(cfstore_flush_utest_msg_g, CFSTORE_FLUSH_UTEST_MSG_BUF_SIZE, "%s:Error:1: failed to write kv data (ret=%" PRId32 ").\r\n", __func__, ret);
+        CFSTORE_TEST_UTEST_MESSAGE(cfstore_flush_utest_msg_g, CFSTORE_FLUSH_UTEST_MSG_BUF_SIZE, "%s:Error:1: failed to write kv data (ret=%d).\r\n", __func__, (int) ret);
         TEST_ASSERT_MESSAGE(ret >= ARM_DRIVER_OK, cfstore_flush_utest_msg_g);
         /* flush to flash */
         ret = drv->Flush();
-        CFSTORE_TEST_UTEST_MESSAGE(cfstore_flush_utest_msg_g, CFSTORE_FLUSH_UTEST_MSG_BUF_SIZE, "%s:Error: failed to flush data to cfstore flash (ret=%" PRId32 ").\r\n", __func__, ret);
+        CFSTORE_TEST_UTEST_MESSAGE(cfstore_flush_utest_msg_g, CFSTORE_FLUSH_UTEST_MSG_BUF_SIZE, "%s:Error: failed to flush data to cfstore flash (ret=%d).\r\n", __func__, (int) ret);
         TEST_ASSERT_MESSAGE(ret >= ARM_DRIVER_OK, cfstore_flush_utest_msg_g);
 
     } else {
         /*read the value, increment by 1 and write value back */
         len = CFSTORE_KEY_NAME_MAX_LENGTH+1;
         ret = cfstore_test_read(cfstore_flush_test_02_kv_data->key_name, value, &len);
-        CFSTORE_TEST_UTEST_MESSAGE(cfstore_flush_utest_msg_g, CFSTORE_FLUSH_UTEST_MSG_BUF_SIZE, "%s:Error: failed to read kv data (ret=%" PRId32 ").\r\n", __func__, ret);
+        CFSTORE_TEST_UTEST_MESSAGE(cfstore_flush_utest_msg_g, CFSTORE_FLUSH_UTEST_MSG_BUF_SIZE, "%s:Error: failed to read kv data (ret=%d).\r\n", __func__, (int) ret);
         TEST_ASSERT_MESSAGE(ret >= ARM_DRIVER_OK, cfstore_flush_utest_msg_g);
 
         /* increment value */
@@ -246,12 +188,12 @@ static control_t cfstore_flush2_test_01_mid(const size_t call_count)
         snprintf(value, CFSTORE_KEY_NAME_MAX_LENGTH+1, "%d", (int) ivalue);
         len = strlen(value);
         ret = cfstore_test_write(cfstore_flush_test_02_kv_data->key_name, value, &len);
-        CFSTORE_TEST_UTEST_MESSAGE(cfstore_flush_utest_msg_g, CFSTORE_FLUSH_UTEST_MSG_BUF_SIZE, "%s:Error: failed to write kv data (ret=%" PRId32 ").\r\n", __func__, ret);
+        CFSTORE_TEST_UTEST_MESSAGE(cfstore_flush_utest_msg_g, CFSTORE_FLUSH_UTEST_MSG_BUF_SIZE, "%s:Error: failed to write kv data (ret=%d).\r\n", __func__, (int) ret);
         TEST_ASSERT_MESSAGE(ret >= ARM_DRIVER_OK, cfstore_flush_utest_msg_g);
 
         /* flush to flash */
         ret = drv->Flush();
-        CFSTORE_TEST_UTEST_MESSAGE(cfstore_flush_utest_msg_g, CFSTORE_FLUSH_UTEST_MSG_BUF_SIZE, "%s:Error: failed to flush data to cfstore flash (ret=%" PRId32 ").\r\n", __func__, ret);
+        CFSTORE_TEST_UTEST_MESSAGE(cfstore_flush_utest_msg_g, CFSTORE_FLUSH_UTEST_MSG_BUF_SIZE, "%s:Error: failed to flush data to cfstore flash (ret=%d).\r\n", __func__, (int) ret);
         TEST_ASSERT_MESSAGE(ret >= ARM_DRIVER_OK, cfstore_flush_utest_msg_g);
     }
     return CaseTimeout(100000);
@@ -309,22 +251,7 @@ Case cases[] = {
 // Declare your test specification with a custom setup handler
 Specification specification(greentea_setup, cases);
 
-#if defined CFSTORE_CONFIG_MBED_OS_VERSION && CFSTORE_CONFIG_MBED_OS_VERSION == 3
-/* mbedosV3*/
-void app_start(int argc __unused, char** argv __unused)
-{
-    /* Run the test specification */
-    Harness::run(specification);
-}
-#endif /* CFSTORE_CONFIG_MBED_OS_VERSION == 3 */
-
-#if defined CFSTORE_CONFIG_MBED_OS_VERSION && CFSTORE_CONFIG_MBED_OS_VERSION == 4
-/* mbedosV3++*/
 int main()
 {
     return !Harness::run(specification);
 }
-#endif /* CFSTORE_CONFIG_MBED_OS_VERSION == 4 */
-
-
-#endif // __MBED__ && ! defined TOOLCHAIN_GCC_ARM

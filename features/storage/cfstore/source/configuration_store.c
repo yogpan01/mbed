@@ -629,6 +629,7 @@ static inline uint32_t cfstore_ctx_get_program_unit(cfstore_ctx_t* ctx)
 static inline void cfstore_ctx_client_notify(cfstore_ctx_t* ctx, cfstore_client_notify_data_t* data)
 {
     CFSTORE_FENTRYLOG("%s:entered: ctx=%p, ctx->client_callback=%p, ctx->client_context=%p\n", __func__, ctx, ctx->client_callback, ctx->client_context);
+    CFSTORE_TP(CFSTORE_TP_CALLBACK, "%s:data=%p, data->opcode=%d, data->status=%d, data->handle=%p\n", __func__, data, (int) data->opcode, (int) data->status, data->handle);
     if(ctx->client_callback){
         ctx->client_callback(data->status, (ARM_CFSTORE_OPCODE) data->opcode, ctx->client_context, data->handle);
     }
@@ -855,7 +856,7 @@ static int32_t cfstore_uvisor_is_client_kv_owner(char* key_name, int32_t* cfstor
     /* Get the ID of the box that called this box through the most recent secure gateway. */
     calling_box_id = uvisor_box_id_caller();
     if(calling_box_id < 0){
-        CFSTORE_ERRLOG("%s: Error: uvisor uvisor_box_id_caller() returned invalid id (calling_box_id=%" PRId32 "\n", __func__, calling_box_id);
+        CFSTORE_ERRLOG("%s: Error: uvisor uvisor_box_id_caller() returned invalid id (calling_box_id=%d\n", __func__, (int) calling_box_id);
         return ARM_CFSTORE_DRIVER_ERROR_UVISOR_BOX_ID;
     }
     if(cfstore_uvisor_box_id){
@@ -864,7 +865,7 @@ static int32_t cfstore_uvisor_is_client_kv_owner(char* key_name, int32_t* cfstor
     if(calling_box_id == 0){
         /* the cfstore uvisor client is the main box.
          * main box is not allowed to create a key as a client is only permitted to create KVs in their namespace. */
-        CFSTORE_ERRLOG("%s: Error: uvisor box id identifies cfstore client cannot create KVs (calling_box_id=%" PRId32 "\n", __func__, calling_box_id);
+        CFSTORE_ERRLOG("%s: Error: uvisor box id identifies cfstore client cannot create KVs (calling_box_id=%d\n", __func__, (int) calling_box_id);
         return ARM_CFSTORE_DRIVER_ERROR_UVISOR_BOX_ID;
     }
     /* Copy the name of the calling box to our stack. */
@@ -1464,9 +1465,9 @@ static int32_t cfstore_fsm_init_on_entry(void* context)
 
     ret = FlashJournal_initialize(&ctx->jrnl, drv, &FLASH_JOURNAL_STRATEGY_SEQUENTIAL, cfstore_flash_journal_callback);
     CFSTORE_FENTRYLOG("%s:here\n", __func__);
-    CFSTORE_TP(CFSTORE_TP_FSM, "%s:FlashJournal_initialize ret=%" PRId32 "\n", __func__, ret);
+    CFSTORE_TP(CFSTORE_TP_FSM, "%s:FlashJournal_initialize ret=%d\n", __func__, (int) ret);
     if(ret < ARM_DRIVER_OK){
-        CFSTORE_ERRLOG("%s:Error: failed to initialize flash journaling layer (ret=%" PRId32 ")\n", __func__, ret);
+        CFSTORE_ERRLOG("%s:Error: failed to initialize flash journaling layer (ret=%d)\n", __func__, (int) ret);
         cfstore_fsm_state_set(&ctx->fsm, cfstore_fsm_state_stopped, ctx);
     }
     else if(ret > 0){
@@ -1499,7 +1500,7 @@ static int32_t cfstore_fsm_initing(void* context)
     if(ctx->status > 0){
         ret = cfstore_fsm_state_set(&ctx->fsm, cfstore_fsm_state_reading, ctx);
     } else if(ctx->status < 0) {
-        CFSTORE_ERRLOG("%s:Error: failed to initialize flash journaling layer (ret=%" PRId32 ")\n", __func__, ctx->status);
+        CFSTORE_ERRLOG("%s:Error: failed to initialize flash journaling layer (ret=%d)\n", __func__, (int) ctx->status);
         cfstore_fsm_state_set(&ctx->fsm, cfstore_fsm_state_stopped, ctx);
     }
     return ret;
@@ -1612,7 +1613,7 @@ static int32_t cfstore_fsm_reading(void* context)
                  */
                 ret = cfstore_flash_set_tail();
                 if(ret < ARM_DRIVER_OK){
-                    CFSTORE_ERRLOG("%s:Error: cfstore_flash_set_tail() failed (ret=%" PRId32 ")\n", __func__, ret);
+                    CFSTORE_ERRLOG("%s:Error: cfstore_flash_set_tail() failed (ret=%d)\n", __func__, (int) ret);
                     /* move to ready state. cfstore client is expected to Uninitialize() before further calls */
                     cfstore_fsm_state_set(&ctx->fsm, cfstore_fsm_state_ready, ctx);
                     memset(&ctx->info, 0, sizeof(ctx->info));
@@ -1620,7 +1621,7 @@ static int32_t cfstore_fsm_reading(void* context)
                 }
                 ret = cfstore_fsm_state_set(&ctx->fsm, cfstore_fsm_state_ready, ctx);
                 if(ret < ARM_DRIVER_OK){
-                    CFSTORE_ERRLOG("%s:Error: cfstore_fsm_state_set() failed (ret=%" PRId32 ")\n", __func__, ret);
+                    CFSTORE_ERRLOG("%s:Error: cfstore_fsm_state_set() failed (ret=%d)\n", __func__, (int) ret);
                     goto out;
                 }
                 ret = ctx->status;
@@ -1631,7 +1632,7 @@ static int32_t cfstore_fsm_reading(void* context)
                 ret = cfstore_fsm_state_set(&ctx->fsm, cfstore_fsm_state_ready, ctx);
                 if(ret < ARM_DRIVER_OK){
                     /* move to ready state. cfstore client is expected to Uninitialize() before further calls */
-                    CFSTORE_ERRLOG("%s:Error: cfstore_fsm_state_set() failed (ret=%" PRId32 ")\n", __func__, ret);
+                    CFSTORE_ERRLOG("%s:Error: cfstore_fsm_state_set() failed (ret=%d)\n", __func__, (int) ret);
                     goto out;
                 }
                 ret = ctx->status;
@@ -1643,7 +1644,7 @@ static int32_t cfstore_fsm_reading(void* context)
             ret = cfstore_fsm_state_set(&ctx->fsm, cfstore_fsm_state_ready, ctx);
             if(ret < ARM_DRIVER_OK){
                 /* move to ready state. cfstore client is expected to Uninitialize() before further calls */
-                CFSTORE_ERRLOG("%s:Error: cfstore_fsm_state_set() failed (ret=%" PRId32 ")\n", __func__, ret);
+                CFSTORE_ERRLOG("%s:Error: cfstore_fsm_state_set() failed (ret=%d)\n", __func__, (int) ret);
                 goto out;
             }
             ret = ctx->status;
@@ -1695,25 +1696,39 @@ int32_t cfstore_fsm_log_on_entry(void* context)
     if(ctx->expected_blob_size % info.program_unit > 0){
         ctx->expected_blob_size += (info.program_unit - (ctx->expected_blob_size % info.program_unit));
     }
-    if(ctx->area_0_head && ctx->area_dirty_flag == true)
+    /* log the changes to flash even when the area has shrunk to 0, as its necessary to erase the flash */
+    if(ctx->area_dirty_flag == true)
     {
-        ret = FlashJournal_log(&ctx->jrnl, (const void*) ctx->area_0_head, ctx->expected_blob_size);
-        if(ret < JOURNAL_STATUS_OK){
-            CFSTORE_ERRLOG("%s:Error: FlashJournal_commit() failed (ret=%d)\n", __func__, (int) ret);
-            ret = cfstore_flash_map_error(status);
-            /* move to ready state. cfstore client is expected to Uninitialize() before further calls */
-            cfstore_fsm_state_set(&ctx->fsm, cfstore_fsm_state_ready, ctx);
-            goto out0;
-        } else if(ret > 0){
-            /* read has completed synchronously*/
+        if(ctx->expected_blob_size > 0){
+            CFSTORE_TP(CFSTORE_TP_FLUSH, "%s:logging: ctx->area_0_head=%p, ctx->expected_blob_size-%d\n", __func__, ctx->area_0_head, (int) ctx->expected_blob_size);
+            ret = FlashJournal_log(&ctx->jrnl, (const void*) ctx->area_0_head, ctx->expected_blob_size);
+            if(ret < JOURNAL_STATUS_OK){
+                CFSTORE_ERRLOG("%s:Error: FlashJournal_commit() failed (ret=%d)\n", __func__, (int) ret);
+                ret = cfstore_flash_map_error(status);
+                /* move to ready state. cfstore client is expected to Uninitialize() before further calls */
+                cfstore_fsm_state_set(&ctx->fsm, cfstore_fsm_state_ready, ctx);
+                goto out0;
+            } else if(ret > 0){
+                /* read has completed synchronously*/
+                cfstore_flash_journal_callback(ret, FLASH_JOURNAL_OPCODE_LOG_BLOB);
+                ret = ctx->status;
+            }
+            /* wait for async completion handler*/
+        } else {
+            /* expected_blob_size == 0
+             * There are no entries in the cfstore (e.g. last entry has been deleted) and this needs
+             * reflecting in the flash. A log is not required (as there is not data). Initiate the
+             * commit which will zero the flash
+             * */
+            CFSTORE_TP(CFSTORE_TP_FLUSH, "%s:skip logging: initiate commit to erase flash\n", __func__);
+            ret = JOURNAL_STATUS_OK;
             cfstore_flash_journal_callback(ret, FLASH_JOURNAL_OPCODE_LOG_BLOB);
-            ret = ctx->status;
         }
-        /* wait for async completion handler*/
     }
     else
     {
         /* nothing to be logged so move back to ready state indicating success*/
+        CFSTORE_TP(CFSTORE_TP_FLUSH, "%s:not logging: ctx->area_0_head=%p, ctx->expected_blob_size-=%d\n", __func__, ctx->area_0_head, (int) ctx->expected_blob_size);
         cfstore_flash_journal_callback(ctx->expected_blob_size, FLASH_JOURNAL_OPCODE_LOG_BLOB);
     }
 out0:
@@ -1767,7 +1782,7 @@ static int32_t cfstore_fsm_commit_on_entry(void* context)
     cfstore_ctx_t* ctx = (cfstore_ctx_t*) context;
 
     CFSTORE_FENTRYLOG("%s:entered:\n", __func__);
-    if(ctx->area_0_head && ctx->area_dirty_flag == true)
+    if(ctx->area_dirty_flag == true)
     {
 		ret = FlashJournal_commit(&ctx->jrnl);
 		CFSTORE_TP(CFSTORE_TP_FSM, "%s:debug: FlashJournal_commit() (ret=%d)\n", __func__, (int) ret);
@@ -1843,6 +1858,7 @@ static int32_t cfstore_fsm_commit_on_exit(void* context)
 /* int32_t cfstore_fsm_reset_on_entry(void* context){ (void) context;} */
 /* int32_t cfstore_fsm_resetting(void* context){ (void) context;} */
 /* int32_t cfstore_fsm_reset_on_exit(void* context){ (void) context;} */
+
 
 static int32_t cfstore_fsm_ready_on_commit_req(void* context)
 {
@@ -1962,7 +1978,7 @@ static int32_t cfstore_fsm_state_set(cfstore_fsm_t* fsm, cfstore_fsm_state_t new
         ret = cfstore_fsm_on_entry[new_state](ctx);
         if(ret < ARM_DRIVER_OK){
             #ifdef CFSTORE_DEBUG
-            CFSTORE_TP(CFSTORE_TP_FSM, "%s:FSM:REQ RX: fsm->state=%d (%s): new_state=%d (%s): Error: cfstore_fsm_on_entry() failed (ret=%" PRId32 ")\n", __func__, (int) fsm->state, cfstore_flash_state_str[fsm->state], (int) new_state, cfstore_flash_state_str[new_state], ret);
+            CFSTORE_TP(CFSTORE_TP_FSM, "%s:FSM:REQ RX: fsm->state=%d (%s): new_state=%d (%s): Error: cfstore_fsm_on_entry() failed (ret=%d)\n", __func__, (int) fsm->state, cfstore_flash_state_str[fsm->state], (int) new_state, cfstore_flash_state_str[new_state], (int) ret);
             #endif
             /* handling of the error is done in the on_entry() method, which best knows how the state to move to */
             return ret;
@@ -2039,7 +2055,7 @@ static int32_t cfstore_flash_reset(void)
 
     ret = FlashJournal_reset(&ctx->jrnl);
     if(ret != JOURNAL_STATUS_OK){
-        CFSTORE_ERRLOG("%s:Error: failed to reset flash journal (ret=%" PRId32 ")\n", __func__, ret);
+        CFSTORE_ERRLOG("%s:Error: failed to reset flash journal (ret=%d)\n", __func__, (int) ret);
         goto out0;
     }
 out0:
@@ -2146,7 +2162,7 @@ static int32_t cfstore_delete_ex(cfstore_area_hkvt_t* hkvt)
         ctx->area_0_tail = ptr + area_size - kv_size;
         ret = cfstore_flash_set_tail();
         if(ret < ARM_DRIVER_OK){
-            CFSTORE_ERRLOG("%s:Error: cfstore_flash_set_tail() failed (ret=%" PRId32 ")\n", __func__, ret);
+            CFSTORE_ERRLOG("%s:Error: cfstore_flash_set_tail() failed (ret=%d)\n", __func__, (int) ret);
             goto out0;
         }
 
@@ -2196,7 +2212,7 @@ static cfstore_file_t* cfstore_file_create(cfstore_area_hkvt_t* hkvt, ARM_CFSTOR
         CFSTORE_INIT_LIST_HEAD(&file->node);
         ret = cfstore_hkvt_refcount_inc(hkvt, NULL);
         if(ret < ARM_DRIVER_OK){
-            CFSTORE_ERRLOG("%s:Error: cfstore_hkvt_refcount_inc() failed (ret=%" PRId32 ")\n", __func__, ret);
+            CFSTORE_ERRLOG("%s:Error: cfstore_hkvt_refcount_inc() failed (ret=%d)\n", __func__, (int) ret);
             return NULL;
         }
         file->head = hkvt->head;
@@ -2875,6 +2891,10 @@ static int32_t cfstore_delete(ARM_CFSTORE_HANDLE hkey)
     /* set the delete flag so the delete occurs when the file is closed
      * no further handles will be returned to this key */
     cfstore_hkvt_set_flags_delete(&hkvt, true);
+
+    /* set the dirty flag so the changes are persisted to backing store when flushed */
+    ctx->area_dirty_flag = true;
+
 out0:
     /* Delete() always completes synchronously irrespective of flash mode, so indicate to caller */
     cfstore_client_notify_data_init(&notify_data, CFSTORE_OPCODE_DELETE, ret, NULL);
@@ -2945,24 +2965,20 @@ static int32_t cfstore_find_ex(const char* key_name_query, cfstore_area_hkvt_t *
         cfstore_hkvt_dump(next, __func__);
 
         /* if this KV is deleting then proceed to the next item */
-        // Note: It is probably better not to enforce policy in this function
-        // but in the client
         if(cfstore_hkvt_get_flags_delete(next)){
             ret = cfstore_get_next_hkvt(next, next);
             if(ret == ARM_CFSTORE_DRIVER_ERROR_KEY_NOT_FOUND) {
                 CFSTORE_TP(CFSTORE_TP_FIND, "%s:No more KVs found\n", __func__);
-                break;
+                return ret;
             }
             continue;
         }
         /* if this KV is not readable by the client then proceed to the next item */
-        // Note: It is probably better not to enforce policy in this function
-        // but in the client
         if(!cfstore_is_kv_client_readable(next)){
             ret = cfstore_get_next_hkvt(next, next);
             if(ret == ARM_CFSTORE_DRIVER_ERROR_KEY_NOT_FOUND) {
                 CFSTORE_TP(CFSTORE_TP_FIND, "%s:No more KVs found\n", __func__);
-                break;
+                return ret;
             }
             continue;
         }
@@ -2977,14 +2993,14 @@ static int32_t cfstore_find_ex(const char* key_name_query, cfstore_area_hkvt_t *
             cfstore_hkvt_dump(next, __func__);
             return ARM_DRIVER_OK;
         } else if(ret != CFSTORE_FNM_NOMATCH){
-            CFSTORE_ERRLOG("%s:Error: cfstore_fnmatch() error (ret=%" PRId32 ").\n", __func__, ret);
+            CFSTORE_ERRLOG("%s:Error: cfstore_fnmatch() error (ret=%d).\n", __func__, (int) ret);
             return ARM_DRIVER_ERROR;
         }
         /* CFSTORE_FNM_NOMATCH => get the next hkvt if any */
         ret = cfstore_get_next_hkvt(next, next);
         if(ret == ARM_CFSTORE_DRIVER_ERROR_KEY_NOT_FOUND) {
             CFSTORE_TP(CFSTORE_TP_FIND, "%s:No more KVs found\n", __func__);
-            break;
+            return ret;
         }
     }
     return ARM_DRIVER_OK;
@@ -3073,17 +3089,23 @@ out2:
 
         key_len = CFSTORE_KEY_NAME_MAX_LENGTH+1;
         memset(key_name, 0, CFSTORE_KEY_NAME_MAX_LENGTH+1);
+
+        cfstore_file_destroy(cfstore_file_get(previous));
+
+        /* check hkvt is valid before trying to retrieve name*/
+        if(!cfstore_hkvt_is_valid(&hkvt_next, ctx->area_0_tail)){
+            goto out1;
+        }
         if(cfstore_get_key_name_ex(&hkvt_next, key_name, &key_len) < ARM_DRIVER_OK){
             /* either no more entries or error but either way, return */
             CFSTORE_TP(CFSTORE_TP_FIND, "%s:debug: cfstore_get_key_name_ex failed or no more kvs.\n", __func__);
             goto out1;
         }
-        cfstore_file_destroy(cfstore_file_get(previous));
         /* now get hkvt_next again based on the name to overcome the fact that the hkvt
          * may be invalid due to the possible deletion of the previous KV.x */
         if(cfstore_find_ex(key_name, NULL, &hkvt_next) < ARM_DRIVER_OK){
             /* either no more entries or error but either way, return */
-            CFSTORE_TP(CFSTORE_TP_FIND, "%s:find failed key_name=%s ret=%" PRId32 ".\n", __func__, key_name, ret);
+            CFSTORE_TP(CFSTORE_TP_FIND, "%s:find failed key_name=%s ret=%d.\n", __func__, key_name, (int) ret);
             goto out1;
         }
         cfstore_hkvt_dump(&hkvt_next, __func__);
@@ -3228,7 +3250,7 @@ static int32_t cfstore_create(const char* key_name, ARM_CFSTORE_SIZE value_len, 
      * Hence, find if key_name pre-exists before validating kdesc */
     ret = cfstore_find_ex(key_name, NULL, &hkvt);
     if(ret < ARM_DRIVER_OK && ret != ARM_CFSTORE_DRIVER_ERROR_KEY_NOT_FOUND){
-        CFSTORE_ERRLOG("%s:CFSTORE find() returned error (%" PRId32 ")\n", __func__, ret);
+        CFSTORE_ERRLOG("%s:CFSTORE find() returned error (%d)\n", __func__, (int) ret);
         goto out1;
     }
 
@@ -3709,7 +3731,7 @@ static int32_t cfstore_flush(void)
     }
     ret = cfstore_flash_flush(ctx);
     if(ret < ARM_DRIVER_OK) {
-        CFSTORE_ERRLOG("%s:Error: cfstore_flash_flush() returned error (ret=%" PRId32 ").\n", __func__, ret);
+        CFSTORE_ERRLOG("%s:Error: cfstore_flash_flush() returned error (ret=%d).\n", __func__, (int) ret);
         goto out0;
     }
 out0:
@@ -3738,7 +3760,9 @@ static int32_t cfstore_initialise(ARM_CFSTORE_CALLBACK callback, void* client_co
         ctx->init_ref_count++;
         /* initially there is no memory allocated for the area */
         CFSTORE_INIT_LIST_HEAD(&ctx->file_list);
-        cfstore_critical_section_init(&ctx->rw_area0_lock);
+        /* This is not required here are the lock is statically initialised to 0
+         *  cfstore_critical_section_init(&ctx->rw_area0_lock);
+         */
         ctx->area_0_head = NULL;
         ctx->area_0_tail = NULL;
 
@@ -3776,9 +3800,9 @@ static int32_t cfstore_initialise(ARM_CFSTORE_CALLBACK callback, void* client_co
         ctx->init_ref_count++;
         ret = ARM_DRIVER_OK;
     }
+out0:
     /* if not initialised already, fsm now in the initing state so safe to come out of CS */
     cfstore_critical_section_unlock(&ctx->rw_area0_lock, __func__);
-out0:
     CFSTORE_FENTRYLOG("%s:exiting: callback=%p, client_context=%p, ref_count=%d\n", __func__, callback, client_context, (int) ctx->init_ref_count);
     return ret;
 }
@@ -3810,11 +3834,11 @@ static int32_t cfstore_uninitialise(void)
     }
     if(ctx->init_ref_count > 0) {
         ctx->init_ref_count--;
-        CFSTORE_TP(CFSTORE_TP_INIT, "%s:Debug: decemented init_ref_count (%" PRId32 ").\n", __func__, ctx->init_ref_count);
+        CFSTORE_TP(CFSTORE_TP_INIT, "%s:Debug: decemented init_ref_count (%d).\n", __func__, (int) ctx->init_ref_count);
     }
     if(ctx->init_ref_count == 0)
     {
-        CFSTORE_TP(CFSTORE_TP_INIT, "%s:Debug: init_ref_count == 0 (%" PRId32 ") so uninitialising.\n", __func__, ctx->init_ref_count);
+        CFSTORE_TP(CFSTORE_TP_INIT, "%s:Debug: init_ref_count == 0 (%d) so uninitialising.\n", __func__, (int) ctx->init_ref_count);
         /* check file list is empty and if not, free the items */
         if(ctx->file_list.next != ctx->file_list.prev)
         {

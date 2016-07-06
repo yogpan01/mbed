@@ -17,65 +17,7 @@
  *
  * Test cases to add and delete KVs in the CFSTORE.
  */
-#if defined __MBED__ && ! defined TOOLCHAIN_GCC_ARM
-
-
-#include "mbed-drivers/mbed.h"
-#include "cfstore_config.h"
-#include "Driver_Common.h"
-#include "cfstore_debug.h"
-#include "cfstore_test.h"
-#include "configuration_store.h"
-#include "utest/utest.h"
-#include "unity/unity.h"
-#include "greentea-client/test_env.h"
-#ifdef YOTTA_CFG_CFSTORE_UVISOR
-#include "uvisor-lib/uvisor-lib.h"
-#include "cfstore_uvisor.h"
-#endif /* YOTTA_CFG_CFSTORE_UVISOR */
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <inttypes.h>
-
-using namespace utest::v1;
-
-static control_t cfstore_example4_test_00(const size_t call_count)
-{
-    (void) call_count;
-    printf("Not implemented for ARM toolchain\n");
-    return CaseNext;
-}
-
-
-utest::v1::status_t greentea_setup(const size_t number_of_cases)
-{
-    GREENTEA_SETUP(100, "default_auto");
-    return greentea_test_setup_handler(number_of_cases);
-}
-
-Case cases[] = {
-           /*          1         2         3         4         5         6        7  */
-           /* 1234567890123456789012345678901234567890123456789012345678901234567890 */
-        Case("EXAMPLE4_test_00", cfstore_example4_test_00),
-};
-
-
-/* Declare your test specification with a custom setup handler */
-Specification specification(greentea_setup, cases);
-
-int main()
-{
-    return !Harness::run(specification);
-}
-
-
-
-#else
-
-
-#include "mbed-drivers/mbed.h"
+#include "mbed.h"
 #include "cfstore_config.h"
 #include "cfstore_test.h"
 #include "cfstore_debug.h"
@@ -120,14 +62,6 @@ static char cfstore_example4_utest_msg_g[CFSTORE_UTEST_MSG_BUF_SIZE];
 
 ARM_CFSTORE_DRIVER *gCfStoreDriver = &cfstore_driver;
 
-static const PvKeyValue_t testDataKeyValue[] = {
-	{ "com.arm.mbed.spv.assets.dtls", "This Is my DTLS Secret" },
-	{ "com.arm.mbed.spv.assets.asset1.payload", "The Rolling Stone" },
-	{ "com.arm.mbed.spv.assets.asset2.payload", "Grumpy old man" },
-	{ "com.arm.mbed.spv.assets.asset3.payload", "Delete this asset payload" },
-};
-
-
 static control_t cfstore_example4_test_00(const size_t call_count)
 {
     int32_t ret = ARM_DRIVER_ERROR;
@@ -151,6 +85,17 @@ static control_t cfstore_example4_test_00(const size_t call_count)
 }
 
 
+/* used for sync mode build only */
+#if defined STORAGE_DRIVER_CONFIG_HARDWARE_MTD_ASYNC_OPS && STORAGE_DRIVER_CONFIG_HARDWARE_MTD_ASYNC_OPS==0
+
+static const PvKeyValue_t testDataKeyValue[] = {
+    { "com.arm.mbed.spv.assets.dtls", "This Is my DTLS Secret" },
+    { "com.arm.mbed.spv.assets.asset1.payload", "The Rolling Stone" },
+    { "com.arm.mbed.spv.assets.asset2.payload", "Grumpy old man" },
+    { "com.arm.mbed.spv.assets.asset3.payload", "Delete this asset payload" },
+};
+
+
 static int32_t CreateKeyValueStore(
 	const char *keyName,
 	const char *data,
@@ -163,29 +108,28 @@ static int32_t CreateKeyValueStore(
 
 	valueLength = *dataLength;
 	cfsStatus = gCfStoreDriver->Create(keyName, valueLength, keyDesc, hkey);
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_example4_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: Create() failed (cfsStatus=%" PRId32 ")\n", __func__, cfsStatus);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_example4_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: Create() failed (cfsStatus=%d)\n", __func__, (int) cfsStatus);
     TEST_ASSERT_MESSAGE(cfsStatus >= ARM_DRIVER_OK, cfstore_example4_utest_msg_g);
 
 	valueLength = *dataLength;
 	cfsStatus = gCfStoreDriver->Write(hkey, data, &valueLength);
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_example4_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: Write() failed (cfsStatus=%" PRId32 ")\n", __func__, cfsStatus);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_example4_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: Write() failed (cfsStatus=%d)\n", __func__, (int) cfsStatus);
     TEST_ASSERT_MESSAGE(cfsStatus >= ARM_DRIVER_OK, cfstore_example4_utest_msg_g);
     CFSTORE_TEST_UTEST_MESSAGE(cfstore_example4_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: valueLength != *dataLength\n", __func__);
     TEST_ASSERT_MESSAGE(valueLength == *dataLength, cfstore_example4_utest_msg_g);
 
 	cfsStatus = gCfStoreDriver->Close(hkey);
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_example4_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: Close() failed (cfsStatus=%" PRId32 ")\n", __func__, cfsStatus);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_example4_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: Close() failed (cfsStatus=%d)\n", __func__, (int) cfsStatus);
     TEST_ASSERT_MESSAGE(cfsStatus >= ARM_DRIVER_OK, cfstore_example4_utest_msg_g);
 
 	cfsStatus = gCfStoreDriver->Flush();
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_example4_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: Flush() failed (cfsStatus=%" PRId32 ")\n", __func__, cfsStatus);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_example4_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: Flush() failed (cfsStatus=%d)\n", __func__, (int) cfsStatus);
     TEST_ASSERT_MESSAGE(cfsStatus >= ARM_DRIVER_OK, cfstore_example4_utest_msg_g);
 
     return ARM_DRIVER_OK;
 }
 
 
-// main test.
 static control_t cfstore_example4_test_01(const size_t call_count)
 {
 	int32_t cfsStatus = ARM_DRIVER_ERROR;
@@ -201,37 +145,38 @@ static control_t cfstore_example4_test_01(const size_t call_count)
 	valueLen = PvStrLen(testDataKeyValue[0].value);
 
 	cfsStatus = gCfStoreDriver->Initialize(NULL, NULL);
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_example4_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: Initialize() failed (cfsStatus=%" PRId32 ")\n", __func__, cfsStatus);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_example4_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: Initialize() failed (cfsStatus=%d)\n", __func__, (int) cfsStatus);
     TEST_ASSERT_MESSAGE(cfsStatus >= ARM_DRIVER_OK, cfstore_example4_utest_msg_g);
 
 	cfsStatus = CreateKeyValueStore(testDataKeyValue[0].key_name, testDataKeyValue[0].value, &valueLen, &kdesc);
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_example4_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: CreateKeyValueStore() failed (cfsStatus=%" PRId32 ")\n", __func__, cfsStatus);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_example4_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: CreateKeyValueStore() failed (cfsStatus=%d)\n", __func__, (int) cfsStatus);
     TEST_ASSERT_MESSAGE(cfsStatus >= ARM_DRIVER_OK, cfstore_example4_utest_msg_g);
 
 	PvMemSet(&flags, 0, sizeof(flags));
 
 	cfsStatus = gCfStoreDriver->Open(testDataKeyValue[0].key_name, flags, hkey);
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_example4_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: Open() failed (cfsStatus=%" PRId32 ")\n", __func__, cfsStatus);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_example4_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: Open() failed (cfsStatus=%d)\n", __func__, (int) cfsStatus);
     TEST_ASSERT_MESSAGE(cfsStatus >= ARM_DRIVER_OK, cfstore_example4_utest_msg_g);
 
 	cfsStatus = gCfStoreDriver->Delete(hkey);
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_example4_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: Delete() failed (cfsStatus=%" PRId32 ")\n", __func__, cfsStatus);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_example4_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: Delete() failed (cfsStatus=%d)\n", __func__, (int) cfsStatus);
     TEST_ASSERT_MESSAGE(cfsStatus >= ARM_DRIVER_OK, cfstore_example4_utest_msg_g);
 
 	cfsStatus = gCfStoreDriver->Close(hkey);
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_example4_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: Close() failed (cfsStatus=%" PRId32 ")\n", __func__, cfsStatus);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_example4_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: Close() failed (cfsStatus=%d)\n", __func__, (int) cfsStatus);
     TEST_ASSERT_MESSAGE(cfsStatus >= ARM_DRIVER_OK, cfstore_example4_utest_msg_g);
 
 	cfsStatus = gCfStoreDriver->Flush();
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_example4_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: Flush() failed (cfsStatus=%" PRId32 ")\n", __func__, cfsStatus);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_example4_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: Flush() failed (cfsStatus=%d)\n", __func__, (int) cfsStatus);
     TEST_ASSERT_MESSAGE(cfsStatus >= ARM_DRIVER_OK, cfstore_example4_utest_msg_g);
 
 	cfsStatus = gCfStoreDriver->Uninitialize();
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_example4_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: Uninitialize() failed (cfsStatus=%" PRId32 ")\n", __func__, cfsStatus);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_example4_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: Uninitialize() failed (cfsStatus=%d)\n", __func__, (int) cfsStatus);
     TEST_ASSERT_MESSAGE(cfsStatus >= ARM_DRIVER_OK, cfstore_example4_utest_msg_g);
 
 	return CaseNext;
 }
+#endif // STORAGE_DRIVER_CONFIG_HARDWARE_MTD_ASYNC_OPS
 
 
 utest::v1::status_t greentea_setup(const size_t number_of_cases)
@@ -253,22 +198,7 @@ Case cases[] = {
 /* Declare your test specification with a custom setup handler */
 Specification specification(greentea_setup, cases);
 
-#if defined CFSTORE_CONFIG_MBED_OS_VERSION && CFSTORE_CONFIG_MBED_OS_VERSION == 3
-/* mbedosV3*/
-void app_start(int argc __unused, char** argv __unused)
-{
-    /* Run the test specification */
-    Harness::run(specification);
-}
-#endif /* CFSTORE_CONFIG_MBED_OS_VERSION == 3 */
-
-#if defined CFSTORE_CONFIG_MBED_OS_VERSION && CFSTORE_CONFIG_MBED_OS_VERSION == 4
-/* mbedosV3++*/
 int main()
 {
     return !Harness::run(specification);
 }
-#endif /* CFSTORE_CONFIG_MBED_OS_VERSION == 4 */
-
-
-#endif // __MBED__ && ! defined TOOLCHAIN_GCC_ARM

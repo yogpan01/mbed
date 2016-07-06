@@ -90,6 +90,7 @@ extern uint32_t cfstore_optLogTracepoint_g;
 #define CFSTORE_TP_VERBOSE1     (1<<12)
 #define CFSTORE_TP_VERBOSE2     (1<<13)
 #define CFSTORE_TP_VERBOSE3     (1<<14)
+#define CFSTORE_TP_CALLBACK     (1<<15)
 #define CFSTORE_TP_FENTRY       (1<<31)
 
 #define CFSTORE_TP(_tp, _fmt, ...)                                              \

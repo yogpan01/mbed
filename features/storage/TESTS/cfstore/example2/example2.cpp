@@ -32,65 +32,7 @@
  * - flash sync mode i.e. with caps.asynchronous_ops == false
  * - flash async mode i.e. with caps.asynchronous_ops == true
  */
-#if defined __MBED__ && ! defined TOOLCHAIN_GCC_ARM
-
-
-#include "mbed-drivers/mbed.h"
-#include "cfstore_config.h"
-#include "Driver_Common.h"
-#include "cfstore_debug.h"
-#include "cfstore_test.h"
-#include "configuration_store.h"
-#include "utest/utest.h"
-#include "unity/unity.h"
-#include "greentea-client/test_env.h"
-#ifdef YOTTA_CFG_CFSTORE_UVISOR
-#include "uvisor-lib/uvisor-lib.h"
-#include "cfstore_uvisor.h"
-#endif /* YOTTA_CFG_CFSTORE_UVISOR */
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <inttypes.h>
-
-using namespace utest::v1;
-
-static control_t cfstore_example2_test_00(const size_t call_count)
-{
-    (void) call_count;
-    printf("Not implemented for ARM toolchain\n");
-    return CaseNext;
-}
-
-
-utest::v1::status_t greentea_setup(const size_t number_of_cases)
-{
-    GREENTEA_SETUP(100, "default_auto");
-    return greentea_test_setup_handler(number_of_cases);
-}
-
-Case cases[] = {
-           /*          1         2         3         4         5         6        7  */
-           /* 1234567890123456789012345678901234567890123456789012345678901234567890 */
-        Case("EXAMPLE2_test_00", cfstore_example2_test_00),
-};
-
-
-/* Declare your test specification with a custom setup handler */
-Specification specification(greentea_setup, cases);
-
-int main()
-{
-    return !Harness::run(specification);
-}
-
-
-
-#else
-
-
-#include "mbed-drivers/mbed.h"
+#include "mbed.h"
 #include "cfstore_config.h"
 #include "cfstore_test.h"
 #include "cfstore_debug.h"
@@ -154,13 +96,13 @@ static int32_t CreateKeyValueStore(
      *      - if caps.asynchronous_ops == false then the operation has completed synchronously and no bytes were written.
      * - if cfsStatus < ARM_DRIVER_OK then an error has occurred
 	 */
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_example2_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: failed to write key (rc=%" PRId32 ")\n", __func__, cfsStatus);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_example2_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: failed to write key (rc=%d)\n", __func__, (int) cfsStatus);
     TEST_ASSERT_MESSAGE(cfsStatus >= ARM_DRIVER_OK, cfstore_example2_utest_msg_g);
 
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_example2_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%sError: valueLength(%" PRId32 ") does not match the expected dataLength(%" PRId32 ")\n", __func__, (int32_t) valueLength, (int32_t) *dataLength);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_example2_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%sError: valueLength(%d) does not match the expected dataLength(%d)\n", __func__, (int) valueLength, (int) *dataLength);
     TEST_ASSERT_MESSAGE(*dataLength == valueLength, cfstore_example2_utest_msg_g);
 
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_example2_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%sError: Write() return value cfsStatus(%" PRId32 ") does not match the expected dataLength(%" PRId32 ")\n", __func__, cfsStatus, (int32_t) *dataLength);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_example2_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%sError: Write() return value cfsStatus(%d) does not match the expected dataLength(%d)\n", __func__, (int) cfsStatus, (int) *dataLength);
     TEST_ASSERT_MESSAGE((int32_t) *dataLength == cfsStatus, cfstore_example2_utest_msg_g);
 
 	drv->Close(hkey);
@@ -203,9 +145,9 @@ static control_t cfstore_example2_test_01(const size_t call_count)
 	valueLen = PvStrLen(value) + 1;
 
 	cfsStatus = drv->Initialize(NULL, NULL);
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_example2_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: Initialize() failed (cfsStatus=%" PRId32 ")\n", __func__, cfsStatus);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_example2_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: Initialize() failed (cfsStatus=%d)\n", __func__, (int) cfsStatus);
     TEST_ASSERT_MESSAGE(cfsStatus >= ARM_DRIVER_OK, cfstore_example2_utest_msg_g);
-	
+
 	cfsStatus = CreateKeyValueStore(key, value, &valueLen, &kdesc);
 
 	/* CreateKeyValueStore() returns the number of characters written, which can vary between 0 and the supplied arg valueLen
@@ -213,7 +155,7 @@ static control_t cfstore_example2_test_01(const size_t call_count)
 	 * - in the case that this example is compiled for flash mode async, CreateKeyValueStore() on success may return a value 0 to valueLen
 	 *   with async notification of the completed transaction.
 	 */
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_example2_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%sError: valueLen(%" PRId32 ") does not match the expected returned value from CreateKeyValueStore(%" PRId32 ")\n", __func__, (int32_t) valueLen, cfsStatus);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_example2_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%sError: valueLen(%d) does not match the expected returned value from CreateKeyValueStore(%d)\n", __func__, (int) valueLen, (int) cfsStatus);
     TEST_ASSERT_MESSAGE(cfsStatus == (int32_t) valueLen, cfstore_example2_utest_msg_g);
 
 	// Read key-value pair with 'Write' permission
@@ -226,10 +168,10 @@ static control_t cfstore_example2_test_01(const size_t call_count)
 	len = sizeof(readBuf);
 	cfsStatus = drv->Read(hkey, readBuf, &len);
     /* Read() returns the number of characters read, which can vary between 0 and the size of the value blob, and the size of the supplied buffer  */
-	CFSTORE_TEST_UTEST_MESSAGE(cfstore_example2_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: Read() returned value (%" PRId32 ") does not match the created length of the value blob(%" PRId32 ")\n", __func__, cfsStatus, (int32_t) PvStrLen(value) + 1);
+	CFSTORE_TEST_UTEST_MESSAGE(cfstore_example2_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: Read() returned value (%d) does not match the created length of the value blob(%d)\n", __func__, (int) cfsStatus, (int) PvStrLen(value) + 1);
     TEST_ASSERT_MESSAGE(cfsStatus == (int32_t) (PvStrLen(value) + 1), cfstore_example2_utest_msg_g);
 
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_example2_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: Read() returned len value (%" PRId32 ") does not match the created length of the value blob(%" PRId32 ")\n", __func__, (int32_t) len, (int32_t) PvStrLen(value) + 1);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_example2_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: Read() returned len value (%d) does not match the created length of the value blob(%d)\n", __func__, (int) len, (int) PvStrLen(value) + 1);
     TEST_ASSERT_MESSAGE(len == PvStrLen(value) + 1, cfstore_example2_utest_msg_g);
 
     /* Note:
@@ -243,9 +185,9 @@ static control_t cfstore_example2_test_01(const size_t call_count)
     /* note len set to sizeof(newDataToWrite) which includes the terminating null of the string */
 	len = sizeof(newDataToWrite);
 	cfsStatus = drv->Write(hkey, newDataToWrite, &len);
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_example2_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: Write() returned cfsStatus value (%" PRId32 ") does not match the length of new data written(%" PRId32 ")\n", __func__, cfsStatus, (int32_t) sizeof(newDataToWrite));
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_example2_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: Write() returned cfsStatus value (%d) does not match the length of new data written(%d)\n", __func__, (int) cfsStatus, (int)  sizeof(newDataToWrite));
     TEST_ASSERT_MESSAGE(cfsStatus == (int32_t) sizeof(newDataToWrite), cfstore_example2_utest_msg_g);
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_example2_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: Write() returned len (%" PRId32 ") does not match the length of new data written(%" PRId32 ")\n", __func__, (int32_t) len, (int32_t) sizeof(newDataToWrite));
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_example2_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: Write() returned len (%d) does not match the length of new data written(%d)\n", __func__, (int) len, (int) sizeof(newDataToWrite));
     TEST_ASSERT_MESSAGE((int32_t) len == (int32_t) sizeof(newDataToWrite), cfstore_example2_utest_msg_g);
 
 	drv->Close(hkey);
@@ -258,10 +200,10 @@ static control_t cfstore_example2_test_01(const size_t call_count)
 	len = CFSTORE_KEY_NAME_MAX_LENGTH;
 	PvMemSet(readBuf, 0, len);
 	cfsStatus = drv->Read(updatedKeyH, readBuf, &len);
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_example2_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: Read() returned value (%" PRId32 ") does not match the created length of the value blob(%" PRId32 ")\n", __func__, cfsStatus, (int32_t) PvStrLen(value) + 1);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_example2_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: Read() returned value (%d) does not match the created length of the value blob(%d)\n", __func__, (int) cfsStatus, (int) PvStrLen(value) + 1);
     TEST_ASSERT_MESSAGE(cfsStatus == (int32_t) (PvStrLen(value) + 1), cfstore_example2_utest_msg_g);
 
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_example2_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: Read() returned len value (%" PRId32 ") does not match the created length of the value blob(%" PRId32 ")\n", __func__, (int32_t) len, (int32_t) PvStrLen(value) + 1);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_example2_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: Read() returned len value (%d) does not match the created length of the value blob(%d)\n", __func__, (int) len, (int) PvStrLen(value) + 1);
     TEST_ASSERT_MESSAGE(len == (PvStrLen(value) + 1), cfstore_example2_utest_msg_g);
 
     /* convert any terminating nulls to '=' */
@@ -277,14 +219,13 @@ static control_t cfstore_example2_test_01(const size_t call_count)
     CFSTORE_DBGLOG("Success: New value of KV (%s) value blob (with nulls converted to '=') = (%s)\n", key, readBuf);
 
 	drv->Close(updatedKeyH);
-	
+
 	cfsStatus = drv->Uninitialize();
-    CFSTORE_TEST_UTEST_MESSAGE(cfstore_example2_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: Uninitialize() failed (cfsStatus=%" PRId32 ")\n", __func__, cfsStatus);
+    CFSTORE_TEST_UTEST_MESSAGE(cfstore_example2_utest_msg_g, CFSTORE_UTEST_MSG_BUF_SIZE, "%s:Error: Uninitialize() failed (cfsStatus=%d)\n", __func__, (int) cfsStatus);
     TEST_ASSERT_MESSAGE(cfsStatus >= ARM_DRIVER_OK, cfstore_example2_utest_msg_g);
 
 	return CaseNext;
 }
-
 
 
 utest::v1::status_t greentea_setup(const size_t number_of_cases)
@@ -304,22 +245,7 @@ Case cases[] = {
 /* Declare your test specification with a custom setup handler */
 Specification specification(greentea_setup, cases);
 
-#if defined CFSTORE_CONFIG_MBED_OS_VERSION && CFSTORE_CONFIG_MBED_OS_VERSION == 3
-/* mbedosV3*/
-void app_start(int argc __unused, char** argv __unused)
-{
-    /* Run the test specification */
-    Harness::run(specification);
-}
-#endif /* CFSTORE_CONFIG_MBED_OS_VERSION == 3 */
-
-#if defined CFSTORE_CONFIG_MBED_OS_VERSION && CFSTORE_CONFIG_MBED_OS_VERSION == 4
-/* mbedosV3++*/
 int main()
 {
     return !Harness::run(specification);
 }
-#endif /* CFSTORE_CONFIG_MBED_OS_VERSION == 4 */
-
-
-#endif // __MBED__ && ! defined TOOLCHAIN_GCC_ARM

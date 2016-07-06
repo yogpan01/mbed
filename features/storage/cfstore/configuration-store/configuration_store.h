@@ -134,7 +134,6 @@ typedef struct _ARM_CFSTORE_STATUS {
 #endif
 
 #if defined __MBED__ && defined TOOLCHAIN_ARM
-/* todo: implment this macro */
 #define CFSTORE_HANDLE_SWAP(__a_HaNdLe, __b_HaNdLe)         \
     do{ ARM_CFSTORE_HANDLE __temp_HaNdLe = (__a_HaNdLe);    \
         __dmb(0xf);                                         \
@@ -142,6 +141,15 @@ typedef struct _ARM_CFSTORE_STATUS {
         __dmb(0xf);                                         \
         (__b_HaNdLe) = (__temp_HaNdLe);                     \
         __dmb(0xf);                                         \
+    }while(0)
+#endif
+
+#if defined __MBED__ && defined TOOLCHAIN_IAR
+/* note, memory barriers may be required in the following implementation */
+#define CFSTORE_HANDLE_SWAP(__a_HaNdLe, __b_HaNdLe)         \
+    do{ ARM_CFSTORE_HANDLE __temp_HaNdLe = (__a_HaNdLe);    \
+        (__a_HaNdLe) = (__b_HaNdLe);                        \
+        (__b_HaNdLe) = (__temp_HaNdLe);                     \
     }while(0)
 #endif
 

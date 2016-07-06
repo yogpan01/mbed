@@ -71,6 +71,7 @@ int32_t cfstore_test_create(const char* key_name, const char* data, size_t* len,
 int32_t cfstore_test_create_table(const cfstore_kv_data_t* table);
 int32_t cfstore_test_delete(const char* key_name);
 int32_t cfstore_test_delete_all(void);
+int32_t cfstore_test_dump(void);
 int32_t cfstore_test_init_1(void);
 int32_t cfstore_test_kv_is_found(const char* key_name, bool* bfound);
 int32_t cfstore_test_kv_name_gen(char* name, const size_t len);
