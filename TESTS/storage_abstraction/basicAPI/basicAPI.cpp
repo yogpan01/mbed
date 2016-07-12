@@ -112,8 +112,6 @@ void test_getInfo()
 
     TEST_ASSERT_EQUAL(0, info.security.reserved1);
     TEST_ASSERT_EQUAL(0, info.security.reserved2);
-    TEST_ASSERT_EQUAL(1, info.erased_value);
-    TEST_ASSERT((info.program_cycles == ARM_STORAGE_PROGRAM_CYCLES_INFINITE) || (info.program_cycles > 0));
     TEST_ASSERT(info.total_storage > 0);
 }
 
