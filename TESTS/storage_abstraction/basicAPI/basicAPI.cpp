@@ -373,6 +373,7 @@ control_t test_programDataUsingProgramUnit(const size_t call_count)
         return (call_count < REPEAT_INSTANCES) ? CaseTimeout(200) + CaseRepeatAll: CaseTimeout(200);
     } else {
         TEST_ASSERT_EQUAL(firstBlock.attributes.erase_unit, rc);
+        verifyBytePattern(addr, firstBlock.attributes.erase_unit, (uint8_t)0xFF);
 
         static const uint32_t BYTE_PATTERN = 0xAA551122;
         size_t sizeofData = info.program_unit;
