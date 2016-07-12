@@ -159,6 +159,7 @@ control_t test_resetAndInitialize(const size_t call_count)
             if (rc == JOURNAL_STATUS_OK) {
                 return CaseTimeout(200);
             }
+            TEST_ASSERT_EQUAL(1, rc); /* synchronous completion of initialize() is expected to return 1 */
 
             /* fall through */
         case NEEDS_VERIFICATION_FOLLOWING_INITIALIZE:
@@ -324,6 +325,7 @@ control_t test_initializeAfterLogSmallAndCommit(const size_t call_count)
             printf("asynchronous_ops for init\n");
             return CaseTimeout(200) + CaseRepeatAll;
         }
+        TEST_ASSERT_EQUAL(1, rc); /* synchronous completion of initialize() is expected to return 1 */
     }
 
     FlashJournal_Info_t info;
@@ -440,6 +442,7 @@ control_t test_initializeAfterLogLargeAndCommit(const size_t call_count)
             printf("test_initializeAfterLogLargeAndCommit: asynchronous_ops for init\n");
             return CaseTimeout(200) + CaseRepeatAll;
         }
+        TEST_ASSERT_EQUAL(1, rc); /* synchronous completion of initialize() is expected to return 1 */
     }
 
     FlashJournal_Info_t info;
