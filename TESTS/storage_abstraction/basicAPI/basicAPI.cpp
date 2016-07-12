@@ -869,6 +869,11 @@ control_t test_programDataWithMultipleProgramUnits(const size_t call_count)
             return CaseNext; /* first block isn't large enough for the intended operation */
         }
 
+        if (rangeNeededForTest > BUFFER_SIZE) {
+            printf("buffer (%u) not large enough; rangeNeededForTest: %u\n", BUFFER_SIZE, rangeNeededForTest);
+            return CaseNext;
+        }
+
         // printf("erasing %u bytes at addr %lu\n", rangeNeededForTest, (uint32_t)firstBlock.addr);
         rc = drv->Erase(firstBlock.addr, rangeNeededForTest);
         TEST_ASSERT(rc >= 0);
@@ -877,8 +882,6 @@ control_t test_programDataWithMultipleProgramUnits(const size_t call_count)
             return CaseTimeout(500);
         } else {
             TEST_ASSERT_EQUAL(rangeNeededForTest, rc);
-
-            TEST_ASSERT((N_UNITS * info.program_unit) <= BUFFER_SIZE);
 
             /* setup byte pattern in buffer */
             static const uint32_t BYTE_PATTERN = 0xABCDEF00;
