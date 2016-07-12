@@ -785,7 +785,7 @@ control_t test_failedSmallWriteFollowedByPaddedWrite(const size_t call_count)
             TEST_ASSERT_EQUAL(1, drv->GetCapabilities().asynchronous_ops);
             return CaseTimeout(500) + CaseRepeatAll;
         }
-        TEST_ASSERT_EQUAL((SIZEOF_WRITE + 1), rc);
+        TEST_ASSERT_EQUAL(1, rc);
         callbackStatus = rc;
         return CaseRepeatAll;
     } else {
