@@ -228,16 +228,11 @@ control_t test_logSmallWithoutCommit(const size_t call_count)
             /* initialize */
             rc = FlashJournal_initialize(&journal, drv, &FLASH_JOURNAL_STRATEGY_SEQUENTIAL, callbackHandler);
             TEST_ASSERT(rc >= ARM_DRIVER_OK);
-            if (drv->GetCapabilities().asynchronous_ops) {
-                if (rc == ARM_DRIVER_OK) {
-                    return CaseTimeout(200) + CaseRepeatAll;
-                } else {
-                    return CaseRepeatAll;
-                }
-            } else {
-                return CaseRepeatAll;
+            if (rc == ARM_DRIVER_OK) {
+                return CaseTimeout(200) + CaseRepeatAll;
             }
-            break;
+            TEST_ASSERT_EQUAL(1, rc); /* synchronous completion of initialize() is expected to return 1 */
+            return CaseRepeatAll;
 
         case 2:
             /* log without commit */
@@ -346,15 +341,11 @@ control_t test_logLargeWithoutCommit(const size_t call_count)
         case 1:
             rc = FlashJournal_initialize(&journal, drv, &FLASH_JOURNAL_STRATEGY_SEQUENTIAL, callbackHandler);
             TEST_ASSERT(rc >= ARM_DRIVER_OK);
-            if (drv->GetCapabilities().asynchronous_ops) {
-                if (rc == ARM_DRIVER_OK) {
-                    return CaseTimeout(200) + CaseRepeatAll;
-                } else {
-                    return CaseRepeatAll;
-                }
-            } else {
-                return CaseRepeatAll;
+            if (rc == ARM_DRIVER_OK) {
+                return CaseTimeout(200) + CaseRepeatAll;
             }
+            TEST_ASSERT_EQUAL(1, rc); /* synchronous completion of initialize() is expected to return 1 */
+            return CaseRepeatAll;
 
         case 2:
             memset(buffer, 0xAA, SIZEOF_LARGE_WRITE);
