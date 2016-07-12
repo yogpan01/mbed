@@ -298,7 +298,6 @@ void programDataCompleteCallback(int32_t status, ARM_STORAGE_OPERATION operation
     if (operation == ARM_STORAGE_OPERATION_ERASE) {
         // printf("programming %u bytes at address %lu with pattern 0x%" PRIx32 "\n", sizeofData, (uint32_t)addr, BYTE_PATTERN);
         status = drv->ProgramData(addr, buffer, sizeofData);
-
         if (status < ARM_DRIVER_OK) {
             return; /* failure. this will trigger a timeout and cause test failure. */
         }
@@ -415,7 +414,6 @@ void programDataOptimalCompleteCallback(int32_t status, ARM_STORAGE_OPERATION op
         printf("programming %u bytes at address %lu with pattern 0x%x\n", sizeofData, (uint32_t)addr, BYTE_PATTERN);
 #endif
         status = drv->ProgramData(addr, buffer, sizeofData);
-
         if (status < ARM_DRIVER_OK) {
             return; /* failure. this will trigger a timeout and cause test failure. */
         }
