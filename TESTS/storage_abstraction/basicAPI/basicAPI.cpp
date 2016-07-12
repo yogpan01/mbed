@@ -372,7 +372,7 @@ control_t test_programDataUsingProgramUnit(const size_t call_count)
         TEST_ASSERT_EQUAL(1, capabilities.asynchronous_ops);
         return (call_count < REPEAT_INSTANCES) ? CaseTimeout(200) + CaseRepeatAll: CaseTimeout(200);
     } else {
-        TEST_ASSERT(rc > 0);
+        TEST_ASSERT_EQUAL(firstBlock.attributes.erase_unit, rc);
 
         /* program the sector at addr */
         // printf("programming %u bytes at address %lu with pattern 0x%" PRIx32 "\n", sizeofData, (uint32_t)addr, BYTE_PATTERN);
@@ -496,7 +496,7 @@ control_t test_programDataUsingOptimalProgramUnit(const size_t call_count)
             TEST_ASSERT_EQUAL(1, capabilities.asynchronous_ops);
             return (call_count < REPEAT_INSTANCES) ? CaseTimeout(200) + CaseRepeatAll: CaseTimeout(200);
         } else {
-            TEST_ASSERT(rc > 0);
+            TEST_ASSERT_EQUAL(sizeofData, rc);
 
             printf("verifying programmed sector at addr %lu\n", (uint32_t)addr);
             verifyBytePattern(addr, sizeofData, BYTE_PATTERN);
