@@ -159,6 +159,7 @@ control_t test_resetAndInitialize(const size_t call_count)
             if (rc == JOURNAL_STATUS_OK) {
                 return CaseTimeout(200);
             }
+            TEST_ASSERT_EQUAL(1, rc); /* synchronous completion of initialize() is expected to return 1 */
 
             /* fall through */
         case NEEDS_VERIFICATION_FOLLOWING_INITIALIZE:
@@ -227,16 +228,11 @@ control_t test_logSmallWithoutCommit(const size_t call_count)
             /* initialize */
             rc = FlashJournal_initialize(&journal, drv, &FLASH_JOURNAL_STRATEGY_SEQUENTIAL, callbackHandler);
             TEST_ASSERT(rc >= ARM_DRIVER_OK);
-            if (drv->GetCapabilities().asynchronous_ops) {
-                if (rc == ARM_DRIVER_OK) {
-                    return CaseTimeout(200) + CaseRepeatAll;
-                } else {
-                    return CaseRepeatAll;
-                }
-            } else {
-                return CaseRepeatAll;
+            if (rc == ARM_DRIVER_OK) {
+                return CaseTimeout(200) + CaseRepeatAll;
             }
-            break;
+            TEST_ASSERT_EQUAL(1, rc); /* synchronous completion of initialize() is expected to return 1 */
+            return CaseRepeatAll;
 
         case 2:
             /* log without commit */
@@ -324,6 +320,7 @@ control_t test_initializeAfterLogSmallAndCommit(const size_t call_count)
             printf("asynchronous_ops for init\n");
             return CaseTimeout(200) + CaseRepeatAll;
         }
+        TEST_ASSERT_EQUAL(1, rc); /* synchronous completion of initialize() is expected to return 1 */
     }
 
     FlashJournal_Info_t info;
@@ -344,15 +341,11 @@ control_t test_logLargeWithoutCommit(const size_t call_count)
         case 1:
             rc = FlashJournal_initialize(&journal, drv, &FLASH_JOURNAL_STRATEGY_SEQUENTIAL, callbackHandler);
             TEST_ASSERT(rc >= ARM_DRIVER_OK);
-            if (drv->GetCapabilities().asynchronous_ops) {
-                if (rc == ARM_DRIVER_OK) {
-                    return CaseTimeout(200) + CaseRepeatAll;
-                } else {
-                    return CaseRepeatAll;
-                }
-            } else {
-                return CaseRepeatAll;
+            if (rc == ARM_DRIVER_OK) {
+                return CaseTimeout(200) + CaseRepeatAll;
             }
+            TEST_ASSERT_EQUAL(1, rc); /* synchronous completion of initialize() is expected to return 1 */
+            return CaseRepeatAll;
 
         case 2:
             memset(buffer, 0xAA, SIZEOF_LARGE_WRITE);
@@ -440,6 +433,7 @@ control_t test_initializeAfterLogLargeAndCommit(const size_t call_count)
             printf("test_initializeAfterLogLargeAndCommit: asynchronous_ops for init\n");
             return CaseTimeout(200) + CaseRepeatAll;
         }
+        TEST_ASSERT_EQUAL(1, rc); /* synchronous completion of initialize() is expected to return 1 */
     }
 
     FlashJournal_Info_t info;
@@ -791,7 +785,7 @@ control_t test_failedSmallWriteFollowedByPaddedWrite(const size_t call_count)
             TEST_ASSERT_EQUAL(1, drv->GetCapabilities().asynchronous_ops);
             return CaseTimeout(500) + CaseRepeatAll;
         }
-        TEST_ASSERT_EQUAL((SIZEOF_WRITE + 1), rc);
+        TEST_ASSERT_EQUAL(1, rc);
         callbackStatus = rc;
         return CaseRepeatAll;
     } else {

@@ -112,8 +112,6 @@ void test_getInfo()
 
     TEST_ASSERT_EQUAL(0, info.security.reserved1);
     TEST_ASSERT_EQUAL(0, info.security.reserved2);
-    TEST_ASSERT_EQUAL(1, info.erased_value);
-    TEST_ASSERT((info.program_cycles == ARM_STORAGE_PROGRAM_CYCLES_INFINITE) || (info.program_cycles > 0));
     TEST_ASSERT(info.total_storage > 0);
 }
 
@@ -299,8 +297,15 @@ void programDataCompleteCallback(int32_t status, ARM_STORAGE_OPERATION operation
     TEST_ASSERT((operation == ARM_STORAGE_OPERATION_ERASE) || (operation == ARM_STORAGE_OPERATION_PROGRAM_DATA));
     if (operation == ARM_STORAGE_OPERATION_ERASE) {
         // printf("programming %u bytes at address %lu with pattern 0x%" PRIx32 "\n", sizeofData, (uint32_t)addr, BYTE_PATTERN);
-        status = drv->ProgramData(addr, buffer, sizeofData);
 
+        size_t sizeofData = info.program_unit;
+        TEST_ASSERT(BUFFER_SIZE >= sizeofData);
+        TEST_ASSERT((sizeofData % sizeof(uint32_t)) == 0);
+        for (size_t index = 0; index < sizeofData / sizeof(uint32_t); index++) {
+            ((uint32_t *)buffer)[index] = BYTE_PATTERN;
+        }
+
+        status = drv->ProgramData(addr, buffer, sizeofData);
         if (status < ARM_DRIVER_OK) {
             return; /* failure. this will trigger a timeout and cause test failure. */
         }
@@ -348,13 +353,6 @@ control_t test_programDataUsingProgramUnit(const size_t call_count)
 
     /* initialize the buffer to hold the pattern. */
     ARM_STORAGE_CAPABILITIES capabilities = drv->GetCapabilities();
-    static const uint32_t BYTE_PATTERN = 0xAA551122;
-    size_t sizeofData = info.program_unit;
-    TEST_ASSERT(BUFFER_SIZE >= sizeofData);
-    TEST_ASSERT((sizeofData % sizeof(uint32_t)) == 0);
-    for (size_t index = 0; index < sizeofData / sizeof(uint32_t); index++) {
-        ((uint32_t *)buffer)[index] = BYTE_PATTERN;
-    }
 
     /* Update the completion callback to 'programDataCompleteCallback'. */
     if (call_count == 2) {
@@ -374,7 +372,16 @@ control_t test_programDataUsingProgramUnit(const size_t call_count)
         TEST_ASSERT_EQUAL(1, capabilities.asynchronous_ops);
         return (call_count < REPEAT_INSTANCES) ? CaseTimeout(200) + CaseRepeatAll: CaseTimeout(200);
     } else {
-        TEST_ASSERT(rc > 0);
+        TEST_ASSERT_EQUAL(firstBlock.attributes.erase_unit, rc);
+        verifyBytePattern(addr, firstBlock.attributes.erase_unit, (uint8_t)0xFF);
+
+        static const uint32_t BYTE_PATTERN = 0xAA551122;
+        size_t sizeofData = info.program_unit;
+        TEST_ASSERT(BUFFER_SIZE >= sizeofData);
+        TEST_ASSERT((sizeofData % sizeof(uint32_t)) == 0);
+        for (size_t index = 0; index < sizeofData / sizeof(uint32_t); index++) {
+            ((uint32_t *)buffer)[index] = BYTE_PATTERN;
+        }
 
         /* program the sector at addr */
         // printf("programming %u bytes at address %lu with pattern 0x%" PRIx32 "\n", sizeofData, (uint32_t)addr, BYTE_PATTERN);
@@ -416,8 +423,11 @@ void programDataOptimalCompleteCallback(int32_t status, ARM_STORAGE_OPERATION op
 #ifndef __CC_ARM
         printf("programming %u bytes at address %lu with pattern 0x%x\n", sizeofData, (uint32_t)addr, BYTE_PATTERN);
 #endif
-        status = drv->ProgramData(addr, buffer, sizeofData);
+        size_t sizeofData = info.optimal_program_unit;
+        TEST_ASSERT(BUFFER_SIZE >= sizeofData);
+        memset(buffer, BYTE_PATTERN, sizeofData);
 
+        status = drv->ProgramData(addr, buffer, sizeofData);
         if (status < ARM_DRIVER_OK) {
             return; /* failure. this will trigger a timeout and cause test failure. */
         }
@@ -465,10 +475,6 @@ control_t test_programDataUsingOptimalProgramUnit(const size_t call_count)
 
     /* initialize the buffer to hold the pattern. */
     ARM_STORAGE_CAPABILITIES capabilities = drv->GetCapabilities();
-    static const uint8_t BYTE_PATTERN = 0xAA;
-    size_t sizeofData = info.optimal_program_unit;
-    TEST_ASSERT(BUFFER_SIZE >= sizeofData);
-    memset(buffer, BYTE_PATTERN, sizeofData);
 
     /* Update the completion callback to 'programDataCompleteCallback'. */
     if (call_count == 2) {
@@ -491,6 +497,11 @@ control_t test_programDataUsingOptimalProgramUnit(const size_t call_count)
         TEST_ASSERT_EQUAL(firstBlock.attributes.erase_unit, rc);
         verifyBytePattern(addr, firstBlock.attributes.erase_unit, (uint8_t)0xFF);
 
+        static const uint8_t BYTE_PATTERN = 0xAA;
+        size_t sizeofData = info.optimal_program_unit;
+        TEST_ASSERT(BUFFER_SIZE >= sizeofData);
+        memset(buffer, BYTE_PATTERN, sizeofData);
+
         /* program the sector at addr */
         printf("programming %u bytes at address %lu with pattern 0x%x\n", sizeofData, (uint32_t)addr, BYTE_PATTERN);
         rc = drv->ProgramData((uint32_t)addr, buffer, sizeofData);
@@ -498,7 +509,7 @@ control_t test_programDataUsingOptimalProgramUnit(const size_t call_count)
             TEST_ASSERT_EQUAL(1, capabilities.asynchronous_ops);
             return (call_count < REPEAT_INSTANCES) ? CaseTimeout(200) + CaseRepeatAll: CaseTimeout(200);
         } else {
-            TEST_ASSERT(rc > 0);
+            TEST_ASSERT_EQUAL(sizeofData, rc);
 
             printf("verifying programmed sector at addr %lu\n", (uint32_t)addr);
             verifyBytePattern(addr, sizeofData, BYTE_PATTERN);
@@ -858,6 +869,11 @@ control_t test_programDataWithMultipleProgramUnits(const size_t call_count)
             return CaseNext; /* first block isn't large enough for the intended operation */
         }
 
+        if (rangeNeededForTest > BUFFER_SIZE) {
+            printf("buffer (%u) not large enough; rangeNeededForTest: %u\n", BUFFER_SIZE, rangeNeededForTest);
+            return CaseNext;
+        }
+
         // printf("erasing %u bytes at addr %lu\n", rangeNeededForTest, (uint32_t)firstBlock.addr);
         rc = drv->Erase(firstBlock.addr, rangeNeededForTest);
         TEST_ASSERT(rc >= 0);
@@ -866,8 +882,6 @@ control_t test_programDataWithMultipleProgramUnits(const size_t call_count)
             return CaseTimeout(500);
         } else {
             TEST_ASSERT_EQUAL(rangeNeededForTest, rc);
-
-            TEST_ASSERT((N_UNITS * info.program_unit) <= BUFFER_SIZE);
 
             /* setup byte pattern in buffer */
             static const uint32_t BYTE_PATTERN = 0xABCDEF00;
