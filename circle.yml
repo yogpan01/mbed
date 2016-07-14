@@ -8,7 +8,9 @@ test:
 dependencies:
     pre:
         - git fetch origin master
-        - git merge origin/master
+        - git checkout -b pr-branch
+        - git checkout origin/master
+        - git merge pr-branch --no-commit
         - cd ../ && ls
         - cd ../ && git clone https://github.com/ARMmbed/mbed-cli.git
         - cd ../mbed-cli && sudo pip install -e .
