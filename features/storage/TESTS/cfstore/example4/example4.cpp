@@ -1,5 +1,4 @@
-/** @file example3.cpp
- *
+/*
  * mbed Microcontroller Library
  * Copyright (c) 2006-2016 ARM Limited
  *
@@ -15,8 +14,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Test cases to add and delete KVs in the CFSTORE.
  */
+
+/** @file example4.cpp Test case to demonstrate a subset of the API functions each work correctly.
+ *
+ * Test case created from Issue 10 code supplied by Motti Gondabi. The code:
+ * - creates a KV
+ * - writes the KV
+ * - closes the KV
+ * - flushes the KV
+ * - opens the KV.
+ * - deletes the KV.
+ * - flushes empty configuration store.
+ *
+ * The test case makes sure that the implementation can flush an empty configuration store
+ * without causing errors. This has only been possible since flash-journal-strategy-sequential
+ * v0.4.0.
+ */
+
 #include "mbed.h"
 #include "cfstore_config.h"
 #include "cfstore_test.h"
@@ -40,27 +55,14 @@ using namespace utest::v1;
 
 static char cfstore_example4_utest_msg_g[CFSTORE_UTEST_MSG_BUF_SIZE];
 
-/* Notes
- * Test case created from Issue 10 code supplied by Motti Gondabi. The code:
- * - creates a KV
- * - writes the KV
- * - closes the KV
- * - flushes the KV
- * - opens the KV.
- * - deletes the KV.
- * - flushes empty configuration store.
- *
- * The test case makes sure that the implementation can flush an empty configuration store
- * without causing errors. This has only been possible since flash-journal-strategy-sequential
- * v0.4.0.
- */
-
 /* defines */
+/// @cond CFSTORE_DOXYGEN_DISABLE
 #define PvMemSet memset
 #define PvStrLen strlen
 #define PvKeyValue_t cfstore_kv_data_t
 
 ARM_CFSTORE_DRIVER *gCfStoreDriver = &cfstore_driver;
+/// @endcond
 
 static control_t cfstore_example4_test_00(const size_t call_count)
 {
@@ -179,6 +181,7 @@ static control_t cfstore_example4_test_01(const size_t call_count)
 #endif // STORAGE_DRIVER_CONFIG_HARDWARE_MTD_ASYNC_OPS
 
 
+/// @cond CFSTORE_DOXYGEN_DISABLE
 utest::v1::status_t greentea_setup(const size_t number_of_cases)
 {
     GREENTEA_SETUP(400, "default_auto");
@@ -202,3 +205,4 @@ int main()
 {
     return !Harness::run(specification);
 }
+/// @endcond

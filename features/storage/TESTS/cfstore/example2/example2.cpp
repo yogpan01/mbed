@@ -1,5 +1,4 @@
-/** @file example2.cpp
- *
+/*
  * mbed Microcontroller Library
  * Copyright (c) 2006-2016 ARM Limited
  *
@@ -17,8 +16,9 @@
  *
  */
 
-
-/* Overview of test:
+/** @file example2.cpp Test case to demonstrate a subset of the API functions each work correctly.
+ *
+ *  Overview of test:
  * - initialises cfstore
  * - creates a key called "com.arm.mbed.spv.assets.asset2.payload" with value blob length = 15 = strlen("Grumpy old man")+1.
  * - writes the data for the key to be "Grumpy old man"
@@ -56,8 +56,10 @@ using namespace utest::v1;
 static char cfstore_example2_utest_msg_g[CFSTORE_UTEST_MSG_BUF_SIZE];
 
 /* defines */
+/// @cond CFSTORE_DOXYGEN_DISABLE
 #define PvMemSet memset
 #define PvStrLen strlen
+/// @endcond
 
 /* report whether built/configured for flash sync or async mode */
 static control_t cfstore_example2_test_00(const size_t call_count)
@@ -71,7 +73,11 @@ static control_t cfstore_example2_test_00(const size_t call_count)
     return CaseNext;
 }
 
+/// @cond CFSTORE_DOXYGEN_DISABLE
 ARM_CFSTORE_DRIVER *drv = &cfstore_driver;
+/// @endcond
+
+
 static int32_t CreateKeyValueStore(
 	const char *keyName,
 	const char *data,
@@ -228,6 +234,7 @@ static control_t cfstore_example2_test_01(const size_t call_count)
 }
 
 
+/// @cond CFSTORE_DOXYGEN_DISABLE
 utest::v1::status_t greentea_setup(const size_t number_of_cases)
 {
     GREENTEA_SETUP(400, "default_auto");
@@ -249,3 +256,4 @@ int main()
 {
     return !Harness::run(specification);
 }
+/// @endcond

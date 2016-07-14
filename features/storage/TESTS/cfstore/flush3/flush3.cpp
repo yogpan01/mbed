@@ -1,5 +1,4 @@
-/** @file del.cpp
- *
+/*
  * mbed Microcontroller Library
  * Copyright (c) 2006-2016 ARM Limited
  *
@@ -14,6 +13,12 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ */
+
+/** @file flush3.cpp Test cases to flush KVs in the CFSTORE using the drv->Flush() interface.
+ *
+ * Please consult the documentation under the test-case functions for
+ * a description of the individual test case.
  *
  * CFSTORE flash-journal sync mode test for github issue Heap Corruption by Jenia Kogan:
  *      https://github.com/ARMmbed/configuration-store/issues/17
@@ -23,6 +28,7 @@
  * flash, so that CFSTORE was re-initialised, the old attribute was read back from
  * flash into the store. This has now been fixed.
  */
+
 #include "mbed.h"
 #include "cfstore_config.h"
 #include "Driver_Common.h"
@@ -57,11 +63,13 @@ CFSTORE_UVISOR_MAIN_ACL(cfstore_acl_uvisor_box_flush3_g);
 UVISOR_SET_MODE_ACL(UVISOR_ENABLED, cfstore_acl_uvisor_box_flush3_g);
 #endif /* YOTTA_CFG_CFSTORE_UVISOR */
 
+/// @cond CFSTORE_DOXYGEN_DISABLE
 #ifdef CFSTORE_DEBUG
 #define CFSTORE_FLUSH3_GREENTEA_TIMEOUT_S     1000
 #else
 #define CFSTORE_FLUSH3_GREENTEA_TIMEOUT_S     100
 #endif
+/// @endcond
 
 /* used for sync mode build only */
 #if defined STORAGE_DRIVER_CONFIG_HARDWARE_MTD_ASYNC_OPS && STORAGE_DRIVER_CONFIG_HARDWARE_MTD_ASYNC_OPS==0
@@ -848,6 +856,7 @@ static control_t cfstore_flush3_test_00(const size_t call_count)
     return CaseNext;
 }
 
+/// @cond CFSTORE_DOXYGEN_DISABLE
 utest::v1::status_t greentea_setup(const size_t number_of_cases)
 {
     GREENTEA_SETUP(CFSTORE_FLUSH3_GREENTEA_TIMEOUT_S, "default_auto");
@@ -873,4 +882,5 @@ int main()
 {
     return !Harness::run(specification);
 }
+/// @cond
 

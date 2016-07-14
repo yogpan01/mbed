@@ -1,5 +1,4 @@
-/** @file add_del.cpp
- *
+/*
  * mbed Microcontroller Library
  * Copyright (c) 2006-2016 ARM Limited
  *
@@ -15,8 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Test cases to add and delete KVs in the CFSTORE.
  */
+
+/** @file add_del.cpp Test cases to add and delete key-value pairs in the CFSTORE.
+ *
+ * Please consult the documentation under the test-case functions for
+ * a description of the individual test case.
+ */
+
 #include "mbed.h"
 #include "cfstore_config.h"
 #include "Driver_Common.h"
@@ -70,15 +75,16 @@ static control_t cfstore_add_del_test_00(const size_t call_count)
     return CaseNext;
 }
 
-/**
- * @brief   test to open() a pre-existing key and try to write it, which should fail
+/** @brief
  *
- * @return  status code
- *          ARM_DRIVER_OK, the test passed successfully
- *          ret < ARM_DRIVER_OK, the test failed with the return code
- *          supplying more details
+ * This test case does the following:
+ * - creates a KV.
+ * - deletes the KV.
+ * - checks that the deleted KV can no longer be found in the store.
+ *
+ * @return on success returns CaseNext to continue to next test case, otherwise will assert on errors.
  */
-static control_t cfstore_add_del_test_01_end(const size_t call_count)
+control_t cfstore_add_del_test_01_end(const size_t call_count)
 {
     bool bfound = false;
     int32_t ret = ARM_DRIVER_ERROR;
@@ -135,19 +141,17 @@ static cfstore_kv_data_t cfstore_add_del_test_08_data[] = {
 };
 
 
-/**
- * @brief   test to add small number of KVs e.g. 3, and then delete them.
- *          basic delete test:
- *          - add key(s)
- *          - delete key(s)
- *          - make sure can't find key in cfstore
+/** @brief
  *
- * @return  status code
- *          ARM_DRIVER_OK, the test passed successfully
- *          ret < ARM_DRIVER_OK, the test failed with the return code
- *          supplying more details
+ * This test case adds a small number of KVs (~3), and then delete them.
+ * - add key(s)
+ * - delete key(s)
+ * - make sure can't find key in cfstore
+ * - loop over the above a number of times.
+ *
+ * @return on success returns CaseNext to continue to next test case, otherwise will assert on errors.
  */
-static control_t cfstore_add_del_test_02_end(const size_t call_count)
+control_t cfstore_add_del_test_02_end(const size_t call_count)
 {
     bool bResult = true;   // We'll do "&=" cumulative checking.
     int32_t ret = ARM_DRIVER_ERROR;
@@ -196,15 +200,14 @@ static control_t cfstore_add_del_test_02_end(const size_t call_count)
     return CaseNext;
 }
 
-/**
- * @brief   add ~50 KVs, and then delete entries at the start, middle and end of sram area
+/** @brief
  *
- * @return  status code
- *          ARM_DRIVER_OK, the test passed successfully
- *          ret < ARM_DRIVER_OK, the test failed with the return code
- *          supplying more details
+ * This test case adds ~50 KVs, and then delete entries at the start,
+ * middle and end of list.
+ *
+ * @return on success returns CaseNext to continue to next test case, otherwise will assert on errors.
  */
-static control_t cfstore_add_del_test_03_end(const size_t call_count)
+control_t cfstore_add_del_test_03_end(const size_t call_count)
 {
     bool bfound = false;
     int32_t ret = ARM_DRIVER_ERROR;
@@ -257,15 +260,14 @@ static control_t cfstore_add_del_test_03_end(const size_t call_count)
 }
 
 
-/**
- * @brief   test as per test_09 but using delete_all() on all init_1 data.
+/** @brief
  *
- * @return  status code
- *          ARM_DRIVER_OK, the test passed successfully
- *          ret < ARM_DRIVER_OK, the test failed with the return code
- *          supplying more details
+ * This test case is as per test_03 but using delete_all() on all init_1 data.
+ * This test case is yet to be implemented.
+ *
+ * @return on success returns CaseNext to continue to next test case, otherwise will assert on errors.
  */
-static control_t cfstore_add_del_test_04(const size_t call_count)
+control_t cfstore_add_del_test_04(const size_t call_count)
 {
     (void) call_count;
     /*todo: implement test */
@@ -276,6 +278,7 @@ static control_t cfstore_add_del_test_04(const size_t call_count)
 }
 
 
+/// @cond CFSTORE_DOXYGEN_DISABLE
 utest::v1::status_t greentea_setup(const size_t number_of_cases)
 {
     GREENTEA_SETUP(100, "default_auto");
@@ -303,3 +306,4 @@ int main()
 {
     return !Harness::run(specification);
 }
+/// @endcond

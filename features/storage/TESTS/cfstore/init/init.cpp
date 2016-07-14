@@ -1,5 +1,4 @@
-/** @file init.cpp
- *
+/*
  * mbed Microcontroller Library
  * Copyright (c) 2006-2016 ARM Limited
  *
@@ -14,9 +13,14 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
- * Test cases to test initialization/uninitialization code.
  */
+
+/** @file init.cpp Test cases to test CFSTORE initialization/uninitialization code.
+ *
+ * Please consult the documentation under the test-case functions for
+ * a description of the individual test case.
+ */
+
 #include "mbed.h"
 #include "Driver_Common.h"
 #include "cfstore_config.h"
@@ -39,6 +43,7 @@ using namespace utest::v1;
 
 static char cfstore_init_utest_msg_g[CFSTORE_UTEST_MSG_BUF_SIZE];
 
+/// @cond CFSTORE_DOXYGEN_DISABLE
 typedef struct cfstore_init_ctx_t
 {
     ARM_CFSTORE_CAPABILITIES caps;
@@ -47,6 +52,7 @@ typedef struct cfstore_init_ctx_t
 static cfstore_init_ctx_t cfstore_init_ctx_g;
 extern ARM_CFSTORE_DRIVER cfstore_driver;
 ARM_CFSTORE_DRIVER *cfstore_drv = &cfstore_driver;
+/// @endcond
 
 
 /* report whether built/configured for flash sync or async mode */
@@ -112,6 +118,7 @@ static control_t cfstore_init_app_start(const size_t call_count)
 
 /* when built as Configuration-Store example, include greentea support otherwise omit */
 
+/// @cond CFSTORE_DOXYGEN_DISABLE
 utest::v1::status_t greentea_setup(const size_t number_of_cases)
 {
     GREENTEA_SETUP(100, "default_auto");
@@ -133,6 +140,7 @@ int main()
 {
     return !Harness::run(specification);
 }
+/// @endcond
 
 
 #else   // YOTTA_CONFIGURATION_STORE_INIT_VERSION_STRING

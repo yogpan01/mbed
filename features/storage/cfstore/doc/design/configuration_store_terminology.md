@@ -2,33 +2,33 @@
 
 ## Defintion of Terms
 
-###### ACL 
+### ACL 
 Access Control List
 
-###### CFSTORE 
+### CFSTORE 
 Configuration Store
 
-###### FOTA 
+### FOTA 
 Firmware Over The Air
 
-###### HLD 
+### HLD 
 High Level Design
 
-###### KV
+### KV
 Key Value Pair, also represented as {key, value}
 
-###### Key Name Prefix
+### Key Name Prefix
 This is indentical tot he Security Name Prefix. 
 
-###### LLD
+### LLD
 Low Level Design
 
-###### NV
+### NV
 Non Volatile
 
-###### OS 
+### OS 
 Operating System
 
-###### Security Name Prefix
+### Security Name Prefix
 If a client security context (uvisor box) needs to create CFSTORE KV entries, it must have a (mandatory) key name prefix. This is called the security_prefix_name.
  

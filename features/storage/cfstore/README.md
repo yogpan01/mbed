@@ -23,7 +23,7 @@ Current support includes:
 - NV-backed support. Integration with Flash Abstraction (Flash Journal Strategy Sequential) for persistent storage on the Freescale FRDM K64F target.
 - SRAM backed support. 
 - More than 60 test cases with >80% test coverage.
-- Comprehensive documentation.
+- Comprehensive documentation including doxygen generated API and test case documentation. 
 
 
 # Configuration-Store Software Architecture
@@ -79,34 +79,25 @@ If you would like to make a contribution to CFSTORE, please provide feedback/des
 
 # Further Reading
 
-* The [CFSTORE Getting Started Guide.][CFSTORE_GETSTART]
-* The [CFSTORE Client Example 3 for flash-journal synchronous mode only (simpler code).][CFSTORE_EX3]
-* The [CFSTORE Client Example 1 for both flash-journal modes (asynchronous and synchronous)(more complicated but versatile code).][CFSTORE_EX1]
-* The CFSTORE Product Requirements were not written.
+* The [CFSTORE Getting Started Guide][CFSTORE_GETSTART] including examples.
 * The [CFSTORE Engineering Requirements.][CFSTORE_ENGREQ]
 * The [CFSTORE High Level Design Document.][CFSTORE_HLD]
 * The [CFSTORE Low Level Design Document.][CFSTORE_LLD]
-* The [CFSTORE Project Test Plan describing the test methodologies and test cases.][CFSTORE_TESTPLAN]
-* The [CFSTORE Release Notes.][CFSTORE_RELEASES]
-* The [CFSTORE Jenkins Build and Test Results.][CFSTORE_JENKINS_BT]
-* The [CFSTORE Jenkins Code Coverage Results.][CFSTORE_JENKINS_COV]
-* The [CFSTORE Project Plan describing milestones and roadmap.][CFSTORE_PROJPLAN]
-* The [CFSTORE Project Plan Excel Spreadsheet with estimates and milestones][CFSTORE_PROJXLS]
-* The [Flash Abstraction Layer.][FAL]
+* The [CFSTORE Test Plan.][CFSTORE_TESTPLAN]
+* The [CFSTORE Application Note 0001: NXP Freescale Kinetis FRDM-K64F Flash Memory Usage.][CFSTORE_APPNOTE_0001]
+* The [CFSTORE Releases][CFSTORE_RELEASE] provides requirements tracking by listing the requirements supported for a CFSTORE version.
 
 
-[CFSTORE_ENGREQ]: https://github.com/ARMmbed/configuration-store/blob/master/doc/design/configuration_store_requirements.md
-[CFSTORE_EX1]: https://github.com/ARMmbed/configuration-store-example1
-[CFSTORE_EX3]: https://github.com/ARMmbed/configuration-store-example3
-[CFSTORE_GETSTART]: https://github.com/ARMmbed/configuration-store/blob/master/doc/design/configuration_store_getting_started.md
-[CFSTORE_HLD]: https://github.com/ARMmbed/configuration-store/blob/master/doc/design/configuration_store_hld.md
-[CFSTORE_JENKINS_BT]: http://e108747.cambridge.arm.com:8080/job/configuration-store-nightly-build-and-test/
-[CFSTORE_JENKINS_COV]: http://e108747.cambridge.arm.com:8080/job/configuration-store-test-coverage/
-[CFSTORE_LLD]: https://github.com/ARMmbed/configuration-store/blob/master/doc/design/configuration_store_lld.md
-[CFSTORE_TESTPLAN]: https://github.com/ARMmbed/configuration-store/blob/master/doc/design/configuration_store_test_plan.md
-[CFSTORE_PRODREQ]: https://github.com/ARMmbed/configuration-store/blob/master/doc/design/configuration_store_product_requirements.md
-[CFSTORE_PROJPLAN]:https://github.com/ARMmbed/configuration-store/blob/master/doc/design/configuration_store_project.md
-[CFSTORE_PROJXLS]:https://github.com/ARMmbed/configuration-store/blob/master/doc/project/ARM_MBED_TN_0020_cfstore_project_plan.xlsx
-[CFSTORE_RELEASES]:https://github.com/ARMmbed/configuration-store/blob/master/doc/project/configuration_store_releases.md
-[CFSTORE_TERM]: https://github.com/ARMmbed/configuration-store/blob/master/doc/design/configuration_store_terminology.md
-[FAL]: https://github.com/ARMmbed/flash-abstraction
+20160714
+
+[CFSTORE_ENGREQ]: doc/design/configuration_store_requirements.md
+[CFSTORE_EX1]: ../TESTS/cfstore/example1/example1.cpp
+[CFSTORE_EX3]: ../TESTS/cfstore/example3/example3.cpp
+[CFSTORE_GETSTART]: doc/design/configuration_store_getting_started.md
+[CFSTORE_HLD]: doc/design/configuration_store_hld.md
+[CFSTORE_LLD]: doc/design/configuration_store_lld.md
+[CFSTORE_TESTPLAN]: doc/design/configuration_store_test_plan.md
+[CFSTORE_PROJPLAN]:doc/design/configuration_store_project.md
+[CFSTORE_RELEASE]: doc/project/configuration_store_releases.md
+[CFSTORE_TERM]: doc/design/configuration_store_terminology.md
+[CFSTORE_APPNOTE_0001]: doc/design/configuration_store_app_note_0001.md

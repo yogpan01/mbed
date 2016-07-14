@@ -1,5 +1,4 @@
-/** @file EXAMPLE5.cpp
- *
+/*
  * mbed Microcontroller Library
  * Copyright (c) 2006-2016 ARM Limited
  *
@@ -19,10 +18,13 @@
  */
 
 
-/* Notes
- * =====
+/** @file example5.cpp
  *
- * The flash-journal synchronous mode example test does the following CFSTORE operations:
+ * Test case to demonstrate each API function works correctly.
+ *
+ * \par Example 5 Notes
+ *
+ * This flash-journal synchronous mode example test does the following CFSTORE operations:
  * - initialises
  * - creates a key-value pair (KV).
  * - writes the data for the KV
@@ -44,21 +46,28 @@
  * The test leaves the flash in the same state as at the beginning of the test so
  * it can be run a second time on the device without flashing, and the test should
  * still work.
+ *
+ * \par How to Build Example5 as a Stand-alone Application
+ *
+ * This example can be build as a stand-alone application as follows:
+ * - Create a new mbed application using the `mbed new .` command.
+ * - Copy this file example5.cpp from the to the top level application directory and rename the file to main.cpp.
+ * - Build the application with `mbed compile -v -m <target> -t <toolchain> -DCFSTORE_EXAMPLE5_APP` e.g. `mbed compile -v -m K64F -t GCC_ARM -DCFSTORE_EXAMPLE5_APP`.
  */
 
 #include "mbed.h"
 #include "Driver_Common.h"
 
-#ifndef YOTTA_CONFIGURATION_STORE_EXAMPLE5_VERSION_STRING
+#ifndef CFSTORE_EXAMPLE5_APP
 /* when built as Configuration-Store example, include greentea support otherwise omit */
 #include "utest/utest.h"
 #include "unity/unity.h"
 #include "greentea-client/test_env.h"
-#else   // YOTTA_CONFIGURATION_STORE_EXAMPLE5_VERSION_STRING
+#else   // CFSTORE_EXAMPLE5_APP
 /* map utest types for building as stand alone example */
 #define control_t   void
 #define CaseNext
-#endif  // YOTTA_CONFIGURATION_STORE_EXAMPLE5_VERSION_STRING
+#endif  // CFSTORE_EXAMPLE5_APP
 
 #include "cfstore_config.h"
 #include "configuration_store.h"
@@ -74,11 +83,12 @@
 #include <string.h>
 
 
-#ifndef YOTTA_CONFIGURATION_STORE_EXAMPLE5_VERSION_STRING
+#ifndef CFSTORE_EXAMPLE5_APP
 using namespace utest::v1;
 #endif
 
 
+/// @cond CFSTORE_DOXYGEN_DISABLE
 #define CFSTORE_EX5_TEST_ASSERT(Expr)                       if (!(Expr)) { printf("%s:%u: assertion failure\r\n", __FUNCTION__, __LINE__); while (1) ;}
 #define CFSTORE_EX5_TEST_ASSERT_EQUAL(expected, actual)     if ((expected) != (actual)) {printf("%s:%u: assertion failure\r\n", __FUNCTION__, __LINE__); while (1) ;}
 #define CFSTORE_EX5_TEST_ASSERT_NOT_EQUAL(expected, actual) if ((expected) == (actual)) {printf("%s:%u: assertion failure\r\n", __FUNCTION__, __LINE__); while (1) ;}
@@ -125,6 +135,7 @@ const char* cfstore_ex5_kv_name = "basement.medicine.pavement.government.trenchc
 const char* cfstore_ex5_kv_value = "TheRollingStone";
 #define CFSTORE_EX5_RSEEK_OFFSET    10   /* offset to S of Stone */
 
+/// @cond CFSTORE_DOXYGEN_DISABLE
 typedef struct cfstore_EXAMPLE5_ctx_t
 {
     ARM_CFSTORE_CAPABILITIES caps;
@@ -143,6 +154,7 @@ static cfstore_EXAMPLE5_ctx_t cfstore_EXAMPLE5_ctx_g;
 
 extern ARM_CFSTORE_DRIVER cfstore_driver;
 ARM_CFSTORE_DRIVER *cfstore_drv = &cfstore_driver;
+/// @endcond
 
 
 /* @brief   test startup code to reset flash
@@ -278,9 +290,10 @@ static control_t cfstore_EXAMPLE5_app_start(const size_t call_count)
     return CaseNext;
 }
 
-#ifndef YOTTA_CONFIGURATION_STORE_EXAMPLE5_VERSION_STRING
+#ifndef CFSTORE_EXAMPLE5_APP
 /* when built as Configuration-Store example, include greentea support otherwise omit */
 
+/// @cond CFSTORE_DOXYGEN_DISABLE
 utest::v1::status_t greentea_setup(const size_t number_of_cases)
 {
     GREENTEA_SETUP(100, "default_auto");
@@ -302,9 +315,10 @@ int main()
 {
     return !Harness::run(specification);
 }
+/// @endcond
 
 
-#else   // YOTTA_CONFIGURATION_STORE_EXAMPLE5_VERSION_STRING
+#else   // CFSTORE_EXAMPLE5_APP
 
 // stand alone Configuration-Store-Example
 void app_start(int argc __unused, char** argv __unused)
@@ -313,4 +327,4 @@ void app_start(int argc __unused, char** argv __unused)
 }
 
 
-#endif // YOTTA_CONFIGURATION_STORE_EXAMPLE5_VERSION_STRING
+#endif // CFSTORE_EXAMPLE5_APP

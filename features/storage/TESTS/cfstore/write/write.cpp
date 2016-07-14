@@ -1,5 +1,4 @@
-/** @file write.cpp
- *
+/*
  * mbed Microcontroller Library
  * Copyright (c) 2006-2016 ARM Limited
  *
@@ -14,9 +13,14 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
- * Test cases to write KVs in the CFSTORE using the drv->Write() API call.
  */
+
+/** @file write.cpp Test cases to write KVs in the CFSTORE using the drv->Write() API call.
+ *
+ * Please consult the documentation under the test-case functions for
+ * a description of the individual test case.
+ */
+
 #include "mbed.h"
 #include "cfstore_config.h"
 #include "cfstore_test.h"
@@ -73,13 +77,9 @@ static control_t cfstore_write_test_00(const size_t call_count)
 /** @brief  test to write many times to an open KV to test data is appended
  *          sequentially to the end of the value blob
  *
- *
- * @return  status code
- *          ARM_DRIVER_OK, the test passed successfully
- *          ret < ARM_DRIVER_OK, the test failed with the return code
- *          supplying more details
+ * @return on success returns CaseNext to continue to next test case, otherwise will assert on errors.
  */
-static control_t cfstore_write_test_01_end(const size_t call_count)
+control_t cfstore_write_test_01_end(const size_t call_count)
 {
     char read_buf[CFSTORE_KEY_NAME_MAX_LENGTH+1];
     uint32_t i = 0;
@@ -138,13 +138,9 @@ static control_t cfstore_write_test_01_end(const size_t call_count)
 
 /** @brief  test to write with a NULL buffer, which should fail gracefully
  *
- *
- * @return  status code
- *          ARM_DRIVER_OK, the test passed successfully
- *          ret < ARM_DRIVER_OK, the test failed with the return code
- *          supplying more details
+ * @return on success returns CaseNext to continue to next test case, otherwise will assert on errors.
  */
-static control_t cfstore_write_test_02_end(const size_t call_count)
+control_t cfstore_write_test_02_end(const size_t call_count)
 {
     int32_t ret = ARM_DRIVER_ERROR;
     ARM_CFSTORE_SIZE len = 0;
@@ -169,6 +165,7 @@ static control_t cfstore_write_test_02_end(const size_t call_count)
 }
 
 
+/// @cond CFSTORE_DOXYGEN_DISABLE
 utest::v1::status_t greentea_setup(const size_t number_of_cases)
 {
     GREENTEA_SETUP(200, "default_auto");
@@ -193,3 +190,4 @@ int main()
 {
     return !Harness::run(specification);
 }
+/// @endcond

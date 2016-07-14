@@ -1,6 +1,4 @@
 /*
- * @file misc.cpp
- *
  * mbed Microcontroller Library
  * Copyright (c) 2006-2016 ARM Limited
  *
@@ -15,9 +13,14 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
- * Test cases for miscellaneious API drv->Xxx() functions.
  */
+
+/** @file misc.cpp Test cases for miscellaneous API drv->Xxx() functions.
+ *
+ * Please consult the documentation under the test-case functions for
+ * a description of the individual test case.
+ */
+
 #include "mbed.h"
 #include "cfstore_config.h"
 #include "cfstore_test.h"
@@ -68,12 +71,9 @@ static control_t cfstore_misc_test_00(const size_t call_count)
 
 /** @brief  basic PowerControl() test
  *
- * @return  status code
- *          ARM_DRIVER_OK, the test passed successfully
- *          ret < ARM_DRIVER_OK, the test failed with the return code
- *          supplying more details
+ * @return on success returns CaseNext to continue to next test case, otherwise will assert on errors.
  */
-static control_t cfstore_misc_test_00_start(const size_t call_count)
+control_t cfstore_misc_test_00_start(const size_t call_count)
 {
     int32_t ret = ARM_DRIVER_ERROR;
     ARM_CFSTORE_DRIVER* drv = &cfstore_driver;
@@ -123,12 +123,8 @@ static control_t cfstore_misc_test_00_end(const size_t call_count)
 
 /** @brief  basic GetVersion() test
  *
- * @return  status code
- *          ARM_DRIVER_OK, the test passed successfully
- *          ret < ARM_DRIVER_OK, the test failed with the return code
- *          supplying more details
  */
-static control_t cfstore_misc_test_01(const size_t call_count)
+control_t cfstore_misc_test_01(const size_t call_count)
 {
     ARM_CFSTORE_DRIVER* drv = &cfstore_driver;
     ARM_DRIVER_VERSION version;
@@ -160,12 +156,9 @@ static cfstore_kv_data_t cfstore_misc_test_03_kv_data[] = {
 
 /** @brief  basic GetKeyName() test
  *
- * @return  status code
- *          ARM_DRIVER_OK, the test passed successfully
- *          ret < ARM_DRIVER_OK, the test failed with the return code
- *          supplying more details
+ * @return on success returns CaseNext to continue to next test case, otherwise will assert on errors.
  */
-static control_t cfstore_misc_test_02_end(const size_t call_count)
+control_t cfstore_misc_test_02_end(const size_t call_count)
 {
     uint8_t key_name_len = 0;
     char key_name_buf[CFSTORE_KEY_NAME_MAX_LENGTH+1];
@@ -217,12 +210,9 @@ static control_t cfstore_misc_test_02_end(const size_t call_count)
 
 /** @brief  basic GetValueLen() test
  *
- * @return  status code
- *          ARM_DRIVER_OK, the test passed successfully
- *          ret < ARM_DRIVER_OK, the test failed with the return code
- *          supplying more details
+ * @return on success returns CaseNext to continue to next test case, otherwise will assert on errors.
  */
-static control_t cfstore_misc_test_03_end(const size_t call_count)
+control_t cfstore_misc_test_03_end(const size_t call_count)
 {
     int32_t ret = ARM_DRIVER_ERROR;
     ARM_CFSTORE_SIZE len = 0;
@@ -269,12 +259,9 @@ static control_t cfstore_misc_test_03_end(const size_t call_count)
 
 /** @brief  basic GetStatus() test
  *
- * @return  status code
- *          ARM_DRIVER_OK, the test passed successfully
- *          ret < ARM_DRIVER_OK, the test failed with the return code
- *          supplying more details
+ * @return on success returns CaseNext to continue to next test case, otherwise will assert on errors.
  */
-static control_t cfstore_misc_test_04_start(const size_t call_count)
+control_t cfstore_misc_test_04_start(const size_t call_count)
 {
     int32_t ret = ARM_DRIVER_ERROR;
     ARM_CFSTORE_STATUS status;
@@ -293,7 +280,11 @@ static control_t cfstore_misc_test_04_start(const size_t call_count)
     return CaseTimeout(CFSTORE_UTEST_DEFAULT_TIMEOUT_MS);
 }
 
-static control_t cfstore_misc_test_04_end(const size_t call_count)
+/** @brief  basic GetStatus() test
+ *
+ * @return on success returns CaseNext to continue to next test case, otherwise will assert on errors.
+ */
+control_t cfstore_misc_test_04_end(const size_t call_count)
 {
     int32_t ret = ARM_DRIVER_ERROR;
     ARM_CFSTORE_DRIVER* drv = &cfstore_driver;
@@ -316,6 +307,7 @@ static control_t cfstore_misc_test_04_end(const size_t call_count)
 }
 
 
+/// @cond CFSTORE_DOXYGEN_DISABLE
 utest::v1::status_t greentea_setup(const size_t number_of_cases)
 {
     GREENTEA_SETUP(200, "default_auto");
@@ -345,3 +337,4 @@ int main()
 {
     return !Harness::run(specification);
 }
+/// @endcond

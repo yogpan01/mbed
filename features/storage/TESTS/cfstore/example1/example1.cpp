@@ -1,5 +1,4 @@
-/** @file example1.cpp
- *
+/*
  * mbed Microcontroller Library
  * Copyright (c) 2006-2016 ARM Limited
  *
@@ -15,12 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Test cases to add and delete KVs in the CFSTORE.
  */
 
-
-/* EXAMPLE1 Notes
- * ==============
+/** @file example1.cpp Test case to demonstrates each API function works correctly.
+ *
+ * \par Example 1 Notes
  *
  * The example test does the following CFSTORE operations:
  * - initialises
@@ -43,6 +41,7 @@
  * This test is coded so as to work in the following modes:
  * - flash sync mode i.e. with caps.asynchronous_ops == false
  * - flash async mode i.e. with caps.asynchronous_ops == true
+ *
  * The dual async/sync mode support with the same code is more complicated
  * than if the implementation just supported sync mode for example. However,
  * it has the benefit of being more versatile.
@@ -51,6 +50,12 @@
  * it can be run a second time on the device without flashing, and the test should
  * still work.
  *
+ * \par How to Build Example1 as a Stand-alone Application
+ *
+ * This example can be build as a stand-alone application as follows:
+ * - Create a new mbed application using the `mbed new .` command.
+ * - Copy this file example1.cpp from the to the top level application directory and rename the file to main.cpp.
+ * - Build the application with `mbed compile -v -m <target> -t <toolchain> -DCFSTORE_EXAMPLE1_APP` e.g. `mbed compile -v -m K64F -t GCC_ARM -DCFSTORE_EXAMPLE1_APP`.
  */
 #if defined __MBED__ && ! defined TOOLCHAIN_GCC_ARM
 
@@ -110,17 +115,17 @@ int main()
 
 #include "mbed.h"
 
-#ifndef YOTTA_CONFIGURATION_STORE_EXAMPLE1_VERSION_STRING
+#ifndef CFSTORE_EXAMPLE1_APP
 /* when built as Configuration-Store example, include greentea support otherwise omit */
 #include "utest/utest.h"
 #include "unity/unity.h"
 #include "greentea-client/test_env.h"
 
-#else   // YOTTA_CONFIGURATION_STORE_EXAMPLE1_VERSION_STRING
+#else   // CFSTORE_EXAMPLE1_APP
 // map utest types for building as stand alone example
 #define control_t   void
 #define CaseNext
-#endif  // YOTTA_CONFIGURATION_STORE_EXAMPLE1_VERSION_STRING
+#endif  // CFSTORE_EXAMPLE1_APP
 
 #include "cfstore_config.h"
 #include "configuration_store.h"
@@ -139,7 +144,8 @@ int main()
 #include <stdlib.h>
 #include <string.h>
 
-#ifndef YOTTA_CONFIGURATION_STORE_EXAMPLE1_VERSION_STRING
+/// @cond CFSTORE_DOXYGEN_DISABLE
+#ifndef CFSTORE_EXAMPLE1_APP
 using namespace utest::v1;
 #endif
 
@@ -228,6 +234,7 @@ typedef enum cfstore_ex_state_t {
     CFSTORE_EX_STATE_UNINIT_DONE
 } cfstore_ex_state_t;
 
+
 typedef struct cfstore_example1_ctx_t
 {
     ARM_CFSTORE_CAPABILITIES caps;
@@ -253,11 +260,12 @@ ARM_CFSTORE_DRIVER *cfstore_drv = &cfstore_driver;
 
 /* forward declarations */
 static void cfstore_ex_fms_update(cfstore_example1_ctx_t* ctx);
+/// @endcond
 
 
 /* @brief   test startup code to reset flash
  */
-int32_t cfstore_test_startup(void)
+static int32_t cfstore_test_startup(void)
 {
     ARM_CFSTORE_CAPABILITIES caps = cfstore_driver.GetCapabilities();
     CFSTORE_EX1_LOG("INITIALIZING: caps.asynchronous_ops=%d\n", (int) caps.asynchronous_ops);
@@ -872,7 +880,7 @@ static control_t cfstore_example1_app_start(const size_t call_count)
     return CaseNext;
 }
 
-#ifndef YOTTA_CONFIGURATION_STORE_EXAMPLE1_VERSION_STRING
+#ifndef CFSTORE_EXAMPLE1_APP
 /* when built as Configuration-Store example, include greentea support otherwise omit */
 
 /* report whether built/configured for flash sync or async mode */
@@ -886,6 +894,7 @@ static control_t cfstore_example1_test_00(const size_t call_count)
     return CaseNext;
 }
 
+/// @cond CFSTORE_DOXYGEN_DISABLE
 utest::v1::status_t greentea_setup(const size_t number_of_cases)
 {
     GREENTEA_SETUP(25, "default_auto");
@@ -907,9 +916,10 @@ int main()
 {
     return !Harness::run(specification);
 }
+/// @endcond
 
 
-#else   // YOTTA_CONFIGURATION_STORE_EXAMPLE1_VERSION_STRING
+#else   // CFSTORE_EXAMPLE1_APP
 
 // stand alone Configuration-Store-Example
 void app_start(int argc __unused, char** argv __unused)
@@ -919,7 +929,7 @@ void app_start(int argc __unused, char** argv __unused)
 
 
 
-#endif // YOTTA_CONFIGURATION_STORE_EXAMPLE1_VERSION_STRING
+#endif // CFSTORE_EXAMPLE1_APP
 
 
 #endif // __MBED__ && ! defined TOOLCHAIN_GCC_ARM
