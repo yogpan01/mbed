@@ -1,5 +1,4 @@
-/** @file example3.cpp
- *
+/*
  * mbed Microcontroller Library
  * Copyright (c) 2006-2016 ARM Limited
  *
@@ -15,12 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Test cases to add and delete KVs in the CFSTORE.
  */
 
-
-/* Notes
- * =====
+/** @file example3.cpp Test case to demonstrate each API function works correctly.
+ *
+ * \par Example 3 Notes
+ *
+ * Example3 is a synchronous mode example for creating key-values in the persistent storage.
  *
  * The flash-journal synchronous mode example test does the following CFSTORE operations:
  * - initialises
@@ -46,18 +46,26 @@
  * The test leaves the flash in the same state as at the beginning of the test so
  * it can be run a second time on the device without flashing, and the test should
  * still work.
+ *
+ * \par How to Build Example3 as a Stand-alone Application
+ *
+ * This example can be build as a stand-alone application as follows:
+ * - Create a new mbed application using the `mbed new .` command.
+ * - Copy this file example3.cpp from the to the top level application directory and rename the file to main.cpp.
+ * - Build the application with `mbed compile -v -m <target> -t <toolchain> -DCFSTORE_EXAMPLE3_APP` e.g. `mbed compile -v -m K64F -t GCC_ARM -DCFSTORE_EXAMPLE3_APP`.
+ *
  */
 #include "mbed.h"
-#ifndef YOTTA_CONFIGURATION_STORE_EXAMPLE3_VERSION_STRING
+#ifndef CFSTORE_EXAMPLE3_APP
 /* when built as Configuration-Store example, include greentea support otherwise omit */
 #include "utest/utest.h"
 #include "unity/unity.h"
 #include "greentea-client/test_env.h"
-#else   // YOTTA_CONFIGURATION_STORE_EXAMPLE3_VERSION_STRING
+#else   // CFSTORE_EXAMPLE3_APP
 /* map utest types for building as stand alone example */
 #define control_t   void
 #define CaseNext
-#endif  // YOTTA_CONFIGURATION_STORE_EXAMPLE3_VERSION_STRING
+#endif  // CFSTORE_EXAMPLE3_APP
 
 #include "cfstore_config.h"
 #include "cfstore_test.h"
@@ -71,11 +79,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-#ifndef YOTTA_CONFIGURATION_STORE_EXAMPLE3_VERSION_STRING
+#ifndef CFSTORE_EXAMPLE3_APP
 using namespace utest::v1;
 #endif
 
 
+/// @cond CFSTORE_DOXYGEN_DISABLE
 #define CFSTORE_EX1_TEST_ASSERT(Expr)                       if (!(Expr)) { printf("%s:%u: assertion failure\r\n", __FUNCTION__, __LINE__); while (1) ;}
 #define CFSTORE_EX1_TEST_ASSERT_EQUAL(expected, actual)     if ((expected) != (actual)) {printf("%s:%u: assertion failure\r\n", __FUNCTION__, __LINE__); while (1) ;}
 #define CFSTORE_EX1_TEST_ASSERT_NOT_EQUAL(expected, actual) if ((expected) == (actual)) {printf("%s:%u: assertion failure\r\n", __FUNCTION__, __LINE__); while (1) ;}
@@ -140,6 +149,7 @@ static cfstore_example3_ctx_t cfstore_example3_ctx_g;
 
 extern ARM_CFSTORE_DRIVER cfstore_driver;
 ARM_CFSTORE_DRIVER *cfstore_drv = &cfstore_driver;
+/// @endcond
 
 
 static void cfstore_ex3_test_01(cfstore_example3_ctx_t* ctx)
@@ -268,7 +278,7 @@ static control_t cfstore_example3_app_start(const size_t call_count)
     return CaseNext;
 }
 
-#ifndef YOTTA_CONFIGURATION_STORE_EXAMPLE3_VERSION_STRING
+#ifndef CFSTORE_EXAMPLE3_APP
 /* when built as Configuration-Store example, include greentea support otherwise omit */
 
 /* report whether built/configured for flash sync or async mode */
@@ -282,6 +292,7 @@ static control_t cfstore_example3_test_00(const size_t call_count)
     return CaseNext;
 }
 
+/// @cond CFSTORE_DOXYGEN_DISABLE
 utest::v1::status_t greentea_setup(const size_t number_of_cases)
 {
     GREENTEA_SETUP(100, "default_auto");
@@ -303,9 +314,10 @@ int main()
 {
     return !Harness::run(specification);
 }
+/// @endcond
 
 
-#else   // YOTTA_CONFIGURATION_STORE_EXAMPLE3_VERSION_STRING
+#else   // CFSTORE_EXAMPLE3_APP
 
 // stand alone Configuration-Store-Example
 void app_start(int argc __unused, char** argv __unused)
@@ -314,4 +326,4 @@ void app_start(int argc __unused, char** argv __unused)
 }
 
 
-#endif // YOTTA_CONFIGURATION_STORE_EXAMPLE3_VERSION_STRING
+#endif // CFSTORE_EXAMPLE3_APP

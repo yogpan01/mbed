@@ -1,6 +1,4 @@
 /*
- * @file close.cpp
- *
  * mbed Microcontroller Library
  * Copyright (c) 2006-2016 ARM Limited
  *
@@ -15,9 +13,14 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
- * Test cases to close KVs in the CFSTORE using the drv->Cpen() interface.
  */
+
+/** @file close.cpp Test cases to close KVs in the CFSTORE using the drv->Close() API function.
+ *
+ * Please consult the documentation under the test-case functions for
+ * a description of the individual test case.
+ */
+
 #include "mbed.h"
 #include "cfstore_config.h"
 #include "Driver_Common.h"
@@ -68,32 +71,26 @@ static control_t cfstore_close_test_00(const size_t call_count)
 }
 
 
-/** @brief  basic test
+/** @brief
  *
- * @note
- *
- * The test does the following:
- * 01. create a key with handle hkey1
- * 02. write data of hkey
- * 03. opens KV with 2nd handle, hkey2
- * 04. read data with hkey2 and make sure its the same as that written with hkey1
- * 05. write new data with hkey2
- * 06. delete hkey2
- * 07. close hkey2
- * 08. read hkey1 and make sure the data is the newly written data i.e. the key hasnt
+ * The is a basic test case which does the following:
+ * - 01. create a key with handle hkey1
+ * - 02. write data of hkey
+ * - 03. opens KV with 2nd handle, hkey2
+ * - 04. read data with hkey2 and make sure its the same as that written with hkey1
+ * - 05. write new data with hkey2
+ * - 06. delete hkey2
+ * - 07. close hkey2
+ * - 08. read hkey1 and make sure the data is the newly written data i.e. the key hasnt
  *     been deleted yet
- * 09. try to open KV and make sure unable to do so, as KV is deleting
- * 10. close hkey1
- * 11. try to open KV and make sure unable to do so because its now been deleted
- * 12. create new KV with same key_name to make sure can re-create the key again.
+ * - 09. try to open KV and make sure unable to do so, as KV is deleting
+ * - 10. close hkey1
+ * - 11. try to open KV and make sure unable to do so because its now been deleted
+ * - 12. create new KV with same key_name to make sure can re-create the key again.
  *
- *
- * @return  status code
- *          ARM_DRIVER_OK, the test passed successfully
- *          ret < ARM_DRIVER_OK, the test failed with the return code
- *          supplying more details
+ * @return on success returns CaseNext to continue to next test case, otherwise will assert on errors.
  */
-static control_t cfstore_close_test_01_end(const size_t call_count)
+control_t cfstore_close_test_01_end(const size_t call_count)
 {
     char read_buf[CFSTORE_KEY_NAME_MAX_LENGTH];
     int32_t ret = ARM_DRIVER_ERROR;
@@ -226,6 +223,7 @@ static control_t cfstore_close_test_01_end(const size_t call_count)
 }
 
 
+/// @cond CFSTORE_DOXYGEN_DISABLE
 utest::v1::status_t greentea_setup(const size_t number_of_cases)
 {
     GREENTEA_SETUP(100, "default_auto");
@@ -248,5 +246,6 @@ int main()
 {
     return !Harness::run(specification);
 }
+/// @endcond
 
 

@@ -1,5 +1,4 @@
-/* @file flush.cpp
- *
+/*
  * mbed Microcontroller Library
  * Copyright (c) 2006-2016 ARM Limited
  *
@@ -14,9 +13,14 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
- * Test cases to flush KVs in the CFSTORE using the drv->Flush() interface.
  */
+
+/** @file flash.cpp Test cases to flush KVs in the CFSTORE using the Flash-Journal interface.
+ *
+ * Please consult the documentation under the test-case functions for
+ * a description of the individual test case.
+ */
+
 #include "cfstore_config.h"
 #include "cfstore_test.h"
 #include "cfstore_debug.h"
@@ -57,6 +61,7 @@ UVISOR_BOX_CONFIG(cfstore_flash_box1, UVISOR_BOX_STACK_SIZE);
  * Defines
  *
  */
+/// @cond CFSTORE_DOXYGEN_DISABLE
 #define CFSTORE_FREE                                    free
 #define CFSTORE_MALLOC                                  malloc
 #define CFSTORE_REALLOC                                 realloc
@@ -71,12 +76,16 @@ UVISOR_BOX_CONFIG(cfstore_flash_box1, UVISOR_BOX_STACK_SIZE);
 #define CFSTORE_FLASH_MTD_ASYNC_OPS_ON                  1
 #define CFSTORE_FLASH_MTD_ASYNC_OPS_OFF                 0
 #define CFSTORE_FLASH_CASE_TIMEOUT_MS                   5000
+/// @endcond
 
 /*
  * Globals
  */
 
+/// @cond CFSTORE_DOXYGEN_DISABLE
 char cfstore_flash_utest_msg_g[CFSTORE_FLASH_UTEST_MSG_BUF_SIZE];
+/// @endcond
+
 #ifdef CFSTORE_CONFIG_BACKEND_FLASH_ENABLED
 uint16_t cfstore_flash_mtd_async_ops_g = 0;
 extern ARM_DRIVER_STORAGE ARM_Driver_Storage_(0);
@@ -659,6 +668,7 @@ static control_t cfstore_flash_test_00(const size_t call_count)
     return CaseNext;
 }
 
+/// @cond CFSTORE_DOXYGEN_DISABLE
 /* Specify all your test cases here */
 Case cases[] = {
         Case("flash_journal_async_test_00", cfstore_flash_test_00),
@@ -682,3 +692,4 @@ int main()
 {
     return !Harness::run(specification);
 }
+/// @endcond

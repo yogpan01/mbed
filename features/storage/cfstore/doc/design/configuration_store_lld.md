@@ -11,7 +11,7 @@ Author: Simon Hughes
 
 The CFSTORE client API interface is represented diagramatically in the following UML digarm  
 
-![CFSTORE_UML_HLD_01](https://github.com/ARMmbed/configuration-store/blob/master/doc/design/pics/configuration_store_hld_api_summary.jpg)
+![CFSTORE_UML_HLD_01](doc/design/pics/configuration_store_hld_api_summary.jpg)
 
 
 The above UML diagram shows the low level design of the CFSTORE API.

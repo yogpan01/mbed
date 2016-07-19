@@ -1,5 +1,4 @@
-/** @file dump.cpp
- *
+/*
  * mbed Microcontroller Library
  * Copyright (c) 2006-2016 ARM Limited
  *
@@ -17,6 +16,10 @@
  *
  * Simple tool (implemented as a test case) to dump cfstore contents.
  */
+
+/** @file dump.cpp test binary for dumping CFSTORE configuration.
+ */
+
 #include "mbed.h"
 #include "cfstore_config.h"
 #include "cfstore_test.h"
@@ -40,7 +43,7 @@
 using namespace utest::v1;
 
 
-static control_t cfstore_dump_test_01_end(const size_t call_count)
+control_t cfstore_dump_test_01_end(const size_t call_count)
 {
     int32_t ret = ARM_DRIVER_ERROR;
     ARM_CFSTORE_DRIVER* drv = &cfstore_driver;
@@ -57,6 +60,7 @@ static control_t cfstore_dump_test_01_end(const size_t call_count)
 }
 
 
+/// @cond CFSTORE_DOXYGEN_DISABLE
 utest::v1::status_t greentea_setup(const size_t number_of_cases)
 {
     GREENTEA_SETUP(400, "default_auto");
@@ -78,4 +82,5 @@ int main()
 {
     return !Harness::run(specification);
 }
+/// @endcond
 

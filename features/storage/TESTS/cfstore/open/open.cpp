@@ -1,6 +1,4 @@
 /*
- * @file open.cpp
- *
  * mbed Microcontroller Library
  * Copyright (c) 2006-2016 ARM Limited
  *
@@ -15,9 +13,14 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
- * Test cases to open KVs in the CFSTORE using the drv->Open() interface.
  */
+
+/** @file open.cpp Test cases to open KVs in the CFSTORE using the drv->Open() interface.
+ *
+ * Please consult the documentation under the test-case functions for
+ * a description of the individual test case.
+ */
+
 #include "mbed.h"
 #include "cfstore_config.h"
 #include "cfstore_test.h"
@@ -48,11 +51,13 @@ UVISOR_BOX_CONFIG(cfstore_open_box1, UVISOR_BOX_STACK_SIZE);
 #endif /* YOTTA_CFG_CFSTORE_UVISOR */
 
 
+/// @cond CFSTORE_DOXYGEN_DISABLE
 #ifdef CFSTORE_DEBUG
 #define CFSTORE_OPEN_GREENTEA_TIMEOUT_S     3000
 #else
 #define CFSTORE_OPEN_GREENTEA_TIMEOUT_S     1000
 #endif
+/// @endcond
 
 
 /* support functions */
@@ -89,12 +94,9 @@ static control_t cfstore_open_test_00(const size_t call_count)
  * - reads the KV data and checks its the same as the previously created data.
  * - closes the opened key
  *
- * @return  status code
- *          ARM_DRIVER_OK, the test passed successfully
- *          ret < ARM_DRIVER_OK, the test failed with the return code
- *          supplying more details
+ * @return on success returns CaseNext to continue to next test case, otherwise will assert on errors.
  */
-static control_t cfstore_open_test_01_end(const size_t call_count)
+control_t cfstore_open_test_01_end(const size_t call_count)
 {
     char* read_buf;
     int32_t ret = ARM_DRIVER_ERROR;
@@ -179,12 +181,9 @@ static cfstore_kv_data_t cfstore_open_test_02_data[] = {
  * - tries to write the KV data which should fail because KV was not opened with write flag set.
  * - closes the opened key
  *
- * @return  status code
- *          ARM_DRIVER_OK, the test passed successfully
- *          ret < ARM_DRIVER_OK, the test failed with the return code
- *          supplying more details
+ * @return on success returns CaseNext to continue to next test case, otherwise will assert on errors.
  */
-static control_t cfstore_open_test_02_end(const size_t call_count)
+control_t cfstore_open_test_02_end(const size_t call_count)
 {
     int32_t ret = ARM_DRIVER_ERROR;
     ARM_CFSTORE_SIZE len = 0;
@@ -235,12 +234,9 @@ static control_t cfstore_open_test_02_end(const size_t call_count)
  * - tries to write the KV data which should succeeds because KV was opened with write flag set.
  * - closes the opened key
  *
- * @return  status code
- *          ARM_DRIVER_OK, the test passed successfully
- *          ret < ARM_DRIVER_OK, the test failed with the return code
- *          supplying more details
+ * @return on success returns CaseNext to continue to next test case, otherwise will assert on errors.
  */
-static control_t cfstore_open_test_03_end(const size_t call_count)
+control_t cfstore_open_test_03_end(const size_t call_count)
 {
     int32_t ret = ARM_DRIVER_ERROR;
     ARM_CFSTORE_SIZE len = 0;
@@ -286,12 +282,9 @@ static control_t cfstore_open_test_03_end(const size_t call_count)
 /** @brief  test to call cfstore_open() with a key_name string that exceeds
  *          the maximum length
  *
- * @return  status code
- *          CFSTORE_ERR_SUCCESS, the test passed successfully
-  *         CFSTORE_ERR_FAILED, the test failed
- *
+ * @return on success returns CaseNext to continue to next test case, otherwise will assert on errors.
  */
-static control_t cfstore_open_test_04_end(const size_t call_count)
+control_t cfstore_open_test_04_end(const size_t call_count)
 {
     char kv_name_good[CFSTORE_KEY_NAME_MAX_LENGTH+1]; /* extra char for terminating null */
     char kv_name_bad[CFSTORE_KEY_NAME_MAX_LENGTH+2];
@@ -341,10 +334,12 @@ static control_t cfstore_open_test_04_end(const size_t call_count)
 }
 
 
+/// @cond CFSTORE_DOXYGEN_DISABLE
 typedef struct cfstore_open_kv_name_ascii_node {
     uint32_t code;
     uint32_t f_allowed : 1;
 } cfstore_open_kv_name_ascii_node;
+/// @endcond
 
 static const uint32_t cfstore_open_kv_name_ascii_table_code_sentinel_g = 256;
 
@@ -368,12 +363,14 @@ static cfstore_open_kv_name_ascii_node cfstore_open_kv_name_ascii_table[] =
         {cfstore_open_kv_name_ascii_table_code_sentinel_g, false},       /* sentinel */
 };
 
+/// @cond CFSTORE_DOXYGEN_DISABLE
 enum cfstore_open_kv_name_pos {
     cfstore_open_kv_name_pos_start = 0x0,
     cfstore_open_kv_name_pos_mid,
     cfstore_open_kv_name_pos_end,
     cfstore_open_kv_name_pos_max
 };
+/// @endcond
 
 /** @brief  test to call cfstore_open() with key_name that in includes
  *          illegal characters
@@ -383,12 +380,9 @@ enum cfstore_open_kv_name_pos {
  *          - a max-length string of random characters (legal and illegal)
  *          - a max-length string of random illegal characters only
  *
- * @return  status code
- *          ARM_DRIVER_OK, the test passed successfully
- *          ret < ARM_DRIVER_OK, the test failed with the return code
- *          supplying more details
+ * @return on success returns CaseNext to continue to next test case, otherwise will assert on errors.
  */
-static control_t cfstore_open_test_05_end(const size_t call_count)
+control_t cfstore_open_test_05_end(const size_t call_count)
 {
     bool f_allowed = false;
     char kv_name[CFSTORE_KEY_NAME_MAX_LENGTH+1];    /* extra char for terminating null */
@@ -529,12 +523,9 @@ static const char cfstore_open_ascii_illegal_buf_g[] = "!\"�$%&'()*+,./:;<=>?@
  *          illegal characters
  *          - a max-length string of random illegal characters only
  *
- * @return  status code
- *          ARM_DRIVER_OK, the test passed successfully
- *          ret < ARM_DRIVER_OK, the test failed with the return code
- *          supplying more details
+ * @return on success returns CaseNext to continue to next test case, otherwise will assert on errors.
  */
-static control_t cfstore_open_test_06_end(const size_t call_count)
+control_t cfstore_open_test_06_end(const size_t call_count)
 {
     char kv_name[CFSTORE_KEY_NAME_MAX_LENGTH+1];    /* extra char for terminating null */
     size_t i = 0;
@@ -574,12 +565,9 @@ static control_t cfstore_open_test_06_end(const size_t call_count)
  *          illegal characters
  *          - a max-length string of random characters (legal and illegal)
  *
- * @return  status code
- *          ARM_DRIVER_OK, the test passed successfully
- *          ret < ARM_DRIVER_OK, the test failed with the return code
- *          supplying more details
+ * @return on success returns CaseNext to continue to next test case, otherwise will assert on errors.
  */
-static control_t cfstore_open_test_07_end(const size_t call_count)
+control_t cfstore_open_test_07_end(const size_t call_count)
 {
     char kv_name[CFSTORE_KEY_NAME_MAX_LENGTH+1];    /* extra char for terminating null */
     size_t i = 0;
@@ -615,6 +603,7 @@ static control_t cfstore_open_test_07_end(const size_t call_count)
     return CaseNext;
 }
 
+/// @cond CFSTORE_DOXYGEN_DISABLE
 utest::v1::status_t greentea_setup(const size_t number_of_cases)
 {
     GREENTEA_SETUP(CFSTORE_OPEN_GREENTEA_TIMEOUT_S, "default_auto");
@@ -649,3 +638,4 @@ int main()
 {
     return !Harness::run(specification);
 }
+/// @endcond

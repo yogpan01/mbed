@@ -3,9 +3,8 @@ Author: Simon Hughes
 
 # Overview
 
-This page documents the supported requirements in each release. The Configuration Store Requirements are documented here:
-
-[CFSTORE_REQUIREMENTS](https://github.com/ARMmbed/meVo/blob/master/config_store/doc/design/configuration_store_requirements.md)
+This page documents the supported requirements in each release. See the [Configuration Store Requirements][CFSTORE_ENGREQ] 
+for the definitions of the REQ-xxx reference numbers used in this document.
 
 
 # Releases
@@ -66,3 +65,4 @@ The requirements status (supported versus not supported) in this release are as 
 
 
 
+[CFSTORE_ENGREQ]: doc/design/configuration_store_requirements.md

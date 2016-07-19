@@ -1,5 +1,4 @@
-/** @file create.cpp
- *
+/*
  * mbed Microcontroller Library
  * Copyright (c) 2006-2016 ARM Limited
  *
@@ -17,6 +16,14 @@
  *
  * Test cases to create KVs in the CFSTORE using the drv->Create() API call.
  */
+
+/** @file create.cpp Test cases to close KVs in the CFSTORE using the
+ *  drv->Create() API function.
+ *
+ * Please consult the documentation under the test-case functions for
+ * a description of the individual test case.
+ */
+
 #include "mbed.h"
 #include "cfstore_config.h"
 #include "cfstore_debug.h"
@@ -54,6 +61,7 @@ UVISOR_BOX_CONFIG(cfstore_create_box1, UVISOR_BOX_STACK_SIZE);
 #endif /* YOTTA_CFG_CFSTORE_UVISOR */
 
 
+/// @cond CFSTORE_DOXYGEN_DISABLE
 #define CFSTORE_CREATE_TEST_01_TABLE_HEAD_ENTRY_01     { "Lefkada.Vathi.Meganisi.Atokos.Vathi.Ithaki.PeriPigathi.AgiosAndreas.Sami.Kefalonia.AgiaEffimia.AgiaSofia.Fiskardo.Frikes.Kioni.Meganissi.Lefkada", "Penelope"}
 #define CFSTORE_CREATE_TEST_01_TABLE_HEAD_ENTRY_02     { "Iolcus.Lemnos.Salmydessus.Cyzicus.Cios.Berbryces.Symplegadese.IsleAres.Colchis.Anenea.Sirens.Scylia.Charybdis.Phaeacia.Triton.Iolcus", "Medea"}
 #define CFSTORE_CREATE_TEST_01_TABLE_HEAD_ENTRY_03     { "338.Chaeronea.336.Macedonia.334.Granicus.333.Issus.332.Tyre.331.Gaugamela.330.Persepolis.Philotas.Parmenion.329.Bactria.Oxus.Samarkand.328.Cleitus.327.Roxane.326.Hydaspes.Bucephalus.324.Hephaestion.323.AlexanderDies", "TheGreat"}
@@ -122,6 +130,7 @@ static cfstore_kv_data_t cfstore_create_test_01_data_step_04[] = {
         CFSTORE_CREATE_TEST_01_TABLE_TAIL_ENTRY_04,
         { NULL, NULL},
 };
+/// @endcond
 
 /* support functions */
 
@@ -147,7 +156,8 @@ static int32_t cfstore_create_kv_value_gen(char* value, const size_t len)
 
 static char* CFSTORE_CREATE_KV_CREATE_NO_TAG = NULL;
 
-/* @brief
+/** @brief
+ *
  * support function to create a KV
  * - a kv name is generated with the length name_len
  * - a kv value blob is generated with the length value_len
@@ -156,6 +166,7 @@ static char* CFSTORE_CREATE_KV_CREATE_NO_TAG = NULL;
  * @param   name_tag    tag to append to name, intended to enable large number of unique strings
  * @param   value_buf   buffer to use for storing the generated value data
  * @param   value_len   the length of the value to generate
+ *
  */
 static int32_t cfstore_create_kv_create(size_t name_len, char* name_tag, char* value_buf, size_t value_len)
 {
@@ -261,11 +272,9 @@ static control_t cfstore_create_test_00(const size_t call_count)
 }
 
 
-/**
- * @brief   test to change the value blob size of pre-existing key
+/** @brief
  *
- * @notes
- *
+ * Test case to change the value blob size of pre-existing key.
  * The test does the following:
  * - creates a cfstore with ~10 entries.
  * - for a mid-cfstore entry, grow the value blob size
@@ -275,12 +284,9 @@ static control_t cfstore_create_test_00(const size_t call_count)
  * - check all the cfstore entries can be read correctly and their
  *   data agrees with the data supplied upon creation.
  *
- * @return  status code
- *          ARM_DRIVER_OK, the test passed successfully
- *          ret < ARM_DRIVER_OK, the test failed with the return code
- *          supplying more details
+ * @return on success returns CaseNext to continue to next test case, otherwise will assert on errors.
  */
-static control_t cfstore_create_test_01_end(const size_t call_count)
+control_t cfstore_create_test_01_end(const size_t call_count)
 {
     int32_t ret = ARM_DRIVER_ERROR;
     ARM_CFSTORE_FMODE flags;
@@ -349,22 +355,6 @@ static control_t cfstore_create_test_01_end(const size_t call_count)
 }
 
 
-/**
- * @brief   create the 10 kvs.
- * @note
- * The amount of data store in the cfstore is as follows:
- * - 10 kvs
- * - kv name lengths are ~220 => ~ 2200 bytes
- * - value blob length is 1x256, 2x256, 3x256, ... 10x256)) = 256(1+2+3+4+..10) = 256*10*11/2 = 14080
- * - kv overhead = 8bytes/kv = 8 * 10 = 80bytes
- * - total = (220*10)+256*10*11/2 10*8 = 143800 bytes
- *
- *
- * @return  status code
- *          ARM_DRIVER_OK, the test passed successfully
- *          ret < ARM_DRIVER_OK, the test failed with the return code
- *          supplying more details
- */
 static int32_t cfstore_create_test_02_core(const size_t call_count)
 {
     int32_t ret = ARM_DRIVER_ERROR;
@@ -399,7 +389,19 @@ static int32_t cfstore_create_test_02_core(const size_t call_count)
     return ret;
 }
 
-static control_t cfstore_create_test_02_end(const size_t call_count)
+
+/**@brief
+ *
+ * Test case to create ~10 kvs. The amount of data store in the cfstore is as follows:
+ * - 10 kvs
+ * - kv name lengths are ~220 => ~ 2200 bytes
+ * - value blob length is 1x256, 2x256, 3x256, ... 10x256)) = 256(1+2+3+4+..10) = 256*10*11/2 = 14080
+ * - kv overhead = 8bytes/kv = 8 * 10 = 80bytes
+ * - total = (220*10)+256*10*11/2 10*8 = 143800 bytes
+ *
+ * @return on success returns CaseNext to continue to next test case, otherwise will assert on errors.
+ */
+control_t cfstore_create_test_02_end(const size_t call_count)
 {
     int32_t ret;
     ARM_CFSTORE_DRIVER* drv = &cfstore_driver;
@@ -417,7 +419,13 @@ static control_t cfstore_create_test_02_end(const size_t call_count)
 }
 
 
-static control_t cfstore_create_test_03_end(const size_t call_count)
+/**@brief
+ *
+ * Test to create the ~100 kvs to make the device run out of memory.
+ *
+ * @return on success returns CaseNext to continue to next test case, otherwise will assert on errors.
+ */
+control_t cfstore_create_test_03_end(const size_t call_count)
 {
     int32_t i = 0;
     int32_t ret;
@@ -438,18 +446,15 @@ static control_t cfstore_create_test_03_end(const size_t call_count)
 }
 
 
-/**
- * @brief   create the 100 kvs to make the device run out of memory
- * @note
+/**@brief
+ *
+ * Test to create the 100 kvs to make the device run out of memory.
  * The amount of data store in the cfstore is as follows:
  * - total = (220*100)+256*100*101/2 100*8 = 1315600 = 1.315x10^6
  *
- * @return  status code
- *          ARM_DRIVER_OK, the test passed successfully
- *          ret < ARM_DRIVER_OK, the test failed with the return code
- *          supplying more details
+ * @return on success returns CaseNext to continue to next test case, otherwise will assert on errors.
  */
-static control_t cfstore_create_test_04_end(const size_t call_count)
+control_t cfstore_create_test_04_end(const size_t call_count)
 {
     int32_t ret = ARM_DRIVER_ERROR;
     uint32_t i = 0;
@@ -496,18 +501,14 @@ static control_t cfstore_create_test_04_end(const size_t call_count)
     return CaseNext;
 }
 
-/**
- * @brief   create the 500 kvs.
- * @note
- * The amount of data store in the cfstore is as follows:
+/**@brief
+ *
+ * Test to create ~500 kvs. The amount of data store in the cfstore is as follows:
  * - total = (220*500)+(256/64)*500*501/2 500*8 = 8236000 = 8.236M
  *
- * @return  status code
- *          ARM_DRIVER_OK, the test passed successfully
- *          ret < ARM_DRIVER_OK, the test failed with the return code
- *          supplying more details
+ * @return on success returns CaseNext to continue to next test case, otherwise will assert on errors.
  */
-static control_t cfstore_create_test_05_end(const size_t call_count)
+control_t cfstore_create_test_05_end(const size_t call_count)
 {
     int32_t ret = ARM_DRIVER_ERROR;
     uint32_t i = 0;
@@ -552,11 +553,14 @@ static control_t cfstore_create_test_05_end(const size_t call_count)
 }
 
 
+/// @cond CFSTORE_DOXYGEN_DISABLE
+/* structure to encode test data */
 typedef struct cfstore_create_key_name_validate_t {
     const char* key_name;
     uint32_t f_allowed : 1;
 } cfstore_create_key_name_validate_t;
 
+/* data table encoding test data */
 cfstore_create_key_name_validate_t cfstore_create_test_06_data[] = {
         /* ruler for measuring text strings */
         /*                                                                                                    1         1         1         1         1         1         1         1         1         1         2         2         2 */
@@ -573,20 +577,19 @@ cfstore_create_key_name_validate_t cfstore_create_test_06_data[] = {
         { "basement.medicine.pavement.government.trenchcoat.off.cough.off.kid.did.when.again.alleyway.friend.cap.pen.dollarbills.ten.foot.soot.put.but.anyway.say.May.DA.kid.did.toes.bows.those.hose.nose.clothes.man.blows.{100000000}", false },
         { NULL, false},
 };
+/// @endcond
 
 
-/**
- * @brief   function to test whether a key name can be created or not
+/**@brief
+ *
+ * Test whether a key name can be created or not.
  *
  * @param	key_name
  * 			name of the key to create in the store
  * @param	should_create
  * 			if true, then create KV should succeed, otherwise should fail.
  *
- * @return  status code
- *          ARM_DRIVER_OK, the test passed successfully
- *          ret < ARM_DRIVER_OK, the test failed with the return code
- *          supplying more details
+ * @return on success returns CaseNext to continue to next test case, otherwise will assert on errors.
  */
 bool cfstore_create_key_name_validate(const char *key_name, bool should_create)
 {
@@ -631,15 +634,13 @@ bool cfstore_create_key_name_validate(const char *key_name, bool should_create)
     return bret;
 }
 
-/**
- * @brief   check that key names with non-matching braces etc do no get created.
+/** @brief
  *
- * @return  status code
- *          ARM_DRIVER_OK, the test passed successfully
- *          ret < ARM_DRIVER_OK, the test failed with the return code
- *          supplying more details
+ * Test that key names with non-matching braces etc do no get created.
+ *
+ * @return on success returns CaseNext to continue to next test case, otherwise will assert on errors.
  */
-static control_t cfstore_create_test_06_end(const size_t call_count)
+control_t cfstore_create_test_06_end(const size_t call_count)
 {
     bool ret = false;
     int32_t ret32 = ARM_DRIVER_ERROR;
@@ -662,6 +663,7 @@ static control_t cfstore_create_test_06_end(const size_t call_count)
     return CaseNext;
 }
 
+/// @cond CFSTORE_DOXYGEN_DISABLE
 utest::v1::status_t greentea_setup(const size_t number_of_cases)
 {
     GREENTEA_SETUP(CFSTORE_CREATE_GREENTEA_TIMEOUT_S, "default_auto");
@@ -694,4 +696,5 @@ int main()
 {
     return !Harness::run(specification);
 }
+/// @endcond
 

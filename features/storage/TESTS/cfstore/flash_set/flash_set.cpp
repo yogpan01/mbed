@@ -1,5 +1,4 @@
-/** @file flash_set.cpp
- *
+/*
  * mbed Microcontroller Library
  * Copyright (c) 2006-2016 ARM Limited
  *
@@ -15,8 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Tool to set flash to some data
  */
+
+/** @file flash_set.cpp Test tool to set flash to some data
+ */
+
 #include "mbed.h"
 #include "cfstore_config.h"
 #include "Driver_Common.h"
@@ -54,10 +56,7 @@ UVISOR_SET_MODE_ACL(UVISOR_ENABLED, cfstore_acl_uvisor_box_flash_set_g);
 /**
  * @brief   add ~50 KVs and store them in flash
  *
- * @return  status code
- *          ARM_DRIVER_OK, the test passed successfully
- *          ret < ARM_DRIVER_OK, the test failed with the return code
- *          supplying more details
+ * @return on success returns CaseNext to continue to next test case, otherwise will assert on errors.
  */
 static control_t cfstore_flash_set_test_01_end(const size_t call_count)
 {
@@ -92,7 +91,7 @@ static control_t cfstore_flash_set_test_01_end(const size_t call_count)
     return CaseNext;
 }
 
-
+/// @cond CFSTORE_DOXYGEN_DISABLE
 utest::v1::status_t greentea_setup(const size_t number_of_cases)
 {
     GREENTEA_SETUP(100, "default_auto");
@@ -114,3 +113,4 @@ int main()
 {
     return !Harness::run(specification);
 }
+/// @endcond

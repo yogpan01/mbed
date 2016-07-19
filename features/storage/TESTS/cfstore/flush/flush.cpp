@@ -1,5 +1,4 @@
-/* @file flush.cpp
- *
+/*
  * mbed Microcontroller Library
  * Copyright (c) 2006-2016 ARM Limited
  *
@@ -14,9 +13,14 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
- * Test cases to flush KVs in the CFSTORE using the drv->Flush() interface.
  */
+
+/** @file flush.cpp Test cases to flush KVs in the CFSTORE using the drv->Flush() interface.
+ *
+ * Please consult the documentation under the test-case functions for
+ * a description of the individual test case.
+ */
+
 #if defined __MBED__ && ! defined TOOLCHAIN_GCC_ARM
 
 
@@ -98,6 +102,7 @@ using namespace utest::v1;
 /*
  * Defines
  */
+/// @cond CFSTORE_DOXYGEN_DISABLE
 #define CFSTORE_FLUSH_UTEST_MSG_BUF_SIZE                256
 #define cfstore_flush_fsm_null                          NULL
 #define CFSTORE_FLUSH_CASE_TIMEOUT_MS                   10000
@@ -130,12 +135,9 @@ UVISOR_BOX_CONFIG(cfstore_flush_box1, UVISOR_BOX_STACK_SIZE);
 
 /** @brief  basic Flush() test
  *
- * @return  status code
- *          ARM_DRIVER_OK, the test passed successfully
- *          ret != ARM_DRIVER_OK, the test failed with the return code
- *          supplying more details
+ * @return on success returns CaseNext to continue to next test case, otherwise will assert on errors.
  */
-static int32_t cfstore_flush_test_01_x86_sync(void)
+int32_t cfstore_flush_test_01_x86_sync(void)
 {
     int32_t ret = ARM_DRIVER_ERROR;
     ARM_CFSTORE_DRIVER* drv = &cfstore_driver;
@@ -189,12 +191,15 @@ typedef enum cfstore_flush_fsm_event_t {
 
 typedef void (*cfstore_flush_fsm_handler)(void* ctx);
 
+/// @cond CFSTORE_DOXYGEN_DISABLE
 typedef struct cfstore_fsm_t
 {
     cfstore_flush_fsm_state_t state;
     cfstore_flush_fsm_event_t event;
 } cfstore_fsm_t;
+/// @endcond
 
+/// @cond CFSTORE_DOXYGEN_DISABLE
 typedef struct cfstore_flush_ctx_t
 {
     int32_t loops_done;
@@ -202,6 +207,7 @@ typedef struct cfstore_flush_ctx_t
     int32_t status;
     ARM_CFSTORE_OPCODE cmd_code;
 } cfstore_flush_ctx_t;
+/// @endcond
 
 
 /*
@@ -227,6 +233,8 @@ static const char* cfstore_flush_event_str[] =
     "unknown"
 };
 #endif
+
+/// @endcond
 
 /*
  * Forward decl
@@ -596,7 +604,7 @@ static control_t cfstore_flush_test_00(const size_t call_count)
     return CaseNext;
 }
 
-
+/// @cond CFSTORE_DOXYGEN_DISABLE
 utest::v1::status_t greentea_setup(const size_t number_of_cases)
 {
     GREENTEA_SETUP(CFSTORE_FLUSH_GREENTEA_TIMEOUT_S, "default_auto");
@@ -616,6 +624,7 @@ int main()
 {
     return !Harness::run(specification);
 }
+/// @endcond
 
 
 #endif // __MBED__ && ! defined TOOLCHAIN_GCC_ARM

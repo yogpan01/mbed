@@ -1,5 +1,4 @@
-/** @file read.cpp
- *
+/*
  * mbed Microcontroller Library
  * Copyright (c) 2006-2016 ARM Limited
  *
@@ -14,9 +13,14 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
- * Test cases to read KVs in the CFSTORE using the drv->Read() API call.
  */
+
+/** @file read.cpp Test cases to read KVs in the CFSTORE using the drv->Read() API call.
+ *
+ * Please consult the documentation under the test-case functions for
+ * a description of the individual test case.
+ */
+
 #include "mbed.h"
 #include "cfstore_config.h"
 #include "cfstore_test.h"
@@ -93,13 +97,9 @@ out0:
 
 /** @brief
  *
- *
- * @return  status code
- *          ARM_DRIVER_OK, the test passed successfully
- *          ret < ARM_DRIVER_OK, the test failed with the return code
- *          supplying more details
+ * @return on success returns CaseNext to continue to next test case, otherwise will assert on errors.
  */
-static control_t cfstore_read_test_01_end(const size_t call_count)
+control_t cfstore_read_test_01_end(const size_t call_count)
 {
     int32_t ret = ARM_DRIVER_ERROR;
     ARM_CFSTORE_SIZE len = 0;
@@ -147,12 +147,9 @@ static control_t cfstore_read_test_01_end(const size_t call_count)
 
 /** @brief
  *
- * @return  status code
- *          ARM_DRIVER_OK, the test passed successfully
- *          ret < ARM_DRIVER_OK, the test failed with the return code
- *          supplying more details
+ * @return on success returns CaseNext to continue to next test case, otherwise will assert on errors.
  */
-static control_t cfstore_read_test_02_end(const size_t call_count)
+control_t cfstore_read_test_02_end(const size_t call_count)
 {
     (void) call_count;
     /*todo: implement test */
@@ -163,6 +160,7 @@ static control_t cfstore_read_test_02_end(const size_t call_count)
 }
 
 
+/// @cond CFSTORE_DOXYGEN_DISABLE
 utest::v1::status_t greentea_setup(const size_t number_of_cases)
 {
     GREENTEA_SETUP(200, "default_auto");
@@ -187,3 +185,4 @@ int main()
 {
     return !Harness::run(specification);
 }
+/// @endcond

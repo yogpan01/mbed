@@ -1,5 +1,4 @@
-/** @file find.cpp
- *
+/*
  * mbed Microcontroller Library
  * Copyright (c) 2006-2016 ARM Limited
  *
@@ -15,8 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Test cases to find KVs in the CFSTORE using the drv->Find() interface.
  */
+
+/** @file find2.cpp Test cases to find KVs in the CFSTORE using the drv->Find() interface.
+ *
+ * Please consult the documentation under the test-case functions for
+ * a description of the individual test case.
+ */
+
 #include "mbed.h"
 #include "cfstore_config.h"
 #include "cfstore_test.h"
@@ -46,11 +51,13 @@ UVISOR_BOX_NAMESPACE("com.arm.mbed.cfstore.test.find2.box1");
 UVISOR_BOX_CONFIG(cfstore_find2_box1, UVISOR_BOX_STACK_SIZE);
 #endif /* YOTTA_CFG_CFSTORE_UVISOR */
 
+/// @cond CFSTORE_DOXYGEN_DISABLE
 #ifdef CFSTORE_DEBUG
 #define CFSTORE_FIND2_GREENTEA_TIMEOUT_S     360
 #else
 #define CFSTORE_FIND2_GREENTEA_TIMEOUT_S     60
 #endif
+#define CFSTORE_FIND2_TEST_02_VALUE_SIZE 191
 
 extern ARM_CFSTORE_DRIVER cfstore_driver;
 
@@ -62,6 +69,7 @@ void cfstore_find2_callback(int32_t status, ARM_CFSTORE_OPCODE cmd_code, void *c
     (void) handle;
     return;
 }
+/// @endcond
 
 /* report whether built/configured for flash sync or async mode */
 static control_t cfstore_find2_test_00(const size_t call_count)
@@ -138,7 +146,6 @@ static control_t cfstore_find2_test_01(const size_t call_count)
 
 
 /* fixed version of brendans code */
-#define CFSTORE_FIND2_TEST_02_VALUE_SIZE 191
 static control_t cfstore_find2_test_02(const size_t call_count)
 {
 	char keyBuffer[128] = "com.arm.mbed.manifest-manager.root.AQAAAAAAAAA-.manifest";
@@ -212,6 +219,7 @@ static control_t cfstore_find2_test_02(const size_t call_count)
     return CaseNext;
 }
 
+/// @cond CFSTORE_DOXYGEN_DISABLE
 utest::v1::status_t greentea_setup(const size_t number_of_cases)
 {
     GREENTEA_SETUP(CFSTORE_FIND2_GREENTEA_TIMEOUT_S, "default_auto");
@@ -234,3 +242,4 @@ int main()
 {
     return !Harness::run(specification);
 }
+/// @endcond

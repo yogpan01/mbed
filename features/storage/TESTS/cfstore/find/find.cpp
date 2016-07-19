@@ -1,5 +1,4 @@
-/** @file find.cpp
- *
+/*
  * mbed Microcontroller Library
  * Copyright (c) 2006-2016 ARM Limited
  *
@@ -15,8 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Test cases to find KVs in the CFSTORE using the drv->Find() interface.
+ *
  */
+
+/** @file find.cpp Test cases to find KVs in the CFSTORE using the drv->Find() interface.
+ *
+ * Please consult the documentation under the test-case functions for
+ * a description of the individual test case.
+ */
+
 #include "mbed.h"
 #include "cfstore_config.h"
 #include "cfstore_test.h"
@@ -60,15 +66,11 @@ static control_t cfstore_find_test_00(const size_t call_count)
     return CaseNext;
 }
 
-/**
- * @brief   test to call cfstore_find() with a key_name string that exceeds
+/** @brief  test to call cfstore_find() with a key_name string that exceeds
  *          the maximum length
- * @return  status code
- *          ARM_DRIVER_OK, the test passed successfully
- *          ret < ARM_DRIVER_OK, the test failed with the return code
- *          supplying more details
+ * @return on success returns CaseNext to continue to next test case, otherwise will assert on errors.
  */
-static control_t cfstore_find_test_01(const size_t call_count)
+control_t cfstore_find_test_01(const size_t call_count)
 {
     (void) call_count;
     /*todo: implement test */
@@ -79,19 +81,15 @@ static control_t cfstore_find_test_01(const size_t call_count)
 }
 
 
-/**
- * @brief	test to call cfstore_find() with key_name that in includes
+/** @brief	test to call cfstore_find() with key_name that in includes
  *         	illegal characters
  *          - the character can be at the beginning of the key_name
  *          - the character can be at the end of the key_name
  *          - the character can be somewhere within the key_name string
  *
- * @return  status code
- *          ARM_DRIVER_OK, the test passed successfully
- *          ret < ARM_DRIVER_OK, the test failed with the return code
- *          supplying more details
+ * @return on success returns CaseNext to continue to next test case, otherwise will assert on errors.
  */
-static control_t cfstore_find_test_02(const size_t call_count)
+control_t cfstore_find_test_02(const size_t call_count)
 {
     /*todo: implement test
      *
@@ -112,8 +110,15 @@ static control_t cfstore_find_test_02(const size_t call_count)
 }
 
 
-
-static control_t cfstore_find_test_03_end(const size_t call_count)
+/** @brief  test to call cfstore_find() with key_name that in includes
+ *          illegal characters
+ *          - the character can be at the beginning of the key_name
+ *          - the character can be at the end of the key_name
+ *          - the character can be somewhere within the key_name string
+ *
+ * @return on success returns CaseNext to continue to next test case, otherwise will assert on errors.
+ */
+control_t cfstore_find_test_03_end(const size_t call_count)
 {
     char* read_buf = NULL;
     const uint8_t key_name_max_len = CFSTORE_KEY_NAME_MAX_LENGTH+1;
@@ -194,21 +199,19 @@ static control_t cfstore_find_test_03_end(const size_t call_count)
 }
 
 
-/**
- * @brief   TODO: write test that uses cfstore_find_test_04_kv_data to grow {key, value}
+/** @brief  TODO: write test that uses cfstore_find_test_04_kv_data to grow {key, value}
  *          from 1 char to 221 chars long.
- *
- * static cfstore_kv_data_t cfstore_find_test_04_kv_data[] = {
+ * @return on success returns CaseNext to continue to next test case, otherwise will assert on errors.
+ */
+/*
+ * use this data:
+ *  static cfstore_kv_data_t cfstore_find_test_04_kv_data[] = {
  *        { "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef", "abcdefghjklmnopqrstuvwxyzabcdefghjklmnopqrstuvwxyzabcdefghjklmnopqrstuvwxyzabcdefghjklmnopqrstuvwxyzabcdefghjklmnopqrstuvwxyzabcdefghjklmnopqrstuvwxyzabcdefghjklmnopqrstuvwxyzabcdefghjklmnopqrstuvwxyzabcdefghjklmnopqrstuvwxyz"},
  *        { NULL, NULL},
  * };
  *
- * @return  status code
- *          ARM_DRIVER_OK, the test passed successfully
- *          ret < ARM_DRIVER_OK, the test failed with the return code
- *          supplying more details
  */
-static control_t cfstore_find_test_04(const size_t call_count)
+control_t cfstore_find_test_04(const size_t call_count)
 {
     /*todo: implement test
      *
@@ -239,7 +242,7 @@ static control_t cfstore_find_test_04(const size_t call_count)
  *          ret < ARM_DRIVER_OK, the test failed with the return code
  *          supplying more details
  */
-bool cfstore_find_key_name_validate(const char *key_name, const char *match, bool should_find)
+static bool cfstore_find_key_name_validate(const char *key_name, const char *match, bool should_find)
 {
     bool bret = true;
     bool btest_status = false;
@@ -284,6 +287,7 @@ bool cfstore_find_key_name_validate(const char *key_name, const char *match, boo
 }
 
 
+/// @cond CFSTORE_DOXYGEN_DISABLE
 typedef struct cfstore_find_key_name_validate_t {
     const char* key_name;
     const char* match;
@@ -303,18 +307,15 @@ cfstore_find_key_name_validate_t cfstore_find_test_05_data[] = {
         { "xyzijkXYZ", "*ijk*", true},
         { NULL, NULL, false},
 };
+/// @endcond
 
 
-/**
- * @brief   test whether a key name in the above table are valid, can be added to the
+/** @brief  test whether a key name in the above table are valid, can be added to the
  *          cfstore and found by a wildcard string
  *
- * @return  status code
- *          ARM_DRIVER_OK, the test passed successfully
- *          ret < ARM_DRIVER_OK, the test failed with the return code
- *          supplying more details
+ * @return on success returns CaseNext to continue to next test case, otherwise will assert on errors.
  */
-static control_t cfstore_find_test_05_end(const size_t call_count)
+control_t cfstore_find_test_05_end(const size_t call_count)
 {
     bool ret = false;
     int32_t ret32 = ARM_DRIVER_ERROR;
@@ -338,7 +339,7 @@ static control_t cfstore_find_test_05_end(const size_t call_count)
 }
 
 
-
+/// @cond CFSTORE_DOXYGEN_DISABLE
 #define CFSTORE_FIND_TEST_06_ENTRY_MATCH_03      { "0123456789abcdef0123456.yxxx.3", "abcdefghijklmnopqrstuvwxyz"}
 #define CFSTORE_FIND_TEST_06_ENTRY_MATCH_05      { "0123456789abcdef0123456.yxxx.5", "abcdefghijklmnopqrstuvwxyz"}
 #define CFSTORE_FIND_TEST_06_ENTRY_MATCH_07      { "0123456789abcdef0123456.yxxx.7", "abcdefghijklmnopqrstuvwxyz"}
@@ -375,6 +376,7 @@ static cfstore_kv_data_t cfstore_find_test_06_data_match_results[] = {
         CFSTORE_FIND_TEST_06_ENTRY_MATCH_09,
         { NULL, NULL},
 };
+/// @endcond
 
 
 /**
@@ -382,12 +384,9 @@ static cfstore_kv_data_t cfstore_find_test_06_data_match_results[] = {
  *          but the query string doesnt match the last 2 entries in the
  *          store.
  *
- * @return  status code
- *          ARM_DRIVER_OK, the test passed successfully
- *          ret < ARM_DRIVER_OK, the test failed with the return code
- *          supplying more details
+ * @return on success returns CaseNext to continue to next test case, otherwise will assert on errors.
  */
-static control_t cfstore_find_test_06_end(const size_t call_count)
+control_t cfstore_find_test_06_end(const size_t call_count)
 {
     const char* key_name_query = "0123456789abcdef0123456.y*";
     char key_name[CFSTORE_KEY_NAME_MAX_LENGTH+1];
@@ -439,6 +438,7 @@ static control_t cfstore_find_test_06_end(const size_t call_count)
 }
 
 
+/// @cond CFSTORE_DOXYGEN_DISABLE
 utest::v1::status_t greentea_setup(const size_t number_of_cases)
 {
     GREENTEA_SETUP(400, "default_auto");
@@ -468,4 +468,5 @@ int main()
 {
     return !Harness::run(specification);
 }
+/// @endcond
 
