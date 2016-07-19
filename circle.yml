@@ -2,7 +2,7 @@ checkout:
     post:
         - git fetch origin master
         - git checkout origin/master
-        - git merge ${CIRCLE_SHA1}
+        - git merge ${CIRCLE_SHA1} --no-commit
         
 test:
     override:
