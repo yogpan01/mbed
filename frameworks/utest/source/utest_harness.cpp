@@ -192,6 +192,8 @@ void Harness::raise_failure(const failure_reason_t reason)
             else if (teardown_status > signed(test_length)) raise_failure(REASON_CASE_INDEX);
             else if (teardown_status >= 0) case_index = teardown_status - 1;
 
+            // Restore case failure location once we have dealt with case teardown
+            location = fail_loc;
             handlers.case_teardown = NULL;
         }
     }
