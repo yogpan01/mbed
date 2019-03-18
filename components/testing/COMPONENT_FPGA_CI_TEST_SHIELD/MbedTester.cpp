@@ -19,7 +19,6 @@
 #include "fpga_config.h"
 #include "BlockDevice.h"
 #include "rtos/ThisThread.h"
-#include "platform/mbed_wait_api.h"
 #include "platform/mbed_error.h"
 #include "drivers/MbedCRC.h"
 
