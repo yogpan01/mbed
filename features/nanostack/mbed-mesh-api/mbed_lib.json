@@ -8,7 +8,7 @@
         },
         "use-malloc-for-heap": {
             "help": "Use `malloc()` for reserving the Nanostack's internal heap.",
-            "value": false
+            "value": true
         },
         "heap-stat-info": {
             "help": "Pointer to heap statistics `mem_stat_t` storage.",

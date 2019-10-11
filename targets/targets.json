@@ -2829,6 +2829,55 @@
             "network-default-interface-type": "ETHERNET"
         }
     },
+	"NUCLEO_F427VI":{
+	"inherits": ["FAMILY_STM32"],
+	"supported_form_factors": ["ARDUINO"],
+    "core": "Cortex-M4F",
+			"config": {
+            "clock_source": {
+                "help": "Mask value : USE_PLL_HSE_EXTC | USE_PLL_HSE_XTAL (need HW patch) | USE_PLL_HSI",
+                "value": "USE_PLL_HSE_XTAL|USE_PLL_HSI",
+                "macro_name": "CLOCK_SOURCE"
+            },
+			"lpticker_lptim": {
+                "help": "This target supports LPTIM. Set value 1 to use LPTIM for LPTICKER, or 0 to use RTC wakeup timer",
+                "value": 0
+            },
+			"clock_source_usb": {
+                "help": "As 48 Mhz clock is configured for USB, SYSCLK has to be reduced from 180 to 168 MHz (set 0 for the max SYSCLK value)",
+                "value": "1",
+                "macro_name": "CLOCK_SOURCE_USB"
+            }
+          },
+        "extra_labels_add": [
+            "STM32F4",
+            "STM_EMAC",
+            "PSA",
+			"STM32F427",
+            "STM32F427VI",
+            "STM32F427xx",
+            "STM32F427xI"
+        ],
+	 "components_add": ["FLASHIAP"],
+       "device_has_add": [
+            "ANALOGOUT",
+            "EMAC",
+			"CAN",
+            "SERIAL_ASYNCH",
+            "TRNG",
+            "FLASH",
+            "MPU"
+       ],
+       "detect_code": ["0799"],
+        "release_versions": ["2", "5"],
+        "device_name": "STM32F427ZI",
+        "bootloader_supported": true,
+        "overrides": {
+            "network-default-interface-type": "MESH",
+			 "lse_available": "1",
+			 "lpticker_delay_ticks": "4"
+			}
+	},
     "MTB_STM_S2LP": {
         "inherits": ["FAMILY_STM32"],
         "core": "Cortex-M4F",

@@ -4,7 +4,7 @@
         "present": 1,
         "shared-stacksize": {
             "help": "Stack size (bytes) for shared event queue thread",
-            "value": 2048
+            "value": 4048
         },
         "shared-eventsize": {
             "help": "Event buffer size (bytes) for shared event queue",
@@ -16,7 +16,7 @@
         },
         "shared-highprio-stacksize": {
             "help": "Stack size (bytes) for shared high-priority event queue thread",
-            "value": 1024
+            "value": 2024
         },
         "shared-highprio-eventsize": {
             "help": "Event buffer size (bytes) for shared high-priority event queue",
