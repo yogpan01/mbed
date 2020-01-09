@@ -2870,8 +2870,42 @@
        ],
        "detect_code": ["0799"],
         "release_versions": ["2", "5"],
-        "device_name": "STM32F427ZI",
-        "bootloader_supported": true,
+        "device_name": "STM32F427VITx",
+        "bootloader_supported": false,
+		       "sectors": [
+            [
+                134217728,
+                16384
+            ],
+            [
+                134283264,
+                65536
+            ],
+            [
+                134348800,
+                131072
+            ],
+            [
+                135266304,
+                16384
+            ],
+            [
+                135331840,
+                65536
+            ],
+            [
+                135397376,
+                131072
+            ],
+            [
+                536836096,
+                528
+            ],
+            [
+                536854528,
+                8
+            ]
+        ],
         "overrides": {
             "network-default-interface-type": "MESH",
 			 "lse_available": "1",

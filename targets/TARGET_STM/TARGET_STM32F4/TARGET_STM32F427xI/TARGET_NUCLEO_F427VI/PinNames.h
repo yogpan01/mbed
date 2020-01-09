@@ -70,8 +70,6 @@ typedef enum {
     // Not connected
     NC = -1,
 	
-#if 1   // Being there is no Arduino connector so all pins are mappped to NC
-
 	A0          = PA_8,      //GPIO0_s2LP     
     A1          = PE_4,      // Updated CS,     
     A2          = PC_9,     // GPIO1_s2LP
@@ -86,7 +84,7 @@ typedef enum {
 	D4          = NC,
 	D5          = NC,
 	D6          = NC,
-	D7          = PD_13,      // Updated SDN
+	D7          = PD_13,      // Updated SDN : PD_12  Production PD_13 for local
 	D8          = NC,
  	D9          = NC,
     D10         = NC,
@@ -96,7 +94,16 @@ typedef enum {
     D14         = NC,    // Updated MC_I2C2_SDA
     D15         = NC,    // Updated MC_I2C2_SCL
 	
-#endif
+	// Meter Interface mapping
+	PUSH_EVENT_SM 	= PA_2,    // NIC Meter interface for PUSH event detection
+	RST_EVENT_SM    = PC_4,   // NIC Meter interface for RST
+	PFO_EVENT_SM    = PE_12,    // NIC Meter interface for PFO
+	SM_UART_RX		= PE_7,		// UART7_RX  Mapped to Pin -8
+	SM_UART_TX   	= PE_8,		// UART7_TX  Mapped to Pin -7
+	CTX_GPIO 		= PD_0, 		// PIN-81, CTX
+	CPS_GPIO 		= PD_1, 		// PIN-82, CPS
+	CSD_GPIO 		= PD_2, 		// PIN-83, CSD
+	ANTENA_SEL		= PD_11,     // Antenna selection
 	
      // STDIO for console print
 #ifdef MBED_CONF_TARGET_STDIO_UART_TX
@@ -115,9 +122,9 @@ typedef enum {
     LED1        = PD_10,  // LD1 = Blue   
     LED2        = PD_8,  // Red 
     LED3        = PD_9, // Green 
-    LED4        = PD_9,  
+    LED4        = NC,
     LED_RED     = PD_8,
-    USER_BUTTON = PC_13,
+    USER_BUTTON = NC,
     // Standardized button names
     BUTTON1 = USER_BUTTON,
     SERIAL_TX   = STDIO_UART_TX, // Virtual Com Port
